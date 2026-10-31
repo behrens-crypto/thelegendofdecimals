@@ -742,6 +742,138 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
 #shop-preview-icon { display:flex; align-items:center; justify-content:center; width:76px; min-height:76px; }
 .shop-card-visual:has(.pixel-hero-icon) { display:flex; align-items:center; justify-content:center; width:80px; height:80px; border-radius:6px; background:radial-gradient(ellipse at 50% 82%,#88adc51c,transparent 70%); }
 </style>
+<style id="mission-interior-themes">
+/* Presentation only. Existing mission markup, values and feedback are retained. */
+#modalOverlay[data-chapter="1"]:not([data-menu]) {
+    --mission-accent:#bda86b; --mission-title:#f0dfa3;
+    --mission-paper:#102821; --mission-surface:#19352c; --mission-inset:#10241f;
+    --mission-line:#546b50; --mission-input-line:#8c9e70;
+    --mission-ink:#e6ead8; --mission-muted:#c4cdb4; --mission-glow:#d0bc7930;
+    --mission-radius:5px;
+}
+#modalOverlay[data-chapter="2"]:not([data-menu]) {
+    --mission-accent:#c5a569; --mission-title:#ead9b0;
+    --mission-paper:#14212b; --mission-surface:#1c2c37; --mission-inset:#101c25;
+    --mission-line:#526673; --mission-input-line:#78909b;
+    --mission-ink:#e2e9ec; --mission-muted:#bdcbd1; --mission-glow:#ceac6e30;
+    --mission-radius:2px;
+}
+#modalOverlay[data-chapter="3"]:not([data-menu]) {
+    --mission-accent:#b5a3d3; --mission-title:#e5ddf5;
+    --mission-paper:#181b2b; --mission-surface:#24283c; --mission-inset:#111626;
+    --mission-line:#5e6380; --mission-input-line:#9296b6;
+    --mission-ink:#e4e7f4; --mission-muted:#c7c9dc; --mission-glow:#b8a8e230;
+    --mission-radius:6px;
+}
+#modalOverlay[data-chapter]:not([data-menu]) > .mcu-panel {
+    background:var(--mission-paper);
+    border-color:var(--mission-accent);
+    box-shadow:0 0 0 3px #060d13,0 20px 80px #0009;
+}
+#modalOverlay[data-chapter]:not([data-menu]) > .mcu-panel::before,
+#modalOverlay[data-chapter]:not([data-menu]) > .mcu-panel::after {
+    content:none;
+}
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent {
+    color:var(--mission-ink);
+    background:var(--mission-paper);
+    font-family:Arial,sans-serif;
+    scrollbar-width:thin;
+    scrollbar-color:var(--mission-accent) var(--mission-paper);
+}
+#modalOverlay[data-chapter="1"]:not([data-menu]) #modalContent {
+    background:radial-gradient(ellipse at 5% 0%,#b59d5620,transparent 58%),var(--mission-paper);
+}
+#modalOverlay[data-chapter="2"]:not([data-menu]) .mission-heading {
+    background:linear-gradient(110deg,#223641,#15232f);
+}
+#modalOverlay[data-chapter="2"]:not([data-menu]) .mission-heading::after {
+    border-color:#c5a56933;
+    background:repeating-linear-gradient(0deg,transparent 0 25px,#c5a56918 25px 27px);
+}
+#modalOverlay[data-chapter="2"]:not([data-menu]) #modalContent {
+    background:linear-gradient(120deg,#647d8910,transparent 55%),var(--mission-paper);
+}
+#modalOverlay[data-chapter="3"]:not([data-menu]) #modalContent {
+    background:radial-gradient(ellipse at 95% 0%,#8e79b91c,transparent 55%),var(--mission-paper);
+}
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent::-webkit-scrollbar { width:7px; height:7px; }
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent::-webkit-scrollbar-track { background:var(--mission-paper); }
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent::-webkit-scrollbar-thumb { background:var(--mission-accent); border-radius:8px; }
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent::-webkit-scrollbar-corner { background:transparent; }
+
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent :is(.bg-slate-900,.bg-slate-800,[class~="bg-slate-900/80"]) {
+    color:var(--mission-ink);
+    background:var(--mission-surface);
+    border-color:var(--mission-line);
+    border-radius:var(--mission-radius);
+}
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent :is(.text-slate-200,.text-slate-300) { color:var(--mission-ink); }
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent .text-slate-400 { color:var(--mission-muted); }
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent :is(.text-sky-200,.text-sky-300,.text-sky-400) { color:var(--mission-title); }
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent :is([class~="border-sky-800"],[class~="border-sky-900/50"]) {
+    border-color:var(--mission-line);
+}
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent p.bg-slate-800 {
+    box-shadow:inset 3px 0 var(--mission-accent);
+    color:var(--mission-muted);
+    line-height:1.65;
+}
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent :is(.mcu-input,.mcu-select) {
+    color:var(--mission-ink);
+    background:var(--mission-inset);
+    border-color:var(--mission-input-line);
+    border-radius:3px;
+    font-family:Consolas,'Courier New',monospace;
+    box-shadow:inset 0 2px 5px #0003;
+}
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent :is(.mcu-input,.mcu-select):focus-visible {
+    outline:2px solid var(--mission-accent);
+    outline-offset:3px;
+    box-shadow:0 0 0 4px var(--mission-glow),inset 0 2px 5px #0003;
+}
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent .mcu-select option { color:var(--mission-ink); background:var(--mission-inset); }
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent :is(input[type="radio"],input[type="checkbox"],input[type="range"]) { accent-color:var(--mission-accent); }
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent .checkbox-label {
+    color:var(--mission-ink);
+    border-color:var(--mission-line);
+    background:var(--mission-inset);
+}
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent .checkbox-label:hover { background:var(--mission-paper); border-color:var(--mission-accent); }
+
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent .mcu-btn {
+    color:var(--mission-title);
+    background:var(--mission-surface);
+    border-color:var(--mission-accent);
+    border-radius:var(--mission-radius);
+    clip-path:none;
+    font-family:Arial,sans-serif;
+    font-weight:700;
+    letter-spacing:.1em;
+    box-shadow:inset 0 1px #ffffff0a,0 3px 10px #0002;
+}
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent .mcu-btn:hover:not(:disabled) {
+    color:var(--mission-paper);
+    background:var(--mission-accent);
+    box-shadow:0 0 16px var(--mission-glow);
+}
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent .mcu-btn:focus-visible { outline:2px solid var(--mission-accent); outline-offset:4px; }
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent .theory-toggle { text-transform:none; letter-spacing:.025em; }
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent :is(#multiply-hero-panel,#divide-hero-panel) {
+    background:var(--mission-surface);
+    color:var(--mission-ink);
+    border-color:var(--mission-line);
+    font-family:Arial,sans-serif;
+}
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent :is(#multiply-hero-title,#divide-hero-title) { color:var(--mission-title); }
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent .hero-tip-steps li { background:var(--mission-inset); border-color:var(--mission-line); }
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent :is(.hero-tip-remember,.hero-tip-rounding) { color:var(--mission-muted); }
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent .hero-tip-rounding { background:var(--mission-inset); }
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent .column-arithmetic-examples { background:var(--mission-inset); border-color:var(--mission-line); }
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent .arithmetic-rule { background:var(--mission-input-line); }
+#modalOverlay[data-chapter]:not([data-menu]) #modalContent .arithmetic-borrow-row small { color:var(--mission-muted); }
+
+</style>
 </head>
 <body class="min-h-screen flex flex-col hologram-bg">
 
