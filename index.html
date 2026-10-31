@@ -461,16 +461,12 @@ body[data-shop-color]:not([data-shop-color="color-blue"]) [class*="border-sky-"]
 #btn-save-progress { color:#f4d58c; border-color:#d4b469; background:#4a3b1c; box-shadow:0 0 14px #d3b16b12; }
 #btn-save-progress:hover { color:#fff0bd; border-color:#e8cc8c; background:#655024; }
 #world-travel-overlay[hidden] { display:none; }
-#world-travel-overlay { position:fixed; inset:0; z-index:120; display:flex; align-items:center; justify-content:center; padding:24px; background:#030b16ed; backdrop-filter:blur(8px); outline:none; }
-.travel-card { width:min(800px,100%); padding:25px; border:1px solid #b9aa7c; background:linear-gradient(145deg,#11242b,#0a1120); box-shadow:0 25px 90px #0009; }
-.travel-eyebrow { margin:0 0 10px; color:#b9bd9a; font:10px/1.5 'Orbitron',monospace; letter-spacing:1.6px; }
-#travel-title { margin:0 0 9px; color:#f0e0b7; font:400 32px/1.3 Georgia,serif; }
-#travel-route { margin:0 0 20px; color:#bacbc8; font:15px/1.5 'Rajdhani',Arial,sans-serif; }
-#travel-animation { display:block; width:100%; height:auto; max-height:calc(100dvh - 240px); object-fit:contain; image-rendering:pixelated; border:1px solid #5d747555; }
-.travel-meter { height:3px; margin-top:18px; background:#293d46; overflow:hidden; }
-.travel-meter span { display:block; width:100%; height:100%; transform:scaleX(var(--travel-progress,0)); transform-origin:left center; background:#dfc386; }
-@media(max-height:720px) { .travel-card{max-width:710px;padding:20px}#travel-title{font-size:27px}#travel-route{margin-bottom:13px} }
-@media(prefers-reduced-motion:reduce) { #world-travel-overlay{backdrop-filter:none} }
+#world-travel-overlay { position:fixed; inset:0; z-index:120; display:block; padding:0; background:transparent; backdrop-filter:none; outline:none; }
+.map-travel-shutter { position:absolute; inset:0; background:#030810; opacity:0; }
+.map-travel-status { position:absolute; left:50%; bottom:18px; transform:translateX(-50%); width:max-content; max-width:calc(100% - 32px); padding:10px 22px; border:1px solid #bba370; border-radius:4px; background:#0b1827ec; color:#f0deb4; text-align:center; box-shadow:0 4px 22px #0006; }
+#travel-title { display:block; font:600 16px/1.4 'Rajdhani',Arial,sans-serif; }
+#travel-route { display:block; margin-top:2px; color:#c9d8d1; font:16px/1.4 'Rajdhani',Arial,sans-serif; }
+
 
 </style>
 <style>
@@ -5030,6 +5026,35 @@ const IslandLevel1=(()=>{
         const s=nearby();keys.clear();if(!s||!available(s))return;
         if(s.travel)window.worldTravel.open(s.id);else if(s.secret)window.islandSecrets.open(s.id);else if(s.id==='shop')openShop();else openMission(1,s.id);
     }
+    // Additional swimming scenery. The separate twelve-fish riddle stays intact.
+    const scenerySchools=[{id:'large-lake',tiles:lakeTiles,count:20},{id:'small-lake',tiles:smallLakes.filter(p=>p.x<640&&p.y>640&&p.y<960),count:5}];
+    const fishColorsScenery=['orange','red','blue'];
+    function fishWaterPoint(s,x,y){return [[-13,-6],[13,-6],[-13,6],[13,6]].every(([dx,dy])=>s.tiles.some(p=>x+dx>=p.x&&x+dx<=p.x+p.w&&y+dy>=p.y&&y+dy<=p.y+p.h));}
+    function fishTarget(s){
+        for(let i=0;i<500;i++){const p=s.tiles[Math.floor(Math.random()*s.tiles.length)],x=p.x+Math.random()*p.w,y=p.y+Math.random()*p.h;if(fishWaterPoint(s,x,y))return {x,y};}
+        const p=s.tiles.find(p=>fishWaterPoint(s,p.x+16,p.y+16));return {x:p.x+16,y:p.y+16};
+    }
+    for(const school of scenerySchools){
+        school.fish=[];for(let i=0;i<school.count;i++){
+            let p;for(let attempt=0;attempt<100;attempt++){p=fishTarget(school);if(school.fish.every(f=>Math.hypot(f.x-p.x,f.y-p.y)>25))break;}
+            school.fish.push({...p,target:fishTarget(school),vx:0,vy:0,left:false,color:fishColorsScenery[Math.floor(Math.random()*3)],speed:11+Math.random()*8});
+        }
+    }
+    let lastSceneryFish=null;
+    function drawSceneryFish(){
+        const now=performance.now(),dt=lastSceneryFish===null?0:Math.min((now-lastSceneryFish)/1000,.05);lastSceneryFish=now;
+        const calm=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        for(const school of scenerySchools)for(const f of school.fish){
+            if(!calm&&dt){
+                let dx=f.target.x-f.x,dy=f.target.y-f.y,distance=Math.hypot(dx,dy);if(distance<9){f.target=fishTarget(school);dx=f.target.x-f.x;dy=f.target.y-f.y;distance=Math.hypot(dx,dy);}
+                const turn=Math.min(1,dt*2.8);f.vx+=(dx/Math.max(distance,1)*f.speed-f.vx)*turn;f.vy+=(dy/Math.max(distance,1)*f.speed-f.vy)*turn;
+                const x=f.x+f.vx*dt,y=f.y+f.vy*dt;if(fishWaterPoint(school,x,y)){f.x=x;f.y=y;}else{f.target=fishTarget(school);f.vx*=.3;f.vy*=.3;}
+                if(Math.abs(f.vx)>.5)f.left=f.vx<0;
+            }
+            window.islandSecrets?.drawFish(ctx,f);
+        }
+    }
+
     const fill=(c,x,y,w,h)=>{g.fillStyle=c;g.fillRect(x,y,w,h);};
     function drawTerrain(){
         IslandArtwork.surface(g,'water',0,0,W,H,'#194f69',.55);
@@ -5052,12 +5077,32 @@ const IslandLevel1=(()=>{
         }
         // Paths are clipped to dry land; their stepped edges match the tile art.
         const pathMask=document.createElement('canvas');pathMask.width=W;pathMask.height=H;
-        const pg=pathMask.getContext('2d');pg.fillStyle='#7f8354';
-        for(const r of roads)pg.fillRect(r.x-3,r.y-3,r.w+6,r.h+6);
-        pg.fillStyle=IslandArtwork.pattern(pg,'path')||'#cbb782';pg.globalAlpha=.86;for(const r of roads)pg.fillRect(r.x,r.y,r.w,r.h);pg.globalAlpha=1;
+        const pg=pathMask.getContext('2d'),trails=new Path2D();
+        for(const points of routeLines){
+            trails.moveTo(...points[0]);
+            for(let i=1;i<points.length-1;i++){
+                const a=points[i-1],b=points[i],c=points[i+1],first=Math.hypot(b[0]-a[0],b[1]-a[1]),second=Math.hypot(c[0]-b[0],c[1]-b[1]),radius=Math.min(32,first/2,second/2);
+                trails.lineTo(b[0]-(b[0]-a[0])*radius/first,b[1]-(b[1]-a[1])*radius/first);
+                trails.quadraticCurveTo(b[0],b[1],b[0]+(c[0]-b[0])*radius/second,b[1]+(c[1]-b[1])*radius/second);
+            }
+            trails.lineTo(...points[points.length-1]);
+        }
+        // Join each entrance forecourt to its nearest existing route centreline.
+        for(const s of sites){
+            const x=s.door.x,y=s.door.y+18;let nearest=null,best=Infinity;
+            for(const points of routeLines)for(let i=1;i<points.length;i++){
+                const a=points[i-1],b=points[i],dx=b[0]-a[0],dy=b[1]-a[1],t=Math.max(0,Math.min(1,((x-a[0])*dx+(y-a[1])*dy)/(dx*dx+dy*dy))),px=a[0]+dx*t,py=a[1]+dy*t,d=Math.hypot(px-x,py-y);
+                if(d<best){nearest=[px,py];best=d;}
+            }
+            if(nearest&&best<180){trails.moveTo(x,y);trails.lineTo(...nearest);}
+        }
+        pg.lineJoin='round';pg.lineCap='round';
+        for(const [width,paint] of [[50,'#7f8354'],[44,IslandArtwork.pattern(pg,'path')||'#cbb782']]){
+            pg.lineWidth=width;pg.strokeStyle=paint;pg.fillStyle=paint;pg.stroke(trails);
+            for(const s of sites){pg.beginPath();pg.roundRect(s.door.x-29-(width-44)/2,s.door.y+3,58+(width-44),38,12);pg.fill();}
+        }
         pg.globalCompositeOperation='destination-in';pg.fillStyle='#000';
         pg.beginPath();for(let y=2;y<=35;y++)for(let x=2;x<61;x++)if(land(x,y))pg.rect(x*T,y*T,T,T);pg.fill();g.drawImage(pathMask,0,0);
-        for(let y=96;y<H-64;y+=16)for(let x=80;x<W-64;x+=16)if(land(x/T|0,y/T|0)&&onRoad(x,y)&&hash(x,y)<.22)fill('#ad986a',x+2,y+3,4,2);
         // A large irregular lake, the original fish pond and a quiet lagoon.
         for(const p of pools)fill('#c5b887',p.x-6,p.y-6,p.w+12,p.h+12);
         for(const p of pools)IslandArtwork.surface(g,'water',p.x,p.y,p.w,p.h,'#205d78',.38);
@@ -5095,8 +5140,8 @@ const IslandLevel1=(()=>{
         }
         // Ragged grass tufts blend the path edges without changing walkability.
         for(let y=112;y<H-80;y+=24)for(let x=112;x<W-80;x+=24){
-            if(!land(x/T|0,y/T|0)||onWater(x,y,12)||!onRoad(x,y)||hash(x+81,y)>.45)continue;
-            if(!onRoad(x-13,y)||!onRoad(x+13,y)||!onRoad(x,y-13)||!onRoad(x,y+13)){
+            if(!land(x/T|0,y/T|0)||onWater(x,y,12)||!pg.isPointInStroke(trails,x,y)||hash(x+81,y)>.45)continue;
+            if(!pg.isPointInStroke(trails,x-13,y)||!pg.isPointInStroke(trails,x+13,y)||!pg.isPointInStroke(trails,x,y-13)||!pg.isPointInStroke(trails,x,y+13)){
                 fill('#526f36',x,y,2,5);fill('#74964b',x-2,y+1,2,3);fill('#9ab86a',x,y-1,1,4);
             }
         }
@@ -5189,6 +5234,7 @@ const IslandLevel1=(()=>{
     }
     let moving=false,tick=0,last=0,raf=0;
     function avatar(){
+        if(window.worldTravel?.hidesHero(1))return;
         const p=position();
         ctx.fillStyle='#203c3b77';ctx.beginPath();ctx.ellipse(p.x,p.y+4,14,5,0,0,Math.PI*2);ctx.fill();
         HeroSprites.draw(ctx,activeShopItems().emblem.id,p.x,p.y,p.facing,moving,tick);
@@ -5225,7 +5271,7 @@ const IslandLevel1=(()=>{
                 if(!onWater(x,y))continue;ctx.globalAlpha=.06+.05*Math.sin(tick/1900+i);ctx.fillRect(x+Math.sin(tick/2400+i)*3,y,16,1);ctx.fillRect(x+5,y+3,7,1);
             }ctx.restore();
         }
-        window.worldTravel?.paint(ctx,1);window.islandSecrets?.paint(ctx);
+        drawSceneryFish();window.worldTravel?.paint(ctx,1);window.islandSecrets?.paint(ctx);
         const visible=(x,y,margin=120)=>x>=cam.x-margin&&x<=cam.x+VW+margin&&y>=cam.y-margin&&y<=cam.y+VH+margin;
         const objects=[...trees.filter(t=>visible(t.x,t.y)).map(t=>({y:t.y,paint:()=>tree(t)})),
             ...rocks.filter(t=>visible(t.x,t.y)).map(t=>({y:t.y,paint:()=>rock(t)})),
@@ -5236,6 +5282,7 @@ const IslandLevel1=(()=>{
                 const x=36+i*113,y=24+(i%2)*(H-48);ctx.fillRect(x+Math.sin(tick/1800+i)*9,y,13,2);
             }
         }
+        window.worldTravel?.paintFlight(ctx,1,cam,VW,VH);
         ctx.restore();
     }
     function frame(time){
@@ -5266,7 +5313,7 @@ const IslandLevel1=(()=>{
     document.addEventListener('visibilitychange',()=>{keys.clear();last=0;});
     canvas.addEventListener('pointerdown',focus);document.getElementById('island-enter').addEventListener('click',interact);
     raf=requestAnimationFrame(frame);
-    return {refresh,focus,nearby,walkable,position,sites,active,spawn,camera,bounds:Object.freeze({width:W,height:H,get viewportWidth(){return VW;},get viewportHeight(){return VH;}})};
+    return {refresh,focus,nearby,walkable,position,sites,active,spawn,sceneryFish:()=>scenerySchools.map(s=>({id:s.id,fish:s.fish.map(f=>({x:f.x,y:f.y,color:f.color})),inside:s.fish.every(f=>fishWaterPoint(s,f.x,f.y))})),camera,bounds:Object.freeze({width:W,height:H,get viewportWidth(){return VW;},get viewportHeight(){return VH;}})};
 })();
 const islandOriginalSwitchSector=switchSector;
 switchSector=function(...args){const result=islandOriginalSwitchSector(...args);IslandLevel1.refresh();IslandLevel1.focus();return result;};
@@ -5694,6 +5741,7 @@ const CityLevel2=(()=>{
         const s=nearby();keys.clear();if(s&&available(s)){if(s.travel)window.worldTravel.open(s.id);else if(s.secret)window.islandSecrets.open(s.id);else openMission(2,s.id);}
     }
     function avatar(){
+        if(window.worldTravel?.hidesHero(2))return;
         const p=position();
         ctx.fillStyle='#0b1c2c99';ctx.beginPath();ctx.ellipse(p.x,p.y+4,14,5,0,0,Math.PI*2);ctx.fill();
         HeroSprites.draw(ctx,activeShopItems().emblem.id,p.x,p.y,p.facing,moving,tick);
@@ -5730,6 +5778,7 @@ const CityLevel2=(()=>{
             ctx.fillStyle='#b9e4e226';for(let x=160;x<W-96;x+=288)ctx.fillRect(x+(tick/120)%16,402,19,2);
             for(let y=480;y<H-96;y+=192)ctx.fillRect(1176,y+(tick/120)%16,2,19);
         }
+        window.worldTravel?.paintFlight(ctx,2,cam,VW,VH);
         ctx.restore();
     }
     function frame(time){
@@ -6141,6 +6190,7 @@ const PlanetLevel3=(()=>{
     function focus(){keys.clear();if(active())canvas.focus({preventScroll:true});}
     function interact(){if(!active())return;const s=nearby();keys.clear();if(s&&available(s)){if(s.travel)window.worldTravel.open(s.id);else if(s.secret)window.islandSecrets.open(s.id);else openMission(3,s.id);}}
     function avatar(){
+        if(window.worldTravel?.hidesHero(3))return;
         const p=position();
         ctx.fillStyle='#342d4c77';ctx.beginPath();ctx.ellipse(p.x,p.y+4,14,5,0,0,Math.PI*2);ctx.fill();
         HeroSprites.draw(ctx,activeShopItems().emblem.id,p.x,p.y,p.facing,moving,tick);
@@ -6180,6 +6230,7 @@ const PlanetLevel3=(()=>{
             ...props.filter(o=>inView(o.x,o.y)).map(o=>({y:o.y+o.h,paint:()=>prop(o)})),{y:position().y,paint:avatar}];
         objects.sort((a,b)=>a.y-b.y).forEach(o=>o.paint());
         if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){ctx.fillStyle='#d7c7e330';for(let i=0;i<12;i++)ctx.fillRect(24+i*169+Math.sin(tick/2500+i)*4,i%2?H-24:24,3,2);}
+        window.worldTravel?.paintFlight(ctx,3,cam,VW,VH);
         ctx.restore();
     }
     function frame(time){
@@ -6551,7 +6602,7 @@ const EasterEggs=(()=>{
     const originalShow=showMainUI;
     showMainUI=function(...args){if(isOpen())close();const result=originalShow(...args);syncCounters();return result;};
     syncCounters();
-    const api={spots,fish,nearby,paint,open,close,isOpen,isSolved,syncCounters};window.islandSecrets=api;return api;
+    const api={spots,fish,drawFish,nearby,paint,open,close,isOpen,isSolved,syncCounters};window.islandSecrets=api;return api;
 })();
 
 // Linked worlds. Only positions/current chapter change; all learning data is shared.
@@ -6615,65 +6666,72 @@ const WorldTravel=(()=>{
             const ready=available(r),w=r.vehicle==='plane'?112:70;
             c.fillStyle='#102732dd';c.fillRect(r.x-w/2,r.y-37,w,48);c.strokeStyle=ready?'#cbb47c':'#75818b';c.lineWidth=2;c.strokeRect(r.x-w/2,r.y-37,w,48);
             c.fillStyle=ready?'#e1c98f':'#788792';for(const side of [-1,1]){c.fillRect(r.x+side*(w/2-7)-2,r.y-28,4,9);c.fillRect(r.x+side*(w/2-7)-2,r.y-8,4,9);}
-            if(r.vehicle==='plane')plane(c,r.x,r.y-34,.8,r.sector===1?1:-1);else rocket(c,r.x,r.y-27,.7);
+            if(!flight||(r.id!==flight.route.id&&r.id!==flight.arrival.id)){if(r.vehicle==='plane')plane(c,r.x,r.y-34,.8,r.sector===1?1:-1);else rocket(c,r.x,r.y-27,.7);}
             c.strokeStyle=ready?'#e3ce91':'#74838b';c.lineWidth=1;c.beginPath();c.arc(r.x,r.y,13,0,Math.PI*2);c.stroke();
             c.fillStyle='#12232fe8';c.fillRect(r.x-51,r.y+16,102,18);c.fillStyle=ready?'#f1e4bb':'#a6b4b7';c.font='bold 9px monospace';c.textAlign='center';c.fillText(`${r.vehicle==='plane'?'FLUG':'RAKETE'} → ${roman[r.to]}${ready?'':' 🔒'}`,r.x,r.y+28);
         }c.restore();
     }
 
+    // The existing maps themselves are the travel stage; only rendering and
+    // current chapter/arrival position change. Learning data stays shared.
     const overlay=document.createElement('div');overlay.id='world-travel-overlay';overlay.hidden=true;overlay.tabIndex=-1;
     overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-labelledby','travel-title');overlay.setAttribute('aria-describedby','travel-route');
-    overlay.innerHTML='<section class="travel-card"><p class="travel-eyebrow" id="travel-vehicle"></p><h2 id="travel-title"></h2><p id="travel-route" role="status" aria-live="polite"></p><canvas id="travel-animation" width="960" height="460" aria-hidden="true"></canvas><div class="travel-meter" aria-hidden="true"><span></span></div></section>';
-    document.body.appendChild(overlay);const canvas=document.getElementById('travel-animation'),ctx=canvas.getContext('2d');
-    function island(c,x,y){
-        c.fillStyle='#284950';c.beginPath();c.moveTo(x-100,y);c.lineTo(x+100,y);c.lineTo(x+50,y+55);c.lineTo(x+15,y+86);c.lineTo(x-30,y+57);c.closePath();c.fill();c.fillStyle='#648f76';c.fillRect(x-100,y-13,200,18);
-        for(const [dx,h] of [[-66,36],[-32,49],[56,40]]){c.fillStyle='#2e554a';c.fillRect(x+dx-3,y-h,6,h);c.fillStyle='#85aa7f';c.fillRect(x+dx-14,y-h-10,28,24);}
-    }
-    function city(c,x,y){
-        c.fillStyle='#1a3545';c.fillRect(x-120,y,240,36);for(const [dx,h,w] of [[-96,62,38],[-46,92,40],[9,52,41],[65,82,32]]){c.fillStyle='#244656';c.fillRect(x+dx,y-h,w,h);c.fillStyle='#8eb4b1';c.fillRect(x+dx+6,y-h+8,w-12,5);for(let row=0;row<3;row++){c.fillStyle='#8cc6bc';c.fillRect(x+dx+8,y-h+23+row*13,6,5);c.fillRect(x+dx+w-14,y-h+23+row*13,6,5);}}
-    }
-    function planet(c,x,y){
-        c.fillStyle='#71647e';c.beginPath();c.ellipse(x,y,91,63,-.16,0,Math.PI*2);c.fill();c.strokeStyle='#c8b5d0';c.lineWidth=4;c.beginPath();c.ellipse(x,y,111,23,-.25,0,Math.PI*2);c.stroke();c.fillStyle='#554963';for(const [dx,dy,r] of [[-31,-19,16],[36,15,12],[16,-32,9]]){c.beginPath();c.arc(x+dx,y+dy,r,0,Math.PI*2);c.fill();}
-    }
-    function frame(route,t,calm){
-        const c=ctx,w=canvas.width,h=canvas.height,e=t*t*(3-2*t),forward=route.to>route.sector;
-        const gradient=c.createLinearGradient(0,0,0,h);gradient.addColorStop(0,route.vehicle==='plane'?'#081b2a':'#070e24');gradient.addColorStop(1,route.vehicle==='plane'?'#315d66':'#302b4b');c.fillStyle=gradient;c.fillRect(0,0,w,h);
-        c.fillStyle='#cfdfd06b';for(let i=0;i<48;i++){const x=(i*137+31)%960,y=(i*83+19)%310;c.fillRect(x,y,i%7===0?3:2,2);}
-        if(route.vehicle==='plane'){
-            c.fillStyle='#a0c2bd13';for(let i=0;i<5;i++)c.fillRect(((i*227-(calm?0:t*85))%1060+1060)%1060-80,90+i*42,135,14);
-            if(forward){island(c,140,365);city(c,805,365);}else{city(c,140,365);island(c,805,365);}
-            c.strokeStyle='#d9c78b66';c.lineWidth=2;c.setLineDash([5,10]);c.beginPath();c.moveTo(145,300);c.quadraticCurveTo(480,80,805,300);c.stroke();c.setLineDash([]);
-            const p=calm?.5:e;plane(c,145+660*p,300-105*Math.sin(Math.PI*p),1.25,1);
+    overlay.innerHTML='<div class="map-travel-shutter" aria-hidden="true"></div><div class="map-travel-status"><strong id="travel-title"></strong><span id="travel-route" role="status" aria-live="polite"></span></div>';
+    document.body.appendChild(overlay);const shutter=overlay.querySelector('.map-travel-shutter');
+    let flight=null;
+    const easeOut=t=>1-(1-t)*(1-t),easeIn=t=>t*t;
+    function hidesHero(sector){return busy&&flight&&(sector===flight.route.sector||sector===flight.arrival.sector);}
+    function paintFlight(c,sector,cam,vw,vh){
+        if(!busy||!flight||flight.phase==='switching'||sector!==(flight.phase==='landing'?flight.arrival.sector:flight.route.sector))return;
+        const landing=flight.phase==='landing',port=landing?flight.arrival:flight.route,t=flight.progress,calm=flight.calm;
+        const direction=port.sector===1?1:-1;let x=port.x,y=port.y-(port.vehicle==='plane'?34:27),alpha=1;
+        if(calm){if(flight.phase==='departing')alpha=1-t;else if(landing)alpha=t;}
+        else if(port.vehicle==='plane'){
+            if(flight.phase==='departing'){
+                const p=easeIn(t),endX=cam.x+(direction>0?vw+140:-140);x+=(endX-x)*p;y-=140*p;
+            }else if(landing){
+                const p=easeOut(t),startX=cam.x+(direction>0?-140:vw+140);x=startX+(port.x-startX)*p;y-=140*(1-p);
+            }
         }else{
-            city(c,280,400);planet(c,760,100);const p=calm?.5:e;const amount=forward?p:1-p;const rocketY=Math.max(152,Math.min(345,350-255*amount));rocket(c,400+185*amount,rocketY,1.2,!calm);
-            c.strokeStyle='#acb8c942';c.lineWidth=2;c.setLineDash([4,12]);c.beginPath();c.moveTo(400,360);c.lineTo(585,95);c.stroke();c.setLineDash([]);
+            const offscreen=cam.y-180;
+            if(flight.phase==='departing')y+=(offscreen-y)*easeIn(t);
+            else if(landing)y=offscreen+(y-offscreen)*easeOut(t);
         }
-        c.fillStyle='#e9dfbd';c.font='13px monospace';c.textAlign='left';c.fillText('CHAPTER '+roman[route.sector],30,h-22);c.textAlign='right';c.fillText('CHAPTER '+roman[route.to],w-30,h-22);
-        overlay.style.setProperty('--travel-progress',String(t));
+        flight.pose={x,y,sector};c.save();c.globalAlpha=alpha;
+        if(port.vehicle==='plane'){
+            c.fillStyle='#07131c33';c.beginPath();c.ellipse(x+6,port.y,24*(1-(flight.phase==='departing'?t:landing?1-t:0)*.7),5,0,0,Math.PI*2);c.fill();
+            plane(c,x,y,.8,direction);
+        }else rocket(c,x,y,.7,!calm&&(flight.phase==='departing'||landing&&t<.98));
+        c.restore();
     }
-    function animate(route){
-        const calm=window.matchMedia('(prefers-reduced-motion: reduce)').matches,duration=calm?450:2100;
-        return new Promise((resolve,reject)=>{let start;function step(now){try{if(start===undefined)start=now;const t=Math.min(1,(now-start)/duration);frame(route,t,calm);if(t<1)requestAnimationFrame(step);else resolve();}catch(error){reject(error);}}requestAnimationFrame(step);});
+    function tween(duration,update){return new Promise((resolve,reject)=>{let start;function step(now){try{if(start===undefined)start=now;const p=Math.min(1,(now-start)/duration);update(p);if(p<1)requestAnimationFrame(step);else resolve();}catch(e){reject(e);}}requestAnimationFrame(step);});}
+    function animatePhase(phase,duration){
+        flight.phase=phase;flight.progress=0;document.getElementById('travel-route').textContent=phase==='boarding'?'Du steigst ein …':phase==='departing'?'Abflug …':`Landung in ${names[flight.arrival.sector]} …`;
+        return tween(duration,p=>{flight.progress=p;});
     }
     async function open(id){
         const r=routes.find(r=>r.id===id);if(!r||busy||appState.currentViewSector!==r.sector||!available(r)||!world(r.sector).active()||world(r.sector).nearby()?.id!==id)return false;
         const state=appState,map=document.getElementById('screen-map'),priorInert=map.inert,arrival=routes.find(a=>a.id===r.arrival),previousPosition={...world(r.to).position()};
-        busy=true;map.inert=true;overlay.hidden=false;overlay.focus({preventScroll:true});
-        document.getElementById('travel-vehicle').textContent=r.vehicle==='plane'?'FLUGZEUG · REISE ZWISCHEN DEN WELTEN':'RAKETE · REISE ZWISCHEN DEN WELTEN';
-        document.getElementById('travel-title').textContent=names[r.to];document.getElementById('travel-route').textContent=`Chapter ${roman[r.sector]} → Chapter ${roman[r.to]} · ${r.vehicle==='plane'?'Der Flug beginnt.':'Die Rakete startet.'}`;
-        let arrived=false;
+        const calm=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        busy=true;flight={route:r,arrival,phase:'boarding',progress:0,calm,pose:null};map.inert=true;overlay.hidden=false;shutter.style.opacity='0';overlay.focus({preventScroll:true});
+        document.getElementById('travel-title').textContent=r.vehicle==='plane'?'Flug zwischen den Welten':'Reise mit der Rakete';
         try{
-            await animate(r);if(appState!==state)return false;
-            Object.assign(world(r.to).position(),{x:arrival.x,y:arrival.y,facing:'up'});switchSector(r.to);
+            await animatePhase('boarding',calm?100:180);
+            await animatePhase('departing',calm?250:r.vehicle==='plane'?1700:1350);if(appState!==state)return false;
+            flight.phase='switching';await tween(calm?100:170,p=>{shutter.style.opacity=String(p);});if(appState!==state)return false;
+            Object.assign(world(r.to).position(),{x:arrival.x,y:arrival.y,facing:'up'});flight.phase='landing';flight.progress=0;switchSector(r.to);
             if(appState.currentViewSector!==r.to)throw Error('Destination unavailable');
-            await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));arrived=true;return true;
+            await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+            await tween(calm?100:170,p=>{shutter.style.opacity=String(1-p);});
+            await animatePhase('landing',calm?250:r.vehicle==='plane'?1500:1250);return appState===state;
         }catch(error){
             if(appState===state){Object.assign(world(r.to).position(),previousPosition);switchSector(r.sector);showCreditToast('Die Reise konnte nicht beendet werden. Versuche es erneut.');}return false;
         }finally{
-            busy=false;map.inert=priorInert;overlay.hidden=true;world(appState.currentViewSector).refresh();world(appState.currentViewSector).focus();syncProgress();
+            busy=false;flight=null;map.inert=priorInert;overlay.hidden=true;shutter.style.opacity='0';world(appState.currentViewSector).refresh();world(appState.currentViewSector).focus();syncProgress();
         }
     }
     overlay.addEventListener('keydown',e=>{if(e.key==='Tab'||e.key===' '||e.key.startsWith('Arrow'))e.preventDefault();});
+
     function syncProgress(){
         for(const n of [1,2,3]){
             const tab=document.getElementById('tab-'+n),done=appState['sector'+n+'Completed'].every(Boolean);
@@ -6683,7 +6741,7 @@ const WorldTravel=(()=>{
     }
     const previousSwitch=switchSector;switchSector=function(...args){const result=previousSwitch(...args);syncProgress();return result;};
     for(const [n,prefix] of [[1,'island'],[2,'city'],[3,'planet']])document.getElementById(prefix+'-canvas').setAttribute('aria-label',document.getElementById(prefix+'-canvas').getAttribute('aria-label')+' An einem Flugzeug oder einer Rakete mit E reisen.');
-    syncProgress();const api={routes,available,nearby,prompt,paint,open,isTravelling:()=>busy,syncProgress};window.worldTravel=api;return api;
+    syncProgress();const api={routes,available,nearby,prompt,paint,open,isTravelling:()=>busy,hidesHero,paintFlight,scene:()=>flight?{phase:flight.phase,progress:flight.progress,from:flight.route.sector,to:flight.arrival.sector,vehicle:flight.route.vehicle,pose:flight.pose?{...flight.pose}:null}:null,syncProgress};window.worldTravel=api;return api;
 })();
 
 
