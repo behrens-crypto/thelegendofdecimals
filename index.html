@@ -437,6 +437,9 @@ body[data-shop-color]:not([data-shop-color="color-blue"]) [class*="border-sky-"]
 #screen-login #loginName { display:block; width:100%; height:51px; background:#061217b3; border:1px solid #73877a; border-radius:2px; color:#e7e9d4; font:400 19px 'Rajdhani',Arial,sans-serif; text-align:left; padding:10px 14px; }
 #screen-login #loginName::placeholder { color:#778e88; }
 #screen-login #loginName:focus { border-color:#e1c887; box-shadow:0 0 0 3px #e1c8871a; }
+.difficulty-choices.legend-niveaux { grid-template-columns:1fr 1fr; }
+.difficulty-choices .niveau-label:hover::after,.difficulty-choices .niveau-label:focus-within::after { content:attr(data-tooltip); position:absolute; z-index:5; top:calc(100% + 6px); left:0; width:100%; min-width:180px; box-sizing:border-box; padding:10px; border:1px solid #d8bd7b; background:#10262a; color:#f6e9ba; font:16px/1.35 'Rajdhani',Arial,sans-serif; text-align:left; pointer-events:none; box-shadow:0 4px 16px #0008; }
+.difficulty-choices .niveau-label:last-child::after { left:auto; right:0; }
 .legend-niveaux { display:grid; grid-template-columns:1fr 1fr 1fr; gap:9px; }
 .legend-niveaux .niveau-label { position:relative; cursor:pointer; }
 .legend-niveau-input { position:absolute; opacity:0; width:1px; height:1px; }
@@ -951,6 +954,13 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
                     <label class="niveau-label"><input type="radio" name="loginNiveau" value="C" class="legend-niveau-input"><div>Niveau <strong>C</strong></div></label>
                     <label class="niveau-label"><input type="radio" name="loginNiveau" value="B" class="legend-niveau-input"><div>Niveau <strong>B</strong></div></label>
                     <label class="niveau-label"><input type="radio" name="loginNiveau" value="A" class="legend-niveau-input"><div>Niveau <strong>A</strong></div></label>
+                </div>
+            </fieldset>
+            <fieldset class="legend-field">
+                <legend>WÄHLE DEINE SCHWIERIGKEIT</legend>
+                <div class="legend-niveaux difficulty-choices">
+                    <label class="niveau-label" data-tooltip="Du kriegst Hinweise, wohin du gehen musst"><input type="radio" name="loginDifficulty" value="easy" class="legend-niveau-input" aria-label="Einfach: Du kriegst Hinweise, wohin du gehen musst" checked><div>Einfach</div></label>
+                    <label class="niveau-label" data-tooltip="Du kriegst keine Hinweise und musst deine Aufgaben selbst suchen"><input type="radio" name="loginDifficulty" value="hard" class="legend-niveau-input" aria-label="Schwierig: Du kriegst keine Hinweise und musst deine Aufgaben selbst suchen"><div>Schwierig</div></label>
                 </div>
             </fieldset>
             <button type="submit" id="legend-start-button" class="legend-start-button"><span>Abenteuer beginnen</span><span aria-hidden="true">→</span></button>
@@ -1596,6 +1606,7 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
         let appState = {
             agentName: "",
             agentNiveau: "",
+            gameDifficulty: "easy",
             sector1Completed: [false, false, false, false, false, false],
             sector2Completed: [false, false, false, false, false, false],
             sector3Completed: [false, false, false, false, false, false, false],
@@ -1607,6 +1618,8 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
             cross: '<svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>'
         };
 
+        function gameplayHintsEnabled() { return appState.gameDifficulty !== 'hard'; }
+
         function startNewGame() {
             const name = document.getElementById('loginName').value.trim();
             const niveauInput = document.querySelector('input[name="loginNiveau"]:checked');
@@ -1617,6 +1630,7 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
             }
             appState.agentName = name;
             appState.agentNiveau = niveauInput.value;
+            appState.gameDifficulty = document.querySelector('input[name="loginDifficulty"]:checked').value;
             showMainUI();
         }
 
@@ -1641,6 +1655,7 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
         });
 
         function showMainUI() {
+            appState.gameDifficulty = gameplayHintsEnabled() ? 'easy' : 'hard';
             document.getElementById('screen-login').classList.add('hidden');
             document.getElementById('screen-map').classList.remove('hidden');
             
@@ -5276,11 +5291,11 @@ const IslandLevel1=(()=>{
         const s=nearby();let text;
         if(s){text=s.travel?window.worldTravel.prompt(s):s.secret?(solved(s)?`✓ ${s.name} · Bereits entdeckt`:s.prompt):available(s)?`${solved(s)?'✓ ':''}${s.name}${s.id==='shop'?' · Ausrüstung & Astrostutz':''}`:`🔒 ${s.name} · Löse zuerst Mission ${s.id-1}.`;}
         else text='Erkunde die Insel. Die goldene Markierung zeigt dein nächstes Ziel.';
-        document.getElementById('island-prompt-text').closest('.island-prompt').hidden=false;
-        document.getElementById('island-prompt-text').closest('.island-prompt').classList.remove('island-prompt-compact');
+        document.getElementById('island-prompt-text').closest('.island-prompt').hidden=!gameplayHintsEnabled()&&(!s||!available(s));
+        document.getElementById('island-prompt-text').closest('.island-prompt').classList.toggle('island-prompt-compact',!gameplayHintsEnabled());
         if(text!==lastPrompt){document.getElementById('island-prompt-text').textContent=text;lastPrompt=text;}
         document.getElementById('island-enter').hidden=!s||!available(s);
-        document.getElementById('island-enter').textContent=s?.travel?'Reisen · E':s?.secret?'Untersuchen · E':'Betreten · E';
+        document.getElementById('island-enter').textContent=!gameplayHintsEnabled()?'Aktion ausführen · E':s?.travel?'Reisen · E':s?.secret?'Untersuchen · E':'Betreten · E';
     }
     function interact(){
         if(!active())return;
@@ -5454,7 +5469,7 @@ const IslandLevel1=(()=>{
         ctx.fillStyle=t.carved?'#80a867':'#628f59';ctx.fillRect(t.x-12,t.y-50,12,12);ctx.fillRect(t.x-6,t.y-61,10,7);
     }
     function building(s){
-        const {x,y,w,h}=s,done=solved(s),unlocked=available(s),next=nextSite()===s;
+        const {x,y,w,h}=s,done=solved(s),unlocked=available(s),next=gameplayHintsEnabled()&&nextSite()===s;
         const kind=s.boss?'arena':s.id==='shop'?'shop':'mission-house',painted=IslandArtwork.has(kind);
         if(painted){
             ctx.fillStyle='#203d2d55';ctx.beginPath();ctx.ellipse(s.door.x+8,s.door.y+4,w*.52,11,0,0,Math.PI*2);ctx.fill();
@@ -5481,7 +5496,7 @@ const IslandLevel1=(()=>{
         if(painted){ctx.fillStyle='#b99a60';ctx.fillRect(signX,signY,signW,1);ctx.fillRect(signX,signY+21,signW,1);ctx.fillStyle='#e4c47e';ctx.fillRect(signX+3,signY+4,2,2);ctx.fillRect(signX+signW-5,signY+4,2,2);}
         ctx.fillStyle='#f5ebcc';ctx.fillText(s.short,x+w/2,signY+16);
         // The same compact status pennant and mission numbers are shown for every niveau.
-        const badge=done?'✓':s.id==='shop'?'$':!unlocked?'🔒':s.icon;
+        const badge=done?'✓':s.id==='shop'?'$':!unlocked?'🔒':gameplayHintsEnabled()?s.icon:'';
         if(badge==='🔒'){
             const bob=window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:Math.sin(tick/700+s.id)*3;
             ctx.font='18px "Segoe UI Emoji",sans-serif';ctx.textAlign='center';ctx.fillStyle='#f5f3d7';ctx.fillText('🔒',s.door.x,y-10+bob);
@@ -5925,7 +5940,7 @@ const CityLevel2=(()=>{
         }else {ctx.fillStyle='#a1966d';ctx.fillRect(o.x+4,o.y+8,o.w-8,3);ctx.fillRect(o.x+9,o.y+4,3,o.h-8);}
     }
     function building(s){
-        const {x,y,w,h}=s,done=solved(s),unlocked=available(s),next=nextSite()===s;
+        const {x,y,w,h}=s,done=solved(s),unlocked=available(s),next=gameplayHintsEnabled()&&nextSite()===s;
         const light=done?'#8bd5ac':unlocked?'#9ccfdf':'#768a95';
         const kind=s.boss?'fortress':[2,5].includes(s.id)?'workshop':'laboratory',painted=CityArtwork.has(kind);
         if(painted){
@@ -5956,7 +5971,7 @@ const CityLevel2=(()=>{
         ctx.fillStyle='#122632';ctx.fillRect(signX,signY,signW,signH);
         if(painted){ctx.fillStyle='#8c9eaa';ctx.fillRect(signX,signY,signW,1);ctx.fillRect(signX,signY+signH-1,signW,1);ctx.fillStyle='#c6a76a';ctx.fillRect(signX+2,signY+3,2,2);ctx.fillRect(signX+signW-4,signY+3,2,2);}
         ctx.fillStyle='#e5eff0';s.lines.forEach((line,i)=>ctx.fillText(line,x+w/2,signY+17+i*16));
-        const badge=done?'✓':!unlocked?'🔒':String(s.id).padStart(2,'0');
+        const badge=done?'✓':!unlocked?'🔒':gameplayHintsEnabled()?String(s.id).padStart(2,'0'):'';
         if(badge==='🔒'){
             const bob=window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:Math.sin(tick/700+s.id)*3;
             ctx.font='18px "Segoe UI Emoji",sans-serif';ctx.textAlign='center';ctx.fillStyle='#e4eff3';ctx.fillText('🔒',x+w/2,y-14+bob);
@@ -5986,11 +6001,11 @@ const CityLevel2=(()=>{
     function updatePrompt(){
         const s=nearby();
         let text=s?(s.travel?window.worldTravel.prompt(s):s.secret?(solved(s)?`✓ ${s.name} · Bereits entdeckt`:s.prompt):available(s)?`${solved(s)?'✓ ':''}${s.name}${s.boss?' · Bossfight':''}`:`🔒 ${s.name} · Löse zuerst Mission ${s.id-1}.`):'Erkunde die Technikstadt. Gold markiert deine nächste Mission.';
-        document.getElementById('city-prompt-text').closest('.island-prompt').hidden=false;
-        document.getElementById('city-prompt-text').closest('.island-prompt').classList.remove('island-prompt-compact');
+        document.getElementById('city-prompt-text').closest('.island-prompt').hidden=!gameplayHintsEnabled()&&(!s||!available(s));
+        document.getElementById('city-prompt-text').closest('.island-prompt').classList.toggle('island-prompt-compact',!gameplayHintsEnabled());
         if(text!==lastPrompt){document.getElementById('city-prompt-text').textContent=text;lastPrompt=text;}
         document.getElementById('city-enter').hidden=!s||!available(s);
-        document.getElementById('city-enter').textContent=s?.travel?'Reisen · E':s?.secret?'Untersuchen · E':'Betreten · E';
+        document.getElementById('city-enter').textContent=!gameplayHintsEnabled()?'Aktion ausführen · E':s?.travel?'Reisen · E':s?.secret?'Untersuchen · E':'Betreten · E';
     }
     function refresh(){
         if(!appState.agentName)return;
@@ -6376,8 +6391,8 @@ const PlanetLevel3=(()=>{
         ctx.fillStyle='#f1e7de';s.lines.forEach((line,i)=>ctx.fillText(line,x+w/2,top+16+i*16));
     }
     function status(s){
-        const next=nextSite()===s,done=solved(s),unlocked=available(s),cx=s.door.x;
-        const badge=done?'✓':!unlocked?'🔒':String(s.id).padStart(2,'0');
+        const next=gameplayHintsEnabled()&&nextSite()===s,done=solved(s),unlocked=available(s),cx=s.door.x;
+        const badge=done?'✓':!unlocked?'🔒':gameplayHintsEnabled()?String(s.id).padStart(2,'0'):'';
         if(badge==='🔒'){
             const bob=window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:Math.sin(tick/700+s.id)*3;
             ctx.font='18px "Segoe UI Emoji",sans-serif';ctx.textAlign='center';ctx.fillStyle='#f6e8d9';ctx.fillText('🔒',cx,s.y-11+bob);
@@ -6451,11 +6466,11 @@ const PlanetLevel3=(()=>{
     let moving=false,last=0,tick=0,lastPrompt='';
     function updatePrompt(){
         const s=nearby();let text=s?(s.travel?window.worldTravel.prompt(s):s.secret?(solved(s)?`✓ ${s.name} · Bereits entdeckt`:s.prompt):available(s)?`${solved(s)?'✓ ':''}${s.name}${s.id===6?' · Neue Übungsrunden':s.boss?' · Bossfight':''}`:`🔒 ${s.name} · ${s.id===7?'Beende zuerst «Genauigkeit üben».':`Löse zuerst Mission ${s.id-1}.`}`):'Erkunde den Forschungsplaneten. Gold markiert dein nächstes Ziel.';
-        document.getElementById('planet-prompt-text').closest('.island-prompt').hidden=false;
-        document.getElementById('planet-prompt-text').closest('.island-prompt').classList.remove('island-prompt-compact');
+        document.getElementById('planet-prompt-text').closest('.island-prompt').hidden=!gameplayHintsEnabled()&&(!s||!available(s));
+        document.getElementById('planet-prompt-text').closest('.island-prompt').classList.toggle('island-prompt-compact',!gameplayHintsEnabled());
         if(text!==lastPrompt){document.getElementById('planet-prompt-text').textContent=text;lastPrompt=text;}
         document.getElementById('planet-enter').hidden=!s||!available(s);
-        document.getElementById('planet-enter').textContent=s?.travel?'Reisen · E':s?.secret?'Untersuchen · E':'Betreten · E';
+        document.getElementById('planet-enter').textContent=!gameplayHintsEnabled()?'Aktion ausführen · E':s?.travel?'Reisen · E':s?.secret?'Untersuchen · E':'Betreten · E';
     }
     function refresh(){
         if(!appState.agentName)return;
@@ -7161,7 +7176,7 @@ const GameFullscreen=(()=>{
 // Chapter-specific guidance. Building labels and roof statuses are drawn with the houses.
 const BuildingSigns=(()=>{
     function sync(){
-        for(const id of ['island-next','city-next','planet-next'])document.getElementById(id).removeAttribute('hidden');
+        for(const id of ['island-next','city-next','planet-next'])document.getElementById(id).hidden=!gameplayHintsEnabled();
     }
     for(const name of ['showMainUI','renderMapNodes','switchSector']){const original=window[name];window[name]=function(...args){const result=original.apply(this,args);sync();return result;};}
     sync();return {sync};
@@ -7452,6 +7467,7 @@ const SettingsMenu=(()=>{
     settings.innerHTML=`<div class="settings-entries">
         <button type="button" class="settings-entry" id="settings-goals"><span class="settings-entry-icon" aria-hidden="true">📜</span><span class="settings-entry-label"><strong>Lernziele</strong><small>Was du in den drei Welten lernst.</small></span><span class="settings-entry-arrow" aria-hidden="true">›</span></button>
         <button type="button" class="settings-entry" id="settings-instructions"><span class="settings-entry-icon" aria-hidden="true">🧭</span><span class="settings-entry-label"><strong>Spielanleitung</strong><small>Steuerung, Orientierung und Spielstand speichern.</small></span><span class="settings-entry-arrow" aria-hidden="true">›</span></button>
+        <button type="button" class="settings-entry" id="settings-difficulty"><span class="settings-entry-icon" aria-hidden="true">🧭</span><span class="settings-entry-label"><strong>Schwierigkeit</strong><small>Orientierungshilfen ein- oder ausschalten.</small></span><span class="settings-entry-arrow" aria-hidden="true">›</span></button>
         <button type="button" class="settings-entry" id="settings-checks"><span class="settings-entry-icon" aria-hidden="true">📝</span><span class="settings-entry-label"><strong>Zwischenstopp</strong><small>Deine Ergebnisse der drei Zwischenstopps.</small></span><span class="settings-entry-arrow" aria-hidden="true">›</span></button>
         <button type="button" class="settings-entry" id="settings-summary" disabled><span class="settings-entry-icon" aria-hidden="true">📖</span><span class="settings-entry-label"><strong>Zusammenfassung</strong><small id="settings-summary-status"></small></span><span class="settings-entry-arrow" id="settings-summary-symbol" aria-hidden="true">🔒</span></button>
     </div>`;
@@ -7459,11 +7475,16 @@ const SettingsMenu=(()=>{
     instructions.innerHTML=`<div class="game-instructions">
         <section><h3>Bewegen und handeln</h3><p>Bewege deine Figur mit den <kbd>Pfeiltasten</kbd> oder <kbd>W A S D</kbd>. Gehe vor einen Gebäudeeingang oder nahe an einen besonderen Gegenstand.</p><p>Drücke <kbd>E</kbd> oder die <kbd>Leertaste</kbd>, wenn eine Aktion möglich ist. Du kannst auch den Aktionsknopf unter der Karte anklicken.</p></section>
 <section><h3>Zahlen eingeben und runden</h3><p>Beim Bilden von Dezimalzahlen und Bestimmen von Stellenwerten wird nicht gerundet, z. B. 5 Tausendstel = 0.005. Bei Rechenaufgaben darfst du erst am Schluss oder nach jedem Rechenschritt auf zwei Nachkommastellen runden. Beide Ergebnisse werden anerkannt. Runde die gegebenen Zahlen nicht vorab. Bei Rundungsaufgaben gilt die verlangte Stelle; Vergleiche und Überschläge bleiben wie angegeben. Schreibe Zahlen ab 1’000 mit Tausender-Apostroph, z. B. 25’000.</p><p>Gib nur die gesuchte Zahl ein; die Einheit steht beim Eingabefeld. Dezimalpunkt und Dezimalkomma sind erlaubt. Rechne die gegebenen Masse zuerst exakt in passende gemeinsame Einheiten um.</p></section>
-        <section><h3>Orientierung</h3><ul><li>Die goldene Markierung zeigt die nächste Mission.</li><li>Ein grünes Häkchen bedeutet: Mission abgeschlossen.</li><li>Ein schwebendes Schloss bedeutet: noch gesperrt. Löse zuerst die vorherigen Missionen.</li><li>Alle Niveaus zeigen Missionsnummern, den Hinweis «Nächstes Ziel» und ausführliche Hinweise zu Gebäuden und Aktionen.</li></ul></section>
+        <section><h3>Orientierung</h3><ul><li>Die goldene Markierung zeigt die nächste Mission.</li><li>Ein grünes Häkchen bedeutet: Mission abgeschlossen.</li><li>Ein schwebendes Schloss bedeutet: noch gesperrt. Löse zuerst die vorherigen Missionen.</li><li>Bei «Einfach» zeigen alle Niveaus Missionsnummern, goldene Zielmarkierungen, «Nächstes Ziel» und ausführliche Aktionshinweise. Bei «Schwierig» suchst du selbst; bei einer möglichen Aktion erscheint nur «Aktion ausführen · E». Du kannst dies unter Einstellungen → Schwierigkeit jederzeit ändern. Das Aufgabenniveau bleibt gleich.</li></ul></section>
         <section><h3>Die drei Welten</h3><p><strong>Insel:</strong> Folge dem Küstenweg um den Waldsee. Der Shop steht beim Landesteg im Süden.</p><p><strong>Technikstadt:</strong> Erkunde Laborviertel, Reaktorplatz und Energiequartier. Die Festung von MECHATRON X steht im Nordosten.</p><p><strong>Mondbasis:</strong> Die Forschungsstationen liegen rund um NULLOX’ Arena. Ringweg und Verbindungswege führen durch Krater und Kristalle.</p><p>Das Flugzeug verbindet Chapter 1 und 2. Die Rakete verbindet Chapter 2 und 3. Auf demselben Weg kommst du zurück. Die Chapter oben zeigen deinen Fortschritt.</p></section>
         <section><h3>Shop und Geheimnisse</h3><p>Den Shop kannst du auf der Insel betreten. Dort kannst du Coins für Helden, Farben, Titel und Siegeseffekte ausgeben oder 20 Coins gegen 1 Astrostutz eintauschen.</p><p>In jeder Welt gibt es zwei Eastereggs. Untersuche die Umgebung. Den Wartungsroboter musst du zuerst aus nächster Nähe zum Anhalten bringen.</p></section>
         <section><h3>Speichern und fortsetzen</h3><p>Position, Antworten, Coins und Fortschritt sicherst du oben über <strong>SPEICHERN</strong> als JSON-Datei. Lade diese Datei beim nächsten Start mit <strong>DATEN HOCHLADEN</strong>, um weiterzuspielen.</p><p>Nach einem besiegten Boss bearbeitest du den Zwischenstopp auf LearningView. Trage danach im Zwischenstopp deine erreichten Punkte ein. Bei voller Punktzahl geht es direkt weiter. Sonst übst du die Inhalte auf LearningView und bestätigst anschliessend hier, dass du geübt hast. Deine Ergebnisse findest du unter <strong>Einstellungen → Zwischenstopp</strong>.</p><p>Wenn alle 19 Missionen abgeschlossen sind, findest du das Theoriemerkheft unter <strong>Einstellungen → Zusammenfassung</strong>.</p></section>
     </div>`;
+    const difficulty=document.createElement('div');difficulty.id='difficulty-content';difficulty.className='mission-content hidden';
+    difficulty.innerHTML=`<div class="game-instructions"><section><h3>Schwierigkeit</h3><p>Die Schwierigkeit bestimmt die Orientierungshilfen. Dein Aufgabenniveau bleibt gleich.</p><fieldset class="legend-field"><legend>WÄHLE DEINE SCHWIERIGKEIT</legend><div class="legend-niveaux difficulty-choices">
+                    <label class="niveau-label" data-tooltip="Du kriegst Hinweise, wohin du gehen musst"><input type="radio" name="settingsDifficulty" value="easy" class="legend-niveau-input" aria-label="Einfach: Du kriegst Hinweise, wohin du gehen musst" checked><div>Einfach</div></label>
+                    <label class="niveau-label" data-tooltip="Du kriegst keine Hinweise und musst deine Aufgaben selbst suchen"><input type="radio" name="settingsDifficulty" value="hard" class="legend-niveau-input" aria-label="Schwierig: Du kriegst keine Hinweise und musst deine Aufgaben selbst suchen"><div>Schwierig</div></label>
+                </div></fieldset><p id="difficulty-status" role="status" aria-live="polite"></p></section></div>`;
     const summary=document.createElement('div');summary.id='summary-content';summary.className='mission-content hidden';
     const checks=document.createElement('div');checks.id='formative-results-content';checks.className='mission-content hidden';
     const results=document.createElement('div');results.className='game-instructions';
@@ -7474,7 +7495,7 @@ const SettingsMenu=(()=>{
         const status=document.createElement('p');status.id='formative-status-'+chapter;status.className='text-sm';
         card.append(title,points,status);results.appendChild(card);
     }
-    checks.appendChild(results);content.append(settings,instructions,summary,checks);summary.appendChild(document.getElementById('learning-book-menu'));
+    checks.appendChild(results);content.append(settings,instructions,summary,checks,difficulty);summary.appendChild(document.getElementById('learning-book-menu'));
     const originalGoals=window.openLernziele;
     const allowed=()=>!LearningViewCheckpoint.isBlocked()&&!BossEncounters.isOpen()&&!WorldTravel.isTravelling();
     function decorate(title){delete modal.dataset.chapter;modal.dataset.menu='true';document.getElementById('modalTitle').textContent=title;}
@@ -7483,6 +7504,8 @@ const SettingsMenu=(()=>{
         originalGoals();hideAllModalContent();section.classList.remove('hidden');decorate(title);content.scrollTop=0;sync();return true;
     }
     function sync(){
+        document.querySelectorAll('input[name="settingsDifficulty"]').forEach(input=>input.checked=input.value===(gameplayHintsEnabled()?'easy':'hard'));
+        document.getElementById('difficulty-status').textContent=gameplayHintsEnabled()?'Einfach: Du kriegst Hinweise, wohin du gehen musst':'Schwierig: Du kriegst keine Hinweise und musst deine Aufgaben selbst suchen';
         const ready=LearningBook.unlocked();document.getElementById('settings-summary').disabled=!ready;
         document.getElementById('settings-summary-status').textContent=ready?'Dein Theoriemerkheft mit gelösten Beispielen herunterladen.':'Nach Abschluss aller 19 Missionen verfügbar.';
         document.getElementById('settings-summary-symbol').textContent=ready?'›':'🔒';
@@ -7497,18 +7520,25 @@ const SettingsMenu=(()=>{
     function openInstructions(){return show(instructions,'SPIELANLEITUNG');}
     function openSummary(){if(!LearningBook.unlocked()||!allowed())return false;return show(summary,'ZUSAMMENFASSUNG');}
     function openChecks(){return show(checks,'ZWISCHENSTOPP');}
+    function openDifficulty(){return show(difficulty,'SCHWIERIGKEIT');}
+    difficulty.addEventListener('change',event=>{
+        if(event.target.name!=='settingsDifficulty'||!allowed())return;
+        appState.gameDifficulty=event.target.value==='hard'?'hard':'easy';
+        BuildingSigns.sync();IslandLevel1.refresh();CityLevel2.refresh();PlanetLevel3.refresh();sync();
+    });
+    document.getElementById('settings-difficulty').addEventListener('click',openDifficulty);
     window.openLernziele=function(){return show(document.getElementById('lernziele-content'),'LERNZIELE');};
     window.openSettings=open;window.openGameInstructions=openInstructions;window.openSummary=openSummary;window.openFormativeChecks=openChecks;
     document.getElementById('settings-goals').addEventListener('click',()=>openLernziele());
     document.getElementById('settings-instructions').addEventListener('click',openInstructions);document.getElementById('settings-summary').addEventListener('click',openSummary);
     document.getElementById('settings-checks').addEventListener('click',openChecks);
-    for(const section of [document.getElementById('lernziele-content'),instructions,summary,checks]){
+    for(const section of [document.getElementById('lernziele-content'),instructions,summary,checks,difficulty]){
         const back=document.createElement('button');back.type='button';back.className='settings-back';back.textContent='‹ Zurück zu Einstellungen';back.addEventListener('click',open);section.prepend(back);
     }
     for(const name of ['showMainUI','renderMapNodes']){const original=window[name];window[name]=function(...args){const result=original.apply(this,args);sync();return result;};}
     const originalMission=window.openMission;window.openMission=function(...args){delete modal.dataset.menu;return originalMission.apply(this,args);};
     const originalClose=window.closeModal;window.closeModal=function(...args){delete modal.dataset.menu;return originalClose.apply(this,args);};
-    sync();return {open,openInstructions,openSummary,openChecks,sync};
+    sync();return {open,openInstructions,openSummary,openChecks,openDifficulty,sync};
 })();
 
 // Temporary shop budget belongs to this override session, never to the saved game.
