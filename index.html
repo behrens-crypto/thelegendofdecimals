@@ -1016,7 +1016,7 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
         <!-- SECTOR 1 (Zigzag) - 6 Nodes -->
         <div id="sector-1-container" class="flex-grow flex items-center justify-center p-4 md:p-8">
             <div class="map-container">
-                <h2 class="absolute -top-4 left-0 w-full text-center orbitron text-sky-500 opacity-50">Chapter I – The Island of Decimals</h2>
+                <h2 class="absolute -top-4 left-0 w-full text-center orbitron text-sky-500 opacity-50">Chapter I – The Island</h2>
                 <svg viewBox="0 0 100 100" class="svg-line" preserveAspectRatio="none">
                     <path class="svg-path" d="M 20 10 L 80 26 L 20 42 L 80 58 L 20 74 L 50 90"></path>
                 </svg>
@@ -1051,7 +1051,7 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
         <!-- SECTOR 2 (U-Shape) - 6 Nodes -->
         <div id="sector-2-container" class="flex-grow items-center justify-center p-4 md:p-8 hidden">
             <div class="map-container">
-                <h2 class="absolute -top-4 left-0 w-full text-center orbitron text-red-500 opacity-50">Chapter II – The Dark Kingdom</h2>
+                <h2 class="absolute -top-4 left-0 w-full text-center orbitron text-red-500 opacity-50">Chapter II – Robotown</h2>
                 <svg viewBox="0 0 100 100" class="svg-line" preserveAspectRatio="none">
                     <path class="svg-path" stroke="#ef4444" d="M 20 20 L 20 50 L 20 80 L 80 80 L 80 50 L 80 20"></path>
                 </svg>
@@ -1086,7 +1086,7 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
         <!-- SECTOR 3 (Winding) - 7 Nodes -->
         <div id="sector-3-container" class="flex-grow items-center justify-center p-4 md:p-8 hidden">
             <div class="map-container">
-                <h2 class="absolute -top-4 left-0 w-full text-center orbitron text-emerald-500 opacity-50">Chapter III – The Final Trial</h2>
+                <h2 class="absolute -top-4 left-0 w-full text-center orbitron text-emerald-500 opacity-50">Chapter III – Moonbase</h2>
                 <svg viewBox="0 0 100 100" class="svg-line" preserveAspectRatio="none">
                     <path class="svg-path" stroke="#10b981" d="M 15 15 L 50 15 L 85 15 L 85 50 L 50 50 L 15 50 L 50 85"></path>
                 </svg>
@@ -5193,9 +5193,9 @@ const IslandLevel1=(()=>{
     for(const s of sites){s.door={x:s.x+s.w/2,y:s.y+s.h};}
     const pond={x:512,y:288,w:192,h:144},spawn={version:1,x:240,y:608,facing:'up'};
     const shell=document.createElement('section');shell.className='island-shell';
-    shell.setAttribute('aria-label','Begehbare Insel in Chapter 1');
-    shell.innerHTML=`<div class="island-heading"><div><h2>The Island of Decimals</h2></div><div class="island-objective"><span id="island-progress">0 / 6 Quests</span><strong id="island-next"></strong></div></div>
-        <div class="island-stage"><canvas id="island-canvas" width="1152" height="704" tabindex="0" aria-label="Insel-Spielfeld. Bewegen mit Pfeiltasten oder WASD. An einer Tür E oder Leertaste drücken. Aufgaben und Shop öffnen sich in einem Fenster."></canvas></div>
+    shell.setAttribute('aria-label','Begehbare Insel The Island in Chapter 1');
+    shell.innerHTML=`<div class="island-heading"><div><h2>The Island</h2></div><div class="island-objective"><span id="island-progress">0 / 6 Quests</span><strong id="island-next"></strong></div></div>
+        <div class="island-stage"><canvas id="island-canvas" width="1152" height="704" tabindex="0" aria-label="The Island – Insel-Spielfeld. Bewegen mit Pfeiltasten oder WASD. An einer Tür E oder Leertaste drücken. Aufgaben und Shop öffnen sich in einem Fenster."></canvas></div>
         <div class="island-footer"><div class="island-prompt" role="status" aria-live="polite"><span id="island-prompt-text"></span><button type="button" id="island-enter" hidden>Betreten · E</button></div></div>`;
     document.getElementById('sector-1-container').appendChild(shell);
     const canvas=document.getElementById('island-canvas'),ctx=canvas.getContext('2d');
@@ -5306,7 +5306,7 @@ const IslandLevel1=(()=>{
     function updatePrompt(){
         const s=nearby();let text;
         if(s){text=s.travel?window.worldTravel.prompt(s):s.secret?(solved(s)?`✓ ${s.name} · Bereits entdeckt`:s.prompt):available(s)?`${solved(s)?'✓ ':''}${s.name}${s.id==='shop'?' · Ausrüstung & Astrostutz':''}`:`🔒 ${s.name} · Löse zuerst Quest ${s.id-1}.`;}
-        else text='Erkunde die Insel. Die goldene Markierung zeigt dein nächstes Ziel.';
+        else text='Erkunde The Island. Die goldene Markierung zeigt dein nächstes Ziel.';
         document.getElementById('island-prompt-text').closest('.island-prompt').hidden=!gameplayHintsEnabled()&&(!s||!available(s));
         document.getElementById('island-prompt-text').closest('.island-prompt').classList.toggle('island-prompt-compact',!gameplayHintsEnabled());
         if(text!==lastPrompt){document.getElementById('island-prompt-text').textContent=text;lastPrompt=text;}
@@ -5748,22 +5748,26 @@ const CityLevel2=(()=>{
     for(const [x,y,kind,w,h] of [
         [192,128,'server',48,96],[288,144,'generator',64,64],
         [528,128,'server',48,96],[944,112,'server',48,112],[1024,128,'server',48,96],
-        [1264,112,'generator',64,64],[1360,192,'server',48,96],
+        [1264,112,'generator',64,64],[1360,152,'server',48,96],
         [1792,128,'server',48,112],[1840,280,'generator',56,56],
-        [128,704,'generator',64,64],[240,704,'server',48,96],
-        [608,816,'server',48,96],[704,832,'server',48,80],
+        [128,704,'generator',64,64],[208,708,'server',48,96],
+        [608,708,'server',48,96],[752,872,'server',48,80],
         [800,1024,'generator',64,64],[896,1024,'generator',64,64],
-        [928,720,'core',64,64],[992,848,'server',48,96],
-        [1264,464,'server',48,96],[1360,480,'generator',64,64],
+        [928,720,'core',64,64],[992,880,'server',48,96],
+        [1296,464,'server',48,96],[1360,480,'generator',64,64],
         [1760,560,'generator',64,64],[1840,656,'server',48,112],
-        [1296,976,'server',48,112],[1408,1008,'generator',64,64],
-        [1808,976,'server',48,96],
+        [1296,960,'server',48,112],[1408,1008,'generator',64,64],
+        [1840,976,'server',48,96],
     ])obstacles.push({x,y,w,h,kind});
-    const lamps=[{x:256,y:288},{x:336,y:288},{x:672,y:288},{x:752,y:288},
-        {x:256,y:624},{x:336,y:624},{x:672,y:624},{x:752,y:624},{x:1040,y:368},
-        {x:912,y:288},{x:1104,y:288},{x:1280,y:288},{x:1744,y:288},{x:1872,y:368},
-        {x:528,y:736},{x:784,y:736},{x:1088,y:736},{x:1264,y:736},{x:1744,y:816},
-        {x:256,y:1104},{x:640,y:1104},{x:1088,y:1104},{x:1440,y:1104},{x:1872,y:1104}];
+    // Pavement-side lamps keep the carriageways, crossings and entrances clear.
+    const lamps=[
+        {x:128,y:248},{x:624,y:248},{x:1104,y:248},{x:1744,y:248},
+        {x:248,y:112},{x:344,y:512},{x:344,y:768},{x:248,y:1008},
+        {x:344,y:1056},{x:664,y:144},{x:760,y:768},{x:664,y:1008},
+        {x:760,y:1040},{x:856,y:512},{x:952,y:552},{x:856,y:976},
+        {x:952,y:1008},{x:1304,y:784},{x:1488,y:576},{x:1712,y:576},
+        {x:1752,y:752},{x:1848,y:840},{x:128,y:1072},{x:1104,y:1072}
+    ];
     const avenues=[
         {x:80,y:304,w:1856,h:64},{x:272,y:80,w:48,h:1056},
         {x:688,y:80,w:48,h:1056},{x:80,y:576,w:1056,h:40},
@@ -5870,9 +5874,9 @@ const CityLevel2=(()=>{
     function nearby(){const p=position(),secret=window.islandSecrets?.nearby(p,2);return (secret?.id==='city-robot'?secret:null)||sites.find(s=>p.y>=s.door.y+6&&p.y<=s.door.y+72&&Math.abs(p.x-s.door.x)<44)||secret||window.worldTravel?.nearby(p,2)||null;}
     function visible(){return appState.agentName&&appState.currentViewSector===2&&!document.getElementById('screen-map').classList.contains('hidden');}
     function active(){return visible()&&document.getElementById('modalOverlay').classList.contains('hidden')&&document.getElementById('shop-overlay').hidden&&!window.islandSecrets?.isOpen()&&!window.worldTravel?.isTravelling()&&!window.learningViewCheckpoint?.isBlocked()&&!window.bossEncounters?.isOpen();}
-    const shell=document.createElement('section');shell.className='island-shell city-shell';shell.setAttribute('aria-label','Begehbare Technikstadt in Chapter 2');
-    shell.innerHTML=`<div class="island-heading"><div><h2>The Dark Kingdom</h2></div><div class="island-objective"><span id="city-progress">0 / 6 Quests</span><strong id="city-next"></strong></div></div>
-        <div class="island-stage"><canvas id="city-canvas" width="1152" height="704" tabindex="0" aria-label="Technikstadt-Spielfeld. Bewegen mit Pfeiltasten oder WASD. An einer Tür E oder Leertaste drücken. Der Shop steht in Chapter 1."></canvas></div>
+    const shell=document.createElement('section');shell.className='island-shell city-shell';shell.setAttribute('aria-label','Begehbare Technikstadt Robotown in Chapter 2');
+    shell.innerHTML=`<div class="island-heading"><div><h2>Robotown</h2></div><div class="island-objective"><span id="city-progress">0 / 6 Quests</span><strong id="city-next"></strong></div></div>
+        <div class="island-stage"><canvas id="city-canvas" width="1152" height="704" tabindex="0" aria-label="Robotown – Technikstadt-Spielfeld. Bewegen mit Pfeiltasten oder WASD. An einer Tür E oder Leertaste drücken. Der Shop steht in Chapter 1."></canvas></div>
         <div class="island-footer"><div class="island-prompt" role="status" aria-live="polite"><span id="city-prompt-text"></span><button type="button" id="city-enter" hidden>Betreten · E</button></div></div>`;
     document.getElementById('sector-2-container').appendChild(shell);
     const canvas=document.getElementById('city-canvas'),ctx=canvas.getContext('2d');
@@ -6063,7 +6067,7 @@ const CityLevel2=(()=>{
     let moving=false,last=0,tick=0,lastPrompt='';
     function updatePrompt(){
         const s=nearby();
-        let text=s?(s.travel?window.worldTravel.prompt(s):s.secret?(solved(s)?`✓ ${s.name} · Bereits entdeckt`:s.prompt):available(s)?`${solved(s)?'✓ ':''}${s.name}${s.boss?' · Bossfight':''}`:`🔒 ${s.name} · Löse zuerst Quest ${s.id-1}.`):'Erkunde die Technikstadt. Gold markiert deine nächste Quest.';
+        let text=s?(s.travel?window.worldTravel.prompt(s):s.secret?(solved(s)?`✓ ${s.name} · Bereits entdeckt`:s.prompt):available(s)?`${solved(s)?'✓ ':''}${s.name}${s.boss?' · Bossfight':''}`:`🔒 ${s.name} · Löse zuerst Quest ${s.id-1}.`):'Erkunde Robotown. Gold markiert deine nächste Quest.';
         document.getElementById('city-prompt-text').closest('.island-prompt').hidden=!gameplayHintsEnabled()&&(!s||!available(s));
         document.getElementById('city-prompt-text').closest('.island-prompt').classList.toggle('island-prompt-compact',!gameplayHintsEnabled());
         if(text!==lastPrompt){document.getElementById('city-prompt-text').textContent=text;lastPrompt=text;}
@@ -6300,9 +6304,9 @@ const PlanetLevel3=(()=>{
     function nearby(){const p=position();return sites.find(s=>p.y>=s.door.y+6&&p.y<=s.door.y+72&&Math.abs(p.x-s.door.x)<44)||window.islandSecrets?.nearby(p,3)||window.worldTravel?.nearby(p,3)||null;}
     function visible(){return appState.agentName&&appState.currentViewSector===3&&!document.getElementById('screen-map').classList.contains('hidden');}
     function active(){return visible()&&document.getElementById('modalOverlay').classList.contains('hidden')&&document.getElementById('shop-overlay').hidden&&!window.islandSecrets?.isOpen()&&!window.worldTravel?.isTravelling()&&!window.learningViewCheckpoint?.isBlocked()&&!window.bossEncounters?.isOpen();}
-    const shell=document.createElement('section');shell.className='island-shell planet-shell';shell.setAttribute('aria-label','Begehbarer Forschungsplanet in Chapter 3');
-    shell.innerHTML=`<div class="island-heading"><div><h2>The Final Trial</h2></div><div class="island-objective"><span id="planet-progress">0 / 7 Quests</span><strong id="planet-next"></strong></div></div>
-        <div class="island-stage"><canvas id="planet-canvas" width="1152" height="704" tabindex="0" aria-label="Forschungsplanet-Spielfeld. Bewegen mit Pfeiltasten oder WASD. An einer Tür E oder Leertaste drücken. Der Shop steht in Chapter 1."></canvas></div>
+    const shell=document.createElement('section');shell.className='island-shell planet-shell';shell.setAttribute('aria-label','Begehbare Mondbasis Moonbase in Chapter 3');
+    shell.innerHTML=`<div class="island-heading"><div><h2>Moonbase</h2></div><div class="island-objective"><span id="planet-progress">0 / 7 Quests</span><strong id="planet-next"></strong></div></div>
+        <div class="island-stage"><canvas id="planet-canvas" width="1152" height="704" tabindex="0" aria-label="Moonbase – Mondbasis-Spielfeld. Bewegen mit Pfeiltasten oder WASD. An einer Tür E oder Leertaste drücken. Der Shop steht in Chapter 1."></canvas></div>
         <div class="island-footer"><div class="island-prompt" role="status" aria-live="polite"><span id="planet-prompt-text"></span><button type="button" id="planet-enter" hidden>Betreten · E</button></div></div>`;
     document.getElementById('sector-3-container').appendChild(shell);
     const canvas=document.getElementById('planet-canvas'),ctx=canvas.getContext('2d');
@@ -6533,7 +6537,7 @@ const PlanetLevel3=(()=>{
     }
     let moving=false,last=0,tick=0,lastPrompt='';
     function updatePrompt(){
-        const s=nearby();let text=s?(s.travel?window.worldTravel.prompt(s):s.secret?(solved(s)?`✓ ${s.name} · Bereits entdeckt`:s.prompt):available(s)?`${solved(s)?'✓ ':''}${s.name}${s.id===6?' · Neue Übungsrunden':s.boss?' · Bossfight':''}`:`🔒 ${s.name} · ${s.id===7?'Beende zuerst «Genauigkeit üben».':`Löse zuerst Quest ${s.id-1}.`}`):'Erkunde den Forschungsplaneten. Gold markiert dein nächstes Ziel.';
+        const s=nearby();let text=s?(s.travel?window.worldTravel.prompt(s):s.secret?(solved(s)?`✓ ${s.name} · Bereits entdeckt`:s.prompt):available(s)?`${solved(s)?'✓ ':''}${s.name}${s.id===6?' · Neue Übungsrunden':s.boss?' · Bossfight':''}`:`🔒 ${s.name} · ${s.id===7?'Beende zuerst «Genauigkeit üben».':`Löse zuerst Quest ${s.id-1}.`}`):'Erkunde die Moonbase. Gold markiert dein nächstes Ziel.';
         document.getElementById('planet-prompt-text').closest('.island-prompt').hidden=!gameplayHintsEnabled()&&(!s||!available(s));
         document.getElementById('planet-prompt-text').closest('.island-prompt').classList.toggle('island-prompt-compact',!gameplayHintsEnabled());
         if(text!==lastPrompt){document.getElementById('planet-prompt-text').textContent=text;lastPrompt=text;}
@@ -6934,7 +6938,7 @@ const EasterEggs=(()=>{
         current=id;overlay.hidden=false;overlay.dataset.sector=String(spot.sector);const puzzle=puzzles[id];
         document.getElementById('easteregg-kicker').textContent=spot.sector===1?'GEHEIMNIS DER INSEL':spot.sector===2?'GEHEIMNIS DER TECHNIKSTADT':'GEHEIMNIS DES FORSCHUNGSPLANETEN';
         document.getElementById('easteregg-title').textContent=spot.name;document.getElementById('easteregg-question').textContent=puzzle.question;document.getElementById('easteregg-answer-label').textContent=puzzle.label;
-        document.getElementById('easteregg-return').textContent=spot.sector===1?'Zurück zur Insel':spot.sector===2?'Zurück zur Technikstadt':'Zurück zum Forschungsplaneten';
+        document.getElementById('easteregg-return').textContent=spot.sector===1?'Zurück zu The Island':spot.sector===2?'Zurück nach Robotown':'Zurück zur Moonbase';
         // Set the attribute explicitly: SVG does not consistently reflect
         // an assigned .hidden property in every browser.
         for(const scene of ['fish','tree','robot','server','scanner','probe'])document.getElementById(`easteregg-${scene}-scene`).toggleAttribute('hidden',scene!==puzzle.scene);
@@ -6993,7 +6997,7 @@ const WorldTravel=(()=>{
         {id:'city-rocket',sector:2,to:3,arrival:'planet-rocket',vehicle:'rocket',x:1040,y:600,radius:28,travel:true,name:'Rakete nach Chapter 3'},
         {id:'planet-rocket',sector:3,to:2,arrival:'city-rocket',vehicle:'rocket',x:304,y:608,radius:28,travel:true,name:'Rakete nach Chapter 2'}
     ];
-    const names={1:'The Island of Decimals',2:'The Dark Kingdom',3:'The Final Trial'},roman={1:'I',2:'II',3:'III'};
+    const names={1:'The Island',2:'Robotown',3:'Moonbase'},roman={1:'I',2:'II',3:'III'};
     const world=n=>n===1?IslandLevel1:n===2?CityLevel2:PlanetLevel3;
     let busy=false;
     function available(route){return directorMode||route.to===1||(route.to===2&&appState.sector1Completed[5])||(route.to===3&&appState.sector2Completed[5]);}
@@ -7421,7 +7425,7 @@ const LearningViewCheckpoint=(()=>{
 const BossEncounters=(()=>{
     const bosses={
         1:{mission:6,name:'Krabbor',epithet:'Der Inselwächter',world:'CHAPTER I · INSEL',story:'Ein gigantischer Panzerkrebs steigt aus dem Meer. Mit seinen mächtigen Scheren bewacht Krabbor den Weg zur nächsten Welt.',challenge:'Durchschaue seine Denkfallen und zeige, dass du Dezimalzahlen sicher einschätzen kannst. Knackst du seine Prüfung, ist der Weg frei.'},
-        2:{mission:6,name:'MECHATRON X',epithet:'Die Rechenmaschine',world:'CHAPTER II · TECHNIKSTADT',story:'Eine künstliche Intelligenz ist ausser Kontrolle geraten. MECHATRON X beherrscht die Technikstadt mit gewaltigen Roboterarmen und einem leuchtenden Energiekern.',challenge:'Löse seine Rechenaufträge und bringe die Maschine aus dem Takt. Präzise Rechnungen öffnen dir den Weg zum Forschungsplaneten.'},
+        2:{mission:6,name:'MECHATRON X',epithet:'Die Rechenmaschine',world:'CHAPTER II · TECHNIKSTADT',story:'Eine künstliche Intelligenz ist ausser Kontrolle geraten. MECHATRON X beherrscht die Technikstadt mit gewaltigen Roboterarmen und einem leuchtenden Energiekern.',challenge:'Löse seine Rechenaufträge und bringe die Maschine aus dem Takt. Präzise Rechnungen öffnen dir den Weg zur Moonbase.'},
         3:{mission:7,name:'NULLOX',epithet:'Herrscher der Leere',world:'CHAPTER III · MONDBASIS',story:'Tief im Kontrollzentrum wartet NULLOX. Das ausserirdische Wesen will die Ordnung der Zahlen zerstören und alles in der Leere verschwinden lassen.',challenge:'Stelle dich seiner letzten Prüfung: Berechne, beurteile und begründe sorgfältig. Drei Aufträge entscheiden über den Abschluss deiner Reise.'}
     };
     const frame=(title,defs,body)=>`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 360" role="img" aria-label="${title}"><defs>${defs}</defs>${body}</svg>`;
@@ -7545,7 +7549,7 @@ const SettingsMenu=(()=>{
         <section><h3>Bewegen und handeln</h3><p>Bewege deine Figur mit den <kbd>Pfeiltasten</kbd> oder <kbd>W A S D</kbd>. Gehe vor einen Gebäudeeingang oder nahe an einen besonderen Gegenstand.</p><p>Drücke <kbd>E</kbd> oder die <kbd>Leertaste</kbd>, wenn eine Aktion möglich ist. Du kannst auch den Aktionsknopf unter der Karte anklicken.</p></section>
 <section><h3>Zahlen eingeben und runden</h3><p>Beim Bilden von Dezimalzahlen und Bestimmen von Stellenwerten wird nicht gerundet, z. B. 5 Tausendstel = 0.005. Bei Rechenaufgaben darfst du erst am Schluss oder nach jedem Rechenschritt auf zwei Nachkommastellen runden. Beide Ergebnisse werden anerkannt. Runde die gegebenen Zahlen nicht vorab. Bei Rundungsaufgaben gilt die verlangte Stelle; Vergleiche und Überschläge bleiben wie angegeben. Schreibe Zahlen ab 1’000 mit Tausender-Apostroph, z. B. 25’000.</p><p>Gib nur die gesuchte Zahl ein; die Einheit steht beim Eingabefeld. Dezimalpunkt und Dezimalkomma sind erlaubt. Rechne die gegebenen Masse zuerst exakt in passende gemeinsame Einheiten um.</p></section>
         <section><h3>Orientierung</h3><ul><li>Die goldene Markierung zeigt die nächste Quest.</li><li>Ein grünes Häkchen bedeutet: Quest abgeschlossen.</li><li>Ein schwebendes Schloss bedeutet: noch gesperrt. Löse zuerst die vorherigen Quests.</li><li>Bei «Geführt» zeigen alle Niveaus Questnummern, goldene Zielmarkierungen, «Nächstes Ziel» und ausführliche Aktionshinweise. Bei «Freies Erkunden» suchst du selbst; bei einer möglichen Aktion erscheint nur «Aktion ausführen · E». Du kannst dies unter Einstellungen → Spielmodus jederzeit ändern. Das Aufgabenniveau bleibt gleich.</li></ul></section>
-        <section><h3>Die drei Welten</h3><p><strong>Insel:</strong> Folge dem Küstenweg um den Waldsee. Der Shop steht beim Landesteg im Süden.</p><p><strong>Technikstadt:</strong> Erkunde Laborviertel, Reaktorplatz und Energiequartier. Die Festung von MECHATRON X steht im Nordosten.</p><p><strong>Mondbasis:</strong> Die Forschungsstationen liegen rund um NULLOX’ Arena. Ringweg und Verbindungswege führen durch Krater und Kristalle.</p><p>Das Flugzeug verbindet Chapter 1 und 2. Die Rakete verbindet Chapter 2 und 3. Auf demselben Weg kommst du zurück. Die Chapter oben zeigen deinen Fortschritt.</p></section>
+        <section><h3>Die drei Welten</h3><p><strong>The Island:</strong> Folge dem Küstenweg um den Waldsee. Der Shop steht beim Landesteg im Süden.</p><p><strong>Robotown:</strong> Erkunde Laborviertel, Reaktorplatz und Energiequartier. Die Festung von MECHATRON X steht im Nordosten.</p><p><strong>Moonbase:</strong> Die Forschungsstationen liegen rund um NULLOX’ Arena. Ringweg und Verbindungswege führen durch Krater und Kristalle.</p><p>Das Flugzeug verbindet Chapter 1 und 2. Die Rakete verbindet Chapter 2 und 3. Auf demselben Weg kommst du zurück. Die Chapter oben zeigen deinen Fortschritt.</p></section>
         <section><h3>Shop und Geheimnisse</h3><p>Den Shop kannst du auf der Insel betreten. Dort kannst du Coins für Helden, Farben, Titel und Siegeseffekte ausgeben oder 20 Coins gegen 1 Astrostutz eintauschen.</p><p>In jeder Welt gibt es zwei Eastereggs. Untersuche die Umgebung. Den Wartungsroboter musst du zuerst aus nächster Nähe zum Anhalten bringen.</p></section>
         <section><h3>Speichern und fortsetzen</h3><p>Position, Antworten, Coins und Fortschritt sicherst du oben über <strong>SPEICHERN</strong> als JSON-Datei. Lade diese Datei beim nächsten Start mit <strong>DATEN HOCHLADEN</strong>, um weiterzuspielen.</p><p>Nach einem besiegten Boss bearbeitest du den Zwischenstopp auf LearningView. Trage danach im Zwischenstopp deine erreichten Punkte ein. Bei voller Punktzahl geht es direkt weiter. Sonst übst du die Inhalte auf LearningView und bestätigst anschliessend hier, dass du geübt hast. Deine Ergebnisse findest du unter <strong>Einstellungen → Zwischenstopp</strong>.</p><p>Wenn alle 19 Quests abgeschlossen sind, findest du das Theoriemerkheft unter <strong>Einstellungen → Zusammenfassung</strong>.</p></section>
     </div>`;
