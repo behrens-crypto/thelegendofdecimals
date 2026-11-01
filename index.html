@@ -416,6 +416,7 @@ body[data-shop-color]:not([data-shop-color="color-blue"]) [class*="border-sky-"]
 .legend-title-rule { display:flex; align-items:center; gap:15px; max-width:420px; color:#b9c39a; margin:20px 0 23px; }
 .legend-title-rule i { height:1px; flex:1; background:linear-gradient(90deg,#b8b88980,transparent); }
 .legend-title-rule i:first-child { transform:rotate(180deg); }
+#screen-login .legend-author { margin:0; color:var(--legend-gold); font:400 clamp(13px,1.1vw,16px)/1.5 'Rajdhani',Arial,sans-serif; letter-spacing:.06em; opacity:.9; }
 .legend-tagline { font:400 clamp(21px,2.2vw,30px)/1.35 Georgia,serif; color:#f3edd9; margin:0 0 18px; text-shadow:0 2px 12px #0009; }
 .legend-tagline em { color:#a7d9c8; }
 .legend-intro { color:#a8beb8; font:400 16px/1.65 'Rajdhani',Arial,sans-serif; margin:0 0 34px; }
@@ -877,68 +878,67 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
 #modalOverlay[data-chapter]:not([data-menu]) #modalContent .arithmetic-borrow-row small { color:var(--mission-muted); }
 
 </style>
+<style id="title-pixel-theme">
+/* The title screen shares the existing island art; all game screens keep their styles. */
+#screen-login { background:#081c20; gap:clamp(28px,5vw,85px); padding:42px clamp(32px,6vw,110px) 58px; }
+#screen-login .legend-scene { object-fit:cover; image-rendering:pixelated; opacity:1; }
+#screen-login::before { background:linear-gradient(180deg,#06182022 0%,#06182008 45%,#03120d44 100%),linear-gradient(90deg,#04171938,transparent 64%,#06171366); }
+#screen-login .legend-story { align-self:start; margin-top:clamp(70px,12vh,140px); padding:12px 0; }
+#screen-login .legend-logo-top { color:#eee0b4; text-shadow:2px 2px #0c241c; }
+#screen-login .legend-logo-main { background:linear-gradient(180deg,#fff1bc 0 36%,#e2c779 36% 51%,#f5dfa0 51% 72%,#bd9852 72% 100%); -webkit-background-clip:text; background-clip:text; filter:drop-shadow(0 3px 0 #493c24) drop-shadow(0 6px 0 #071b17) drop-shadow(0 9px 18px #061820); }
+#screen-login .legend-title-rule { color:#dfc47f; max-width:390px; margin:22px 0 17px; }
+#screen-login .legend-title-rule i { background:linear-gradient(90deg,#d5bc79aa,#d5bc7915); }
+#screen-login .legend-author { color:#e7d8ae; font-size:15px; opacity:1; text-shadow:1px 2px #061c14; }
+#screen-login .legend-gate { border:3px solid #89936c; border-radius:3px; background:linear-gradient(145deg,#19352def,#0d211fee); padding:26px 27px 21px; box-shadow:0 0 0 2px #081a16,inset 0 0 0 1px #d3b97955,7px 8px 0 #06160e77,0 20px 55px #06140f88; backdrop-filter:none; }
+#screen-login .legend-gate::before,#screen-login .legend-gate::after { width:22px; height:22px; border-color:#e1c483; border-width:3px; }
+#screen-login #legend-gate-title { font-size:29px; color:#f1dfad; text-shadow:1px 2px #092119; }
+#screen-login .legend-form-intro { color:#bdcbb7; margin-bottom:24px; font-size:15px; }
+#screen-login .legend-field { margin-bottom:19px; }
+#screen-login .legend-field>label,#screen-login .legend-field>legend { font:700 11px/1.5 monospace; color:#d6ddc6; letter-spacing:1.2px; margin-bottom:9px; }
+#screen-login #loginName { background:#081d19; border:2px solid #687c61; color:#f0e8c9; border-radius:2px; box-shadow:inset 2px 3px 0 #05150f77; }
+#screen-login #loginName::placeholder { color:#8ea58b; }
+#screen-login #loginName:focus { border-color:#e5c787; box-shadow:0 0 0 2px #e5c78722,inset 2px 3px 0 #05150f77; }
+#screen-login .legend-niveaux .niveau-label>div { border:2px solid #60775c; color:#d0ddc4; background:#10271f; padding:11px 3px; font-size:17px; box-shadow:inset 0 -3px 0 #081b1570; }
+#screen-login .legend-niveaux .niveau-label:hover>div { background:#29442b; border-color:#a8b77b; }
+#screen-login .legend-niveaux .niveau-label input:checked+div { color:#fff0bf; background:#425135; border-color:#dfc27b; box-shadow:inset 0 -3px 0 #293724,inset 0 2px 0 #8a926b55; }
+#screen-login .legend-start-button { color:#243020; background:linear-gradient(180deg,#f0dda1 0 12%,#d9bd7b 12% 89%,#aa8749 89% 100%); border:2px solid #f2dfac; border-radius:2px; padding:15px 16px; box-shadow:3px 4px 0 #071a13; }
+#screen-login .legend-start-button:hover { background:linear-gradient(180deg,#fff0bf 0 12%,#ead08e 12% 89%,#bb985b 89% 100%); }
+#screen-login .legend-divider { color:#a3b895; }
+#screen-login .legend-divider>span:first-child,#screen-login .legend-divider>span:last-child { background:#a0ad7544; }
+#screen-login .legend-upload-caption { color:#b9cbb1; }
+#screen-login .legend-upload-button { color:#dfebcf; background:#1d382c; border:2px solid #819574; border-radius:2px; box-shadow:inset 0 -3px 0 #10251d; min-height:46px; }
+#screen-login .legend-upload-button:hover { background:#2a4934; border-color:#c1ca91; }
+#screen-login .legend-gate-footer { color:#a1b58f; font:10px/1.5 monospace; letter-spacing:.6px; margin-top:21px; }
+#screen-login .legend-gate-footer span { color:#d8bf7c; }
+@media (min-width:781px) and (max-height:760px) {
+ #screen-login { padding-top:25px; padding-bottom:35px; }
+ #screen-login .legend-gate { padding:20px 23px 17px; }
+ #screen-login #legend-gate-title { font-size:26px; }
+ #screen-login .legend-form-intro { margin-bottom:17px; }
+ #screen-login .legend-field { margin-bottom:16px; }
+ #screen-login .legend-niveaux .niveau-label>div { padding:9px 3px; }
+ #screen-login .legend-divider { margin-top:21px; }
+ #screen-login .legend-gate-footer { margin-top:17px; }
+}
+@media(max-width:780px) {
+ #screen-login { padding:35px 24px 48px; gap:30px; }
+ #screen-login .legend-story { align-self:auto; margin-top:10px; }
+ #screen-login .legend-gate { max-width:480px; }
+ #screen-login .legend-scene { min-height:0; opacity:1; }
+}
+
+</style>
 </head>
 <body class="min-h-screen flex flex-col hologram-bg">
 
     <!-- Screen 1: Login -->
 <div id="screen-login" class="legend-entry z-20">
-    <svg class="legend-scene" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-  <defs>
-    <linearGradient id="legend-sky" x2="0" y2="1"><stop stop-color="#031b22"/><stop offset=".55" stop-color="#123c40"/><stop offset="1" stop-color="#071416"/></linearGradient>
-    <linearGradient id="legend-stone" x2=".5" y2="1"><stop stop-color="#416463"/><stop offset=".3" stop-color="#172e32"/><stop offset="1" stop-color="#030b13"/></linearGradient>
-    <linearGradient id="legend-blade"><stop stop-color="#6ca8ac"/><stop offset=".47" stop-color="#e7fff1"/><stop offset=".52" stop-color="#80dbd5"/><stop offset="1" stop-color="#215c68"/></linearGradient>
-    <linearGradient id="legend-gold" x2="1" y2="1"><stop stop-color="#fff0b7"/><stop offset=".4" stop-color="#b9a260"/><stop offset="1" stop-color="#4a573f"/></linearGradient>
-    <radialGradient id="legend-halo"><stop stop-color="#a3ead2" stop-opacity=".3"/><stop offset=".5" stop-color="#2b8a7c" stop-opacity=".12"/><stop offset="1" stop-color="#25535b" stop-opacity="0"/></radialGradient>
-    <radialGradient id="legend-horizon"><stop stop-color="#87c6a4" stop-opacity=".35"/><stop offset="1" stop-color="#6cae96" stop-opacity="0"/></radialGradient>
-    <filter id="legend-glow"><feGaussianBlur stdDeviation="6"/></filter>
-    <filter id="legend-mist"><feGaussianBlur stdDeviation="22"/></filter>
-  </defs>
-  <path fill="url(#legend-sky)" d="M0 0h1600v1000H0z"/>
-  <ellipse cx="785" cy="370" rx="540" ry="470" fill="url(#legend-halo)"/>
-  <ellipse cx="790" cy="700" rx="740" ry="210" fill="url(#legend-horizon)"/>
-  <g fill="#d5e9cd" opacity=".5"><circle cx="80" cy="120" r="1"/><circle cx="258" cy="83" r="1.5"/><circle cx="420" cy="145" r="1"/><circle cx="616" cy="72" r="1"/><circle cx="1000" cy="111" r="1.5"/><circle cx="1230" cy="175" r="1"/><circle cx="1475" cy="60" r="1.3"/><circle cx="910" cy="230" r="1"/><circle cx="130" cy="425" r="1"/><circle cx="1400" cy="380" r="1"/><circle cx="720" cy="150" r="1"/><circle cx="1130" cy="46" r="1"/><circle cx="1510" cy="240" r="1.5"/></g>
-  <g transform="translate(805 355)" fill="none">
-    <circle r="231" stroke="#94bea3" stroke-opacity=".13"/>
-    <circle r="212" stroke="#8dd7c0" stroke-opacity=".16" stroke-dasharray="2 17"/>
-    <circle r="184" stroke="#b9d7bd" stroke-opacity=".18"/>
-    <path d="M-250 0h65m370 0h65M0-250v65M0 185v65" stroke="#82c8bd" stroke-opacity=".3"/>
-    <path d="M-158-158l32 32m252 252l32 32m-316 0l32-32m252-252l32-32" stroke="#c5c098" stroke-opacity=".25"/>
-    <g stroke="#c0d6b5" stroke-opacity=".18"><path d="M-14-225l14-13 14 13M-14 225l14 13 14-13M225-14l13 14-13 14M-225-14l-13 14 13 14"/></g>
-  </g>
-  <path d="M0 620l110-80 84 27 111-128 115 136 78-59 117 130 100-102 97 28 96-132 92 120 98-39 103 112 105-174 126 136 98-58 151 90v373H0z" fill="#21484c" opacity=".6"/>
-  <path d="M0 710l112-87 94 38 106-58 93 87 110-31 103 36 131-74 112 67 70-52 133 67 124-106 89 71 122-39 201 98v278H0z" fill="#102c32"/>
-  <g opacity=".6" fill="#172e32" stroke="#356265" stroke-width="1">
-    <path d="M80 642v-124h20v-30h28v30h19v124m23-5V450h24v-40h28v40h22v185m16 0V520h26v-35h28v35h20v128"/>
-    <path d="M1270 636V420h24v-32h22v32h24v216m30 0V480h25v-30h28v30h20v156m25 10V355h22v-32h23v32h22v291"/>
-  </g>
-  <g stroke="#81c9bb" opacity=".35" fill="none"><path d="M178 575v-78h14m-14 32h38m1060 18v-90h26m79 135V388h20m-20 68h20"/><circle cx="192" cy="497" r="3"/><circle cx="1302" cy="457" r="3"/></g>
-  <path d="M580 721l42-27 90-13 52 11 49-12 61 24 84 6 42 29-54 85-40 11-41 107-50-49-44 64-53-104-57-18-37-76z" fill="url(#legend-stone)"/>
-  <path d="M580 721l42-27 90-13 52 11 49-12 61 24 84 6 42 29-84 26-83-9-77 15-76-18-102-5z" fill="#42615a"/>
-  <path d="M607 724l87-17 65 7 55-16 51 22 91 17-89 7-50-9-69 14-58-12z" fill="#7a9380" opacity=".45"/>
-  <path d="M750 716l-23 69 27 54-10 34m60-139l11 57-23 44 9 67m-111-153l-15 37m218-34l-28 50" fill="none" stroke="#79c6b4" stroke-opacity=".32" stroke-width="2"/>
-  <g transform="translate(792 0)">
-    <ellipse cx="0" cy="723" rx="53" ry="12" fill="#7be4c1" opacity=".4" filter="url(#legend-glow)"/>
-    <path d="M-54 727l9-56 29-19 43 4 22 19 10 49-59 18z" fill="#1e3739" stroke="#7b9e8c"/>
-    <path d="M-20 671l16 11 17-15m-13 15v46m-30-31l17 6m28-7l17-8" fill="none" stroke="#bfc69b" stroke-opacity=".5"/>
-    <path d="M-13 425h26v230L0 680l-13-25z" fill="#75eddb" opacity=".55" filter="url(#legend-glow)"/>
-    <path d="M-13 425h26v230L0 680l-13-25z" fill="url(#legend-blade)" stroke="#c2f2db" stroke-width="1"/>
-    <path d="M0 437v220" stroke="#fff6bf" opacity=".8"/>
-    <path d="M-73 419l25-15 26 10h44l26-10 25 15-4 14-44-6H-25l-44 6z" fill="url(#legend-gold)" stroke="#c9c194"/>
-    <path d="M-8 346h16v66H-8z" fill="#193b3f" stroke="#c5bc82" stroke-width="2"/>
-    <path d="M-7 357l14 9-14 9 14 9-14 9" fill="none" stroke="#82cab3"/>
-    <path d="M0 313l14 18-14 20-14-20z" fill="url(#legend-gold)"/>
-    <path d="M0 319l6 12-6 10-6-10z" fill="#9ff8db"/>
-    <path d="M-24 454h-34v41h-19m101-41h34v41h19" fill="none" stroke="#9be4c6" stroke-opacity=".45"/>
-    <circle cx="-77" cy="495" r="4" fill="#9be4c6"/><circle cx="77" cy="495" r="4" fill="#9be4c6"/>
-  </g>
-  <ellipse cx="790" cy="778" rx="560" ry="26" fill="#acc8a1" opacity=".07" filter="url(#legend-mist)"/>
-  <path d="M0 884l116-54 82 36 99-75 151 117 104-12 80 104H0zm1600 116V779l-98 37-61-43-81 97-71-9-51 139z" fill="#051215"/>
-  <g stroke="#4a8c82" fill="none" opacity=".3"><path d="M20 935h220l38-38h106m1216 54h-198l-72-72h-89m-689 79h164l20-20h61"/><circle cx="384" cy="897" r="4"/><circle cx="1241" cy="879" r="4"/><circle cx="797" cy="938" r="4"/></g>
-</svg>
+    <canvas id="legend-title-scene" class="legend-scene" width="1600" height="1000" aria-hidden="true"></canvas>
 
     <div class="legend-story">
         <h1 class="legend-logo" aria-label="THE LEGEND OF DECIMALS"><span class="legend-logo-top">THE LEGEND OF</span><span class="legend-logo-main">DECIMALS</span></h1>
         <div class="legend-title-rule" aria-hidden="true"><i></i><span>✦</span><i></i></div>
+        <p class="legend-author">developed by R. Behrens</p>
     </div>
     <section class="legend-gate" aria-labelledby="legend-gate-title">
         <h2 id="legend-gate-title">Deine Reise beginnt.</h2>
@@ -1128,7 +1128,7 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
         <div class="mcu-panel w-full max-w-3xl max-h-[95vh] flex flex-col relative overflow-hidden">
             
             <div class="p-4 border-b border-sky-900/50 flex justify-between items-center bg-slate-900/80">
-                <h2 id="modalTitle" class="orbitron text-xl md:text-2xl text-sky-400 uppercase tracking-widest">MISSION</h2>
+                <h2 id="modalTitle" class="orbitron text-xl md:text-2xl text-sky-400 uppercase tracking-widest">QUEST</h2>
                 <button onclick="closeModal()" class="text-sky-500 hover:text-red-500 transition-colors">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
@@ -1164,8 +1164,8 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
                     <p id="s1-m1-error" class="text-red-500 text-center hidden">Fehler bei der Eingabe!</p>
                     
                     <div id="s1-m1-success" class="hidden text-center py-4">
-                        <h2 class="orbitron text-2xl text-green-400">MISSION ERFOLGREICH</h2>
-                        <p class="text-slate-300 font-mono text-sm mb-4">Mission abgeschlossen. Sichere deinen Fortschritt über SPEICHERN als JSON-Datei.</p>
+                        <h2 class="orbitron text-2xl text-green-400">QUEST ERFOLGREICH</h2>
+                        <p class="text-slate-300 font-mono text-sm mb-4">Quest abgeschlossen. Sichere deinen Fortschritt über SPEICHERN als JSON-Datei.</p>
                         <div class="flex flex-col gap-3 justify-center">
                             <button onclick="restoreMissionView('s1-m1', 's1m1', 1)" class="mcu-btn border-green-500 text-green-400 hover:bg-green-500 hover:text-black px-6 py-2 text-sm font-bold">👁️ URSPRÜNGLICHE AUFGABEN & LÖSUNGEN ANZEIGEN</button>
                             <button onclick="closeModal()" class="text-slate-400 hover:text-white font-mono text-sm">ZUR KARTE</button>
@@ -1205,8 +1205,8 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
                     <p id="s1-m2-error" class="text-red-500 text-center hidden">Hulk wütend! Falsche Zeichen!</p>
                     
                     <div id="s1-m2-success" class="hidden text-center py-4">
-                        <h2 class="orbitron text-2xl text-green-400">MISSION ERFOLGREICH</h2>
-                        <p class="text-slate-300 font-mono text-sm mb-4">Mission abgeschlossen. Sichere deinen Fortschritt über SPEICHERN als JSON-Datei.</p>
+                        <h2 class="orbitron text-2xl text-green-400">QUEST ERFOLGREICH</h2>
+                        <p class="text-slate-300 font-mono text-sm mb-4">Quest abgeschlossen. Sichere deinen Fortschritt über SPEICHERN als JSON-Datei.</p>
                         <div class="flex flex-col gap-3 justify-center">
                             <button onclick="document.getElementById('s1-m2-success').classList.add('hidden'); document.getElementById('s1-m2-forms').style.display='block'; document.getElementById('btn-eval-s1-m2').style.display='block'; checkS1M2();" class="mcu-btn border-green-500 text-green-400 hover:bg-green-500 hover:text-black px-6 py-2 text-sm font-bold">👁️ URSPRÜNGLICHE AUFGABEN & LÖSUNGEN ANZEIGEN</button>
                             <button onclick="closeModal()" class="text-slate-400 hover:text-white font-mono text-sm">ZUR KARTE</button>
@@ -1221,8 +1221,8 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
                     <p id="s1-m3-error" class="text-red-500 text-center hidden">Falsche Darstellung der Dimension!</p>
                     
                     <div id="s1-m3-success" class="hidden text-center py-4">
-                        <h2 class="orbitron text-2xl text-green-400">MISSION ERFOLGREICH</h2>
-                        <p class="text-slate-300 font-mono text-sm mb-4">Mission abgeschlossen. Sichere deinen Fortschritt über SPEICHERN als JSON-Datei.</p>
+                        <h2 class="orbitron text-2xl text-green-400">QUEST ERFOLGREICH</h2>
+                        <p class="text-slate-300 font-mono text-sm mb-4">Quest abgeschlossen. Sichere deinen Fortschritt über SPEICHERN als JSON-Datei.</p>
                         <div class="flex flex-col gap-3 justify-center">
                             <button onclick="restoreMissionView('s1-m3', 'm3', 1)" class="mcu-btn border-green-500 text-green-400 hover:bg-green-500 hover:text-black px-6 py-2 text-sm font-bold">👁️ URSPRÜNGLICHE AUFGABEN & LÖSUNGEN ANZEIGEN</button>
                             <button onclick="closeModal()" class="text-slate-400 hover:text-white font-mono text-sm">ZUR KARTE</button>
@@ -1237,8 +1237,8 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
                     <p id="s1-m4-error" class="text-red-500 text-center hidden">Falsch gerundet!</p>
                     
                     <div id="s1-m4-success" class="hidden text-center py-4">
-                        <h2 class="orbitron text-2xl text-green-400">MISSION ERFOLGREICH</h2>
-                        <p class="text-slate-300 font-mono text-sm mb-4">Mission abgeschlossen. Sichere deinen Fortschritt über SPEICHERN als JSON-Datei.</p>
+                        <h2 class="orbitron text-2xl text-green-400">QUEST ERFOLGREICH</h2>
+                        <p class="text-slate-300 font-mono text-sm mb-4">Quest abgeschlossen. Sichere deinen Fortschritt über SPEICHERN als JSON-Datei.</p>
                         <div class="flex flex-col gap-3 justify-center">
                             <button onclick="restoreMissionView('s1-m4', 'm4', 1)" class="mcu-btn border-green-500 text-green-400 hover:bg-green-500 hover:text-black px-6 py-2 text-sm font-bold">👁️ URSPRÜNGLICHE AUFGABEN & LÖSUNGEN ANZEIGEN</button>
                             <button onclick="closeModal()" class="text-slate-400 hover:text-white font-mono text-sm">ZUR KARTE</button>
@@ -1253,8 +1253,8 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
                     <p id="s1-m5-error" class="text-red-500 text-center hidden">Fehlerhafter Überschlag!</p>
                     
                     <div id="s1-m5-success" class="hidden text-center py-4">
-                        <h2 class="orbitron text-2xl text-green-400">MISSION ERFOLGREICH</h2>
-                        <p class="text-slate-300 font-mono text-sm mb-4">Mission abgeschlossen. Sichere deinen Fortschritt über SPEICHERN als JSON-Datei.</p>
+                        <h2 class="orbitron text-2xl text-green-400">QUEST ERFOLGREICH</h2>
+                        <p class="text-slate-300 font-mono text-sm mb-4">Quest abgeschlossen. Sichere deinen Fortschritt über SPEICHERN als JSON-Datei.</p>
                         <div class="flex flex-col gap-3 justify-center">
                             <button onclick="restoreMissionView('s1-m5', 'm5', 1)" class="mcu-btn border-green-500 text-green-400 hover:bg-green-500 hover:text-black px-6 py-2 text-sm font-bold">👁️ URSPRÜNGLICHE AUFGABEN & LÖSUNGEN ANZEIGEN</button>
                             <button onclick="closeModal()" class="text-slate-400 hover:text-white font-mono text-sm">ZUR KARTE</button>
@@ -1285,8 +1285,8 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
                     <p id="s2-m1-error" class="text-red-500 text-center hidden">Falsche Berechnung(en)!</p>
                     
                     <div id="s2-m1-success" class="hidden text-center py-4">
-                        <h2 class="orbitron text-2xl text-green-400">MISSION ERFOLGREICH</h2>
-                        <p class="text-slate-300 font-mono text-sm mb-4">Mission abgeschlossen. Sichere deinen Fortschritt über SPEICHERN als JSON-Datei.</p>
+                        <h2 class="orbitron text-2xl text-green-400">QUEST ERFOLGREICH</h2>
+                        <p class="text-slate-300 font-mono text-sm mb-4">Quest abgeschlossen. Sichere deinen Fortschritt über SPEICHERN als JSON-Datei.</p>
                         <div class="flex flex-col gap-3 justify-center">
                             <button onclick="restoreMissionView('s2-m1', 's2m1', 2)" class="mcu-btn border-green-500 text-green-400 hover:bg-green-500 hover:text-black px-6 py-2 text-sm font-bold">👁️ URSPRÜNGLICHE AUFGABEN & LÖSUNGEN ANZEIGEN</button>
                             <button onclick="closeModal()" class="text-slate-400 hover:text-white font-mono text-sm">ZUR KARTE</button>
@@ -1303,8 +1303,8 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
                     <p id="s2-m2-error" class="text-red-500 text-center hidden">Falsche Berechnung(en)!</p>
                     
                     <div id="s2-m2-success" class="hidden text-center py-4">
-                        <h2 class="orbitron text-2xl text-green-400">MISSION ERFOLGREICH</h2>
-                        <p class="text-slate-300 font-mono text-sm mb-4">Mission abgeschlossen. Sichere deinen Fortschritt über SPEICHERN als JSON-Datei.</p>
+                        <h2 class="orbitron text-2xl text-green-400">QUEST ERFOLGREICH</h2>
+                        <p class="text-slate-300 font-mono text-sm mb-4">Quest abgeschlossen. Sichere deinen Fortschritt über SPEICHERN als JSON-Datei.</p>
                         <div class="flex flex-col gap-3 justify-center">
                             <button onclick="restoreMissionView('s2-m2', 's2m2', 2)" class="mcu-btn border-green-500 text-green-400 hover:bg-green-500 hover:text-black px-6 py-2 text-sm font-bold">👁️ URSPRÜNGLICHE AUFGABEN & LÖSUNGEN ANZEIGEN</button>
                             <button onclick="closeModal()" class="text-slate-400 hover:text-white font-mono text-sm">ZUR KARTE</button>
@@ -1321,8 +1321,8 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
                     <p id="s2-m3-error" class="text-red-500 text-center hidden">Falsche Berechnung(en)!</p>
                     
                     <div id="s2-m3-success" class="hidden text-center py-4">
-                        <h2 class="orbitron text-2xl text-green-400">MISSION ERFOLGREICH</h2>
-                        <p class="text-slate-300 font-mono text-sm mb-4">Mission abgeschlossen. Sichere deinen Fortschritt über SPEICHERN als JSON-Datei.</p>
+                        <h2 class="orbitron text-2xl text-green-400">QUEST ERFOLGREICH</h2>
+                        <p class="text-slate-300 font-mono text-sm mb-4">Quest abgeschlossen. Sichere deinen Fortschritt über SPEICHERN als JSON-Datei.</p>
                         <div class="flex flex-col gap-3 justify-center">
                             <button onclick="restoreMissionView('s2-m3', 's2m3', 2)" class="mcu-btn border-green-500 text-green-400 hover:bg-green-500 hover:text-black px-6 py-2 text-sm font-bold">👁️ URSPRÜNGLICHE AUFGABEN & LÖSUNGEN ANZEIGEN</button>
                             <button onclick="closeModal()" class="text-slate-400 hover:text-white font-mono text-sm">ZUR KARTE</button>
@@ -1339,8 +1339,8 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
                     <p id="s2-m4-error" class="text-red-500 text-center hidden">Falsche Berechnung(en)!</p>
                     
                     <div id="s2-m4-success" class="hidden text-center py-4">
-                        <h2 class="orbitron text-2xl text-green-400">MISSION ERFOLGREICH</h2>
-                        <p class="text-slate-300 font-mono text-sm mb-4">Mission abgeschlossen. Sichere deinen Fortschritt über SPEICHERN als JSON-Datei.</p>
+                        <h2 class="orbitron text-2xl text-green-400">QUEST ERFOLGREICH</h2>
+                        <p class="text-slate-300 font-mono text-sm mb-4">Quest abgeschlossen. Sichere deinen Fortschritt über SPEICHERN als JSON-Datei.</p>
                         <div class="flex flex-col gap-3 justify-center">
                             <button onclick="restoreMissionView('s2-m4', 's2m4', 2)" class="mcu-btn border-green-500 text-green-400 hover:bg-green-500 hover:text-black px-6 py-2 text-sm font-bold">👁️ URSPRÜNGLICHE AUFGABEN & LÖSUNGEN ANZEIGEN</button>
                             <button onclick="closeModal()" class="text-slate-400 hover:text-white font-mono text-sm">ZUR KARTE</button>
@@ -1357,8 +1357,8 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
                     <p id="s2-m5-error" class="text-red-500 text-center hidden">Falsche Rechnung(en) ausgewählt!</p>
                     
                     <div id="s2-m5-success" class="hidden text-center py-4">
-                        <h2 class="orbitron text-2xl text-green-400">MISSION ERFOLGREICH</h2>
-                        <p class="text-slate-300 font-mono text-sm mb-4">Mission abgeschlossen. Sichere deinen Fortschritt über SPEICHERN als JSON-Datei.</p>
+                        <h2 class="orbitron text-2xl text-green-400">QUEST ERFOLGREICH</h2>
+                        <p class="text-slate-300 font-mono text-sm mb-4">Quest abgeschlossen. Sichere deinen Fortschritt über SPEICHERN als JSON-Datei.</p>
                         <div class="flex flex-col gap-3 justify-center">
                             <button onclick="restoreMissionView('s2-m5', 's2m5', 2)" class="mcu-btn border-green-500 text-green-400 hover:bg-green-500 hover:text-black px-6 py-2 text-sm font-bold">👁️ URSPRÜNGLICHE AUFGABEN & LÖSUNGEN ANZEIGEN</button>
                             <button onclick="closeModal()" class="text-slate-400 hover:text-white font-mono text-sm">ZUR KARTE</button>
@@ -1388,13 +1388,13 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
                     </div>
                 </div>
 
-                <!-- CHAPTER 3 / MISSION 1: REPETITION -->
+                <!-- CHAPTER 3 / QUEST 1: REPETITION -->
                 <div id="s3-m1-content" class="mission-content hidden space-y-6 pb-8">
                     <div id="s3-m1-forms" class="space-y-3 font-mono text-sm md:text-base"></div>
                     <p id="s3-m1-error" class="text-red-500 text-center hidden">Noch nicht alle Messdaten stimmen. Prüfe die rot markierten Antworten!</p>
 
                     <div id="s3-m1-success" class="hidden text-center py-4">
-                        <h2 class="orbitron text-2xl text-green-400">MISSION ERFOLGREICH</h2>
+                        <h2 class="orbitron text-2xl text-green-400">QUEST ERFOLGREICH</h2>
                         <p class="text-slate-300 font-mono text-sm mb-4">Messdaten verifiziert – Feld 2 ist freigeschaltet!</p>
                         <div class="flex flex-col gap-3 justify-center">
                             <button onclick="restoreMissionView('s3-m1', 's3m1', 3)" class="mcu-btn border-green-500 text-green-400 hover:bg-green-500 hover:text-black px-6 py-2 text-sm font-bold">👁️ URSPRÜNGLICHE AUFGABEN &amp; LÖSUNGEN ANZEIGEN</button>
@@ -1407,13 +1407,13 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
                     </div>
                 </div>
 
-                <!-- CHAPTER 3 / MISSION 2: MESSEN -->
+                <!-- CHAPTER 3 / QUEST 2: MESSEN -->
                 <div id="s3-m2-content" class="mission-content hidden space-y-6 pb-8">
                     <div id="s3-m2-forms" class="space-y-3 font-mono text-sm md:text-base"></div>
                     <p id="s3-m2-error" class="text-red-500 text-center hidden">Noch nicht alle Messdaten stimmen. Prüfe die rot markierten Antworten!</p>
 
                     <div id="s3-m2-success" class="hidden text-center py-4">
-                        <h2 class="orbitron text-2xl text-green-400">MISSION ERFOLGREICH</h2>
+                        <h2 class="orbitron text-2xl text-green-400">QUEST ERFOLGREICH</h2>
                         <p class="text-slate-300 font-mono text-sm mb-4">Messdaten verifiziert – Feld 3 ist freigeschaltet!</p>
                         <div class="flex flex-col gap-3 justify-center">
                             <button onclick="restoreMissionView('s3-m2', 's3m2', 3)" class="mcu-btn border-green-500 text-green-400 hover:bg-green-500 hover:text-black px-6 py-2 text-sm font-bold">👁️ URSPRÜNGLICHE AUFGABEN &amp; LÖSUNGEN ANZEIGEN</button>
@@ -1426,13 +1426,13 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
                     </div>
                 </div>
 
-                <!-- CHAPTER 3 / MISSION 3: LÄNGEN UMRECHNEN -->
+                <!-- CHAPTER 3 / QUEST 3: LÄNGEN UMRECHNEN -->
                 <div id="s3-m3-content" class="mission-content hidden space-y-6 pb-8">
                     <div id="s3-m3-forms" class="space-y-3 font-mono text-sm md:text-base"></div>
                     <p id="s3-m3-error" class="text-red-500 text-center hidden">Noch nicht alle Umrechnungen stimmen. Prüfe die rot markierten Antworten!</p>
 
                     <div id="s3-m3-success" class="hidden text-center py-4">
-                        <h2 class="orbitron text-2xl text-green-400">MISSION ERFOLGREICH</h2>
+                        <h2 class="orbitron text-2xl text-green-400">QUEST ERFOLGREICH</h2>
                         <p class="text-slate-300 font-mono text-sm mb-4">Längen umgerechnet – Feld 4 ist freigeschaltet!</p>
                         <div class="flex flex-col gap-3 justify-center">
                             <button onclick="restoreMissionView('s3-m3', 's3m3', 3)" class="mcu-btn border-green-500 text-green-400 hover:bg-green-500 hover:text-black px-6 py-2 text-sm font-bold">👁️ URSPRÜNGLICHE AUFGABEN &amp; LÖSUNGEN ANZEIGEN</button>
@@ -1445,13 +1445,13 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
                     </div>
                 </div>
 
-                <!-- CHAPTER 3 / MISSION 4: FLÄCHEN & VOLUMEN -->
+                <!-- CHAPTER 3 / QUEST 4: FLÄCHEN & VOLUMEN -->
                 <div id="s3-m4-content" class="mission-content hidden space-y-6 pb-8">
                     <div id="s3-m4-forms" class="space-y-3 font-mono text-sm md:text-base"></div>
                     <p id="s3-m4-error" class="text-red-500 text-center hidden">Noch nicht alle Umrechnungen stimmen. Prüfe die rot markierten Antworten!</p>
 
                     <div id="s3-m4-success" class="hidden text-center py-4">
-                        <h2 class="orbitron text-2xl text-green-400">MISSION ERFOLGREICH</h2>
+                        <h2 class="orbitron text-2xl text-green-400">QUEST ERFOLGREICH</h2>
                         <p class="text-slate-300 font-mono text-sm mb-4">Flächen und Volumen umgerechnet – Feld 5 ist freigeschaltet!</p>
                         <div class="flex flex-col gap-3 justify-center">
                             <button onclick="restoreMissionView('s3-m4', 's3m4', 3)" class="mcu-btn border-green-500 text-green-400 hover:bg-green-500 hover:text-black px-6 py-2 text-sm font-bold">👁️ URSPRÜNGLICHE AUFGABEN &amp; LÖSUNGEN ANZEIGEN</button>
@@ -1464,13 +1464,13 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
                     </div>
                 </div>
 
-                <!-- CHAPTER 3 / MISSION 5: GRÖSSEN BERECHNEN -->
+                <!-- CHAPTER 3 / QUEST 5: GRÖSSEN BERECHNEN -->
                 <div id="s3-m5-content" class="mission-content hidden space-y-6 pb-8">
                     <div id="s3-m5-forms" class="space-y-3 font-mono text-sm md:text-base"></div>
                     <p id="s3-m5-error" class="text-red-500 text-center hidden">Noch nicht alle Ergebnisse stimmen. Prüfe die rot markierten Lücken und rechne mit einheitlichen Massen!</p>
 
                     <div id="s3-m5-success" class="hidden text-center py-4">
-                        <h2 class="orbitron text-2xl text-green-400">MISSION ERFOLGREICH</h2>
+                        <h2 class="orbitron text-2xl text-green-400">QUEST ERFOLGREICH</h2>
                         <p class="text-slate-300 font-mono text-sm mb-4">Grössen berechnet – Feld 6 ist freigeschaltet!</p>
                         <div class="flex flex-col gap-3 justify-center">
                             <button onclick="restoreMissionView('s3-m5', 's3m5', 3)" class="mcu-btn border-green-500 text-green-400 hover:bg-green-500 hover:text-black px-6 py-2 text-sm font-bold">👁️ URSPRÜNGLICHE AUFGABEN &amp; LÖSUNGEN ANZEIGEN</button>
@@ -1549,7 +1549,7 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
                     <div class="text-6xl mb-4 animate-pulse" id="placeholder-icon">⏳</div>
                     <h3 class="orbitron text-2xl text-slate-400 mb-2" id="placeholder-title">SYSTEM GESPERRT</h3>
                     <p class="text-slate-500 font-mono mb-8">Kommando-Konsole: Warte auf Missionsdaten vom Director...</p>
-                    <button id="dev-skip-btn" class="mcu-btn border-slate-500 text-slate-500 px-6 py-2 text-sm">DEV: Mission überspringen</button>
+                    <button id="dev-skip-btn" class="mcu-btn border-slate-500 text-slate-500 px-6 py-2 text-sm">DEV: Quest überspringen</button>
                 </div>
 
             </div>
@@ -1578,9 +1578,9 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
     <div id="shop-overlay" hidden>
         <section class="shop-dialog" role="dialog" aria-modal="true" aria-labelledby="shop-title">
             <div class="shop-heading"><div><h2 id="shop-title">Hütergilde-Ausrüstungskammer</h2><p class="shop-subtitle">Dein Held. Deine Ausrüstung.</p></div><button type="button" id="shop-close" class="shop-close" aria-label="Shop schliessen" onclick="closeShop()">×</button></div>
-            <p id="shop-balance">🪙 0 Credits</p>
+            <p id="shop-balance">🪙 0 Coins</p>
             <p id="shop-astro-total" class="shop-astro-total">💵 Bisher eingetauscht: 0 Astrostutz</p>
-            <p class="shop-help">Mission erstmals abschliessen: 10 Credits · Boss erstmals besiegen: 30 Credits · Übungsaufgabe erstmals richtig korrigieren: 2 Credits. Neue Übungsrunden bringen neue Verdienstmöglichkeiten. Fehler kosten keine Coins.</p>
+            <p class="shop-help">Quest erstmals abschliessen: 10 Coins · Boss erstmals besiegen: 30 Coins · Übungsaufgabe erstmals richtig korrigieren: 2 Coins. Neue Übungsrunden bringen neue Verdienstmöglichkeiten. Fehler kosten keine Coins.</p>
             <p class="shop-save-help">Coinstand, Käufe und Ausrüstung über SPEICHERN als JSON-Datei sichern und später mit DATEN HOCHLADEN laden.</p>
             <div id="shop-profile-preview" class="shop-profile-preview"><span id="shop-preview-icon" aria-hidden="true"></span><div><p id="shop-preview-caption"></p><p id="shop-preview-name"></p><p id="shop-preview-title"></p><p id="shop-preview-effect"></p></div></div>
             <p id="shop-message" role="status" aria-live="polite"></p>
@@ -1631,6 +1631,7 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
             appState.agentName = name;
             appState.agentNiveau = niveauInput.value;
             appState.gameDifficulty = document.querySelector('input[name="loginDifficulty"]:checked').value;
+            GameFullscreen.enter();
             showMainUI();
         }
 
@@ -4819,14 +4820,14 @@ const HeroSprites=(()=>{
 
 const SHOP_ITEMS = [
     {id:'emblem-agent',kind:'emblem',name:'Abenteurer',icon:'🕵️',price:0,description:'Dein kostenloser Startheld. Mit Spürsinn beginnt deine Legende.'},
-    {id:'emblem-fox',kind:'emblem',legacyHero:true,name:'Fuchs',icon:'🦊',price:20,description:'Mit Köpfchen durch jede Mission.'},
+    {id:'emblem-fox',kind:'emblem',legacyHero:true,name:'Fuchs',icon:'🦊',price:20,description:'Mit Köpfchen durch jede Quest.'},
     {id:'emblem-dragon',kind:'emblem',name:'Drache',icon:'🐉',price:20,description:'Bereit für grosse Herausforderungen.'},
     {id:'emblem-owl',kind:'emblem',name:'Zauberer',icon:'🦉',price:20,description:'Mit Hut, Umhang und Zauberstab durch dein Zahlenabenteuer.'},
     {id:'emblem-rocket',kind:'emblem',name:'Astronaut',icon:'🐸',price:20,description:'Im Raumanzug bereit für jede deiner drei Welten.'},
     {id:'emblem-shield',kind:'emblem',legacyHero:true,name:'Löwe',icon:'🦁',price:20,description:'Mutig und entschlossen durch jedes Chapter.'},
     {id:'emblem-lightning',kind:'emblem',name:'Einhorn',icon:'🦄',price:20,description:'Ein magischer Begleiter für deine Zahlenabenteuer.'},
     {id:'emblem-spider',kind:'emblem',legacyHero:true,name:'Spinne',icon:'🕷️',price:20,description:'Alle Zusammenhänge im Netz.'},
-    {id:'emblem-robot',kind:'emblem',legacyHero:true,name:'Dinosaurier',icon:'🦖',price:20,description:'Mit urzeitlicher Kraft zur nächsten Mission.'},
+    {id:'emblem-robot',kind:'emblem',legacyHero:true,name:'Dinosaurier',icon:'🦖',price:20,description:'Mit urzeitlicher Kraft zur nächsten Quest.'},
     {id:'color-blue',kind:'color',name:'Hütergilde-Blau',color:'#0ea5e9',rgb:'14,165,233',price:0,description:'Die klassische Heldenfarbe.'},
     {id:'color-red',kind:'color',name:'Stark-Rot',color:'#fb7185',rgb:'251,113,133',price:60,description:'Ein neuer Anstrich für deine Oberfläche.'},
     {id:'color-green',kind:'color',name:'Hulk-Grün',color:'#4ade80',rgb:'74,222,128',price:60,description:'Grüne Energie für deine Ausrüstung.'},
@@ -4940,8 +4941,8 @@ function renderMapPlayer() {
         player.style.left=node.style.left;player.style.top=node.style.top;
         player.dataset.sector=String(sector);player.dataset.mission=String(mission);
         HeroSprites.mount(player.querySelector('.map-player-icon'),emblem.id,40);
-        const missionName=node.querySelector('div')?.textContent.trim() || `Mission ${mission}`;
-        const description=`Deine Spielfigur: ${emblem.name}. Chapter ${sector}, ${missionName}${next<0?' – Chapter abgeschlossen.':' – nächste offene Mission.'}`;
+        const missionName=node.querySelector('div')?.textContent.trim() || `Quest ${mission}`;
+        const description=`Deine Spielfigur: ${emblem.name}. Chapter ${sector}, ${missionName}${next<0?' – Chapter abgeschlossen.':' – nächste offene Quest.'}`;
         player.setAttribute('aria-label',description);player.title=description;
     }
 }
@@ -4949,8 +4950,8 @@ function updateShopHeader() {
     if(!document.getElementById('shop-credit-count'))return;
     const s=ensureShopState().state;
     document.getElementById('shop-credit-count').textContent=s.balance.toLocaleString('de-CH');
-    document.getElementById('btn-shop').setAttribute('aria-label',`Ausrüstungskammer öffnen, ${s.balance} Credits`);
-    document.getElementById('shop-balance').textContent=`🪙 ${s.balance.toLocaleString('de-CH')} Credits`;
+    document.getElementById('btn-shop').setAttribute('aria-label',`Ausrüstungskammer öffnen, ${s.balance} Coins`);
+    document.getElementById('shop-balance').textContent=`🪙 ${s.balance.toLocaleString('de-CH')} Coins`;
     document.getElementById('shop-astro-total').textContent=`💵 Bisher eingetauscht: ${s.astroRedemptions.length} Astrostutz`;
 }
 function openShop() {
@@ -4990,9 +4991,14 @@ function buyShopItem(id) {
     if(!item)return;
     if(item.kind==='astro'){redeemAstrostutz();return;}
     if(s.owned.includes(id)){equipShopItem(id);return;}
-    if(s.balance<item.price){document.getElementById('shop-message').textContent=`Für ${item.name} fehlen noch ${item.price-s.balance} Credits.`;return;}
-    s.balance-=item.price;s.owned.push(id);equipShopItem(id);
-    document.getElementById('shop-message').textContent=`${item.name} gekauft und aktiviert! Sichere deinen Coinstand und deine Ausrüstung mit SPEICHERN als JSON-Datei.`;
+    const suitCredit=window.moonSuitGate?.purchaseCredit(id)||0;
+    if(s.balance+suitCredit<item.price){document.getElementById('shop-message').textContent=`Für ${item.name} fehlen noch ${item.price-s.balance} Coins.`;return;}
+    s.balance-=item.price-suitCredit;s.owned.push(id);
+    if(id==='emblem-rocket')window.moonSuitGate?.redeemCredit(suitCredit);
+    equipShopItem(id);
+    document.getElementById('shop-message').textContent=suitCredit>0
+        ? `Astronaut gekauft und aktiviert! Die Kaufgutschrift übernimmt ${suitCredit} Coins. Sichere deinen Spielstand mit SPEICHERN als JSON-Datei.`
+        : `${item.name} gekauft und aktiviert! Sichere deinen Coinstand und deine Ausrüstung mit SPEICHERN als JSON-Datei.`;
 }
 function redeemAstrostutz() {
     const s=ensureShopState().state;
@@ -5006,7 +5012,6 @@ function redeemAstrostutz() {
 function renderShop() {
     const s=ensureShopState().state;
     updateShopHeader();renderShopPreview();
-    document.querySelectorAll('[data-shop-view]').forEach(button=>button.addEventListener('click',()=>{shopOwnedOnly=button.dataset.shopView==='owned';shopPreview=null;renderShop();}));
 document.querySelectorAll('[data-shop-category]').forEach(button=>{
         const selected=button.dataset.shopCategory===shopCategory;
         button.setAttribute('aria-selected',String(selected));button.tabIndex=selected?0:-1;
@@ -5029,7 +5034,7 @@ document.querySelectorAll('[data-shop-category]').forEach(button=>{
             if(s.balance<20){const missing=document.createElement('small');missing.textContent=`Noch ${20-s.balance} Coins bis zum nächsten Astrostutz.`;card.appendChild(missing);}
             list.appendChild(card);return;
         }
-        const owned=s.owned.includes(item.id),active=s.equipped[item.kind]===item.id;
+        const owned=s.owned.includes(item.id),active=s.equipped[item.kind]===item.id,suitCredit=window.moonSuitGate?.purchaseCredit(item.id)||0;
         const card=document.createElement('article');card.className='shop-card';card.dataset.itemId=item.id;
         card.dataset.owned=String(owned);
         if(active)card.classList.add('shop-card-active');
@@ -5039,16 +5044,16 @@ document.querySelectorAll('[data-shop-category]').forEach(button=>{
         else {visual.textContent=item.icon || 'HELD';if(item.kind==='title')visual.classList.add('shop-title-visual');}
         const name=document.createElement('h4');name.textContent=item.name;
         const description=document.createElement('p');description.textContent=item.description;
-        const status=document.createElement('p');status.className='shop-item-status';status.textContent=active?'✓ Aktiv':owned?'✓ Freigeschaltet':`🪙 ${item.price} Credits`;
+        const status=document.createElement('p');status.className='shop-item-status';status.textContent=active?'✓ Aktiv':owned?'✓ Freigeschaltet':`🪙 ${item.price} Coins${suitCredit>0?' · Kaufgutschrift: '+suitCredit+' Coins':''}`;
         const actions=document.createElement('div');actions.className='shop-card-actions';
         const preview=document.createElement('button');preview.type='button';preview.textContent='Vorschau';preview.addEventListener('click',()=>previewShopItem(item.id));
         const action=document.createElement('button');action.type='button';action.className='shop-primary';
-        action.textContent=active?'✓ Aktiv':owned?'Auswählen':`Kaufen · ${item.price} 🪙`;
-        action.disabled=active || (!owned && s.balance<item.price);
+        action.textContent=active?'✓ Aktiv':owned?'Auswählen':suitCredit>0?'Mit Kaufgutschrift kaufen':`Kaufen · ${item.price} 🪙`;
+        action.disabled=active || (!owned && s.balance+suitCredit<item.price);
         action.addEventListener('click',()=>owned?equipShopItem(item.id):buyShopItem(item.id));
         actions.append(preview,action);
         card.append(visual,name,description,status,actions);
-        if(!owned && s.balance<item.price){const missing=document.createElement('small');missing.textContent=`Noch ${item.price-s.balance} Credits bis zu diesem Gegenstand.`;card.appendChild(missing);}
+        if(!owned && s.balance+suitCredit<item.price){const missing=document.createElement('small');missing.textContent=`Noch ${item.price-s.balance} Coins bis zu diesem Gegenstand.`;card.appendChild(missing);}
         list.appendChild(card);
     });
 }
@@ -5068,6 +5073,7 @@ function playShopEffect(id) {
     }
     shopEffectTimer=setTimeout(()=>stage.replaceChildren(),3000);
 }
+document.querySelectorAll('[data-shop-view]').forEach(button=>button.addEventListener('click',()=>{shopOwnedOnly=button.dataset.shopView==='owned';shopPreview=null;renderShop();}));
 document.querySelectorAll('[data-shop-category]').forEach(button=>{
     button.addEventListener('click',()=>{shopCategory=button.dataset.shopCategory;renderShop();});
     button.addEventListener('keydown',event=>{
@@ -5178,7 +5184,7 @@ const IslandLevel1=(()=>{
     const pond={x:512,y:288,w:192,h:144},spawn={version:1,x:240,y:608,facing:'up'};
     const shell=document.createElement('section');shell.className='island-shell';
     shell.setAttribute('aria-label','Begehbare Insel in Chapter 1');
-    shell.innerHTML=`<div class="island-heading"><div><h2>The Island of Decimals</h2></div><div class="island-objective"><span id="island-progress">0 / 6 Missionen</span><strong id="island-next"></strong></div></div>
+    shell.innerHTML=`<div class="island-heading"><div><h2>The Island of Decimals</h2></div><div class="island-objective"><span id="island-progress">0 / 6 Quests</span><strong id="island-next"></strong></div></div>
         <div class="island-stage"><canvas id="island-canvas" width="1152" height="704" tabindex="0" aria-label="Insel-Spielfeld. Bewegen mit Pfeiltasten oder WASD. An einer Tür E oder Leertaste drücken. Aufgaben und Shop öffnen sich in einem Fenster."></canvas></div>
         <div class="island-footer"><div class="island-prompt" role="status" aria-live="polite"><span id="island-prompt-text"></span><button type="button" id="island-enter" hidden>Betreten · E</button></div></div>`;
     document.getElementById('sector-1-container').appendChild(shell);
@@ -5281,7 +5287,7 @@ const IslandLevel1=(()=>{
     function focus(){keys.clear();if(active())canvas.focus({preventScroll:true});}
     function refresh(){
         if(!appState.agentName)return;
-        const next=nextSite();document.getElementById('island-progress').textContent=`${appState.sector1Completed.filter(Boolean).length} / 6 Missionen gelöst`;
+        const next=nextSite();document.getElementById('island-progress').textContent=`${appState.sector1Completed.filter(Boolean).length} / 6 Quests gelöst`;
         document.getElementById('island-next').textContent=next?`Nächstes Ziel: ${next.name}`:'✓ Krabbor besiegt · Flugzeug am Landesteg';
         updatePrompt();
         document.getElementById('btn-shop').setAttribute('aria-label',`${ensureShopState().state.balance} Coins. Shop auf der Insel in Chapter 1.`);
@@ -5289,7 +5295,7 @@ const IslandLevel1=(()=>{
     let lastPrompt='';
     function updatePrompt(){
         const s=nearby();let text;
-        if(s){text=s.travel?window.worldTravel.prompt(s):s.secret?(solved(s)?`✓ ${s.name} · Bereits entdeckt`:s.prompt):available(s)?`${solved(s)?'✓ ':''}${s.name}${s.id==='shop'?' · Ausrüstung & Astrostutz':''}`:`🔒 ${s.name} · Löse zuerst Mission ${s.id-1}.`;}
+        if(s){text=s.travel?window.worldTravel.prompt(s):s.secret?(solved(s)?`✓ ${s.name} · Bereits entdeckt`:s.prompt):available(s)?`${solved(s)?'✓ ':''}${s.name}${s.id==='shop'?' · Ausrüstung & Astrostutz':''}`:`🔒 ${s.name} · Löse zuerst Quest ${s.id-1}.`;}
         else text='Erkunde die Insel. Die goldene Markierung zeigt dein nächstes Ziel.';
         document.getElementById('island-prompt-text').closest('.island-prompt').hidden=!gameplayHintsEnabled()&&(!s||!available(s));
         document.getElementById('island-prompt-text').closest('.island-prompt').classList.toggle('island-prompt-compact',!gameplayHintsEnabled());
@@ -5808,7 +5814,7 @@ const CityLevel2=(()=>{
     function visible(){return appState.agentName&&appState.currentViewSector===2&&!document.getElementById('screen-map').classList.contains('hidden');}
     function active(){return visible()&&document.getElementById('modalOverlay').classList.contains('hidden')&&document.getElementById('shop-overlay').hidden&&!window.islandSecrets?.isOpen()&&!window.worldTravel?.isTravelling()&&!window.learningViewCheckpoint?.isBlocked()&&!window.bossEncounters?.isOpen();}
     const shell=document.createElement('section');shell.className='island-shell city-shell';shell.setAttribute('aria-label','Begehbare Technikstadt in Chapter 2');
-    shell.innerHTML=`<div class="island-heading"><div><h2>The Dark Kingdom</h2></div><div class="island-objective"><span id="city-progress">0 / 6 Missionen</span><strong id="city-next"></strong></div></div>
+    shell.innerHTML=`<div class="island-heading"><div><h2>The Dark Kingdom</h2></div><div class="island-objective"><span id="city-progress">0 / 6 Quests</span><strong id="city-next"></strong></div></div>
         <div class="island-stage"><canvas id="city-canvas" width="1152" height="704" tabindex="0" aria-label="Technikstadt-Spielfeld. Bewegen mit Pfeiltasten oder WASD. An einer Tür E oder Leertaste drücken. Der Shop steht in Chapter 1."></canvas></div>
         <div class="island-footer"><div class="island-prompt" role="status" aria-live="polite"><span id="city-prompt-text"></span><button type="button" id="city-enter" hidden>Betreten · E</button></div></div>`;
     document.getElementById('sector-2-container').appendChild(shell);
@@ -6000,7 +6006,7 @@ const CityLevel2=(()=>{
     let moving=false,last=0,tick=0,lastPrompt='';
     function updatePrompt(){
         const s=nearby();
-        let text=s?(s.travel?window.worldTravel.prompt(s):s.secret?(solved(s)?`✓ ${s.name} · Bereits entdeckt`:s.prompt):available(s)?`${solved(s)?'✓ ':''}${s.name}${s.boss?' · Bossfight':''}`:`🔒 ${s.name} · Löse zuerst Mission ${s.id-1}.`):'Erkunde die Technikstadt. Gold markiert deine nächste Mission.';
+        let text=s?(s.travel?window.worldTravel.prompt(s):s.secret?(solved(s)?`✓ ${s.name} · Bereits entdeckt`:s.prompt):available(s)?`${solved(s)?'✓ ':''}${s.name}${s.boss?' · Bossfight':''}`:`🔒 ${s.name} · Löse zuerst Quest ${s.id-1}.`):'Erkunde die Technikstadt. Gold markiert deine nächste Quest.';
         document.getElementById('city-prompt-text').closest('.island-prompt').hidden=!gameplayHintsEnabled()&&(!s||!available(s));
         document.getElementById('city-prompt-text').closest('.island-prompt').classList.toggle('island-prompt-compact',!gameplayHintsEnabled());
         if(text!==lastPrompt){document.getElementById('city-prompt-text').textContent=text;lastPrompt=text;}
@@ -6009,7 +6015,7 @@ const CityLevel2=(()=>{
     }
     function refresh(){
         if(!appState.agentName)return;
-        const next=nextSite();document.getElementById('city-progress').textContent=`${appState.sector2Completed.filter(Boolean).length} / 6 Missionen gelöst`;
+        const next=nextSite();document.getElementById('city-progress').textContent=`${appState.sector2Completed.filter(Boolean).length} / 6 Quests gelöst`;
         document.getElementById('city-next').textContent=next?`Nächstes Ziel: ${next.name}`:'✓ MECHATRON X besiegt · Rakete beim Reaktorplatz';updatePrompt();
     }
     function focus(){keys.clear();if(active())canvas.focus({preventScroll:true});}
@@ -6238,7 +6244,7 @@ const PlanetLevel3=(()=>{
     function visible(){return appState.agentName&&appState.currentViewSector===3&&!document.getElementById('screen-map').classList.contains('hidden');}
     function active(){return visible()&&document.getElementById('modalOverlay').classList.contains('hidden')&&document.getElementById('shop-overlay').hidden&&!window.islandSecrets?.isOpen()&&!window.worldTravel?.isTravelling()&&!window.learningViewCheckpoint?.isBlocked()&&!window.bossEncounters?.isOpen();}
     const shell=document.createElement('section');shell.className='island-shell planet-shell';shell.setAttribute('aria-label','Begehbarer Forschungsplanet in Chapter 3');
-    shell.innerHTML=`<div class="island-heading"><div><h2>The Final Trial</h2></div><div class="island-objective"><span id="planet-progress">0 / 7 Missionen</span><strong id="planet-next"></strong></div></div>
+    shell.innerHTML=`<div class="island-heading"><div><h2>The Final Trial</h2></div><div class="island-objective"><span id="planet-progress">0 / 7 Quests</span><strong id="planet-next"></strong></div></div>
         <div class="island-stage"><canvas id="planet-canvas" width="1152" height="704" tabindex="0" aria-label="Forschungsplanet-Spielfeld. Bewegen mit Pfeiltasten oder WASD. An einer Tür E oder Leertaste drücken. Der Shop steht in Chapter 1."></canvas></div>
         <div class="island-footer"><div class="island-prompt" role="status" aria-live="polite"><span id="planet-prompt-text"></span><button type="button" id="planet-enter" hidden>Betreten · E</button></div></div>`;
     document.getElementById('sector-3-container').appendChild(shell);
@@ -6465,7 +6471,7 @@ const PlanetLevel3=(()=>{
     }
     let moving=false,last=0,tick=0,lastPrompt='';
     function updatePrompt(){
-        const s=nearby();let text=s?(s.travel?window.worldTravel.prompt(s):s.secret?(solved(s)?`✓ ${s.name} · Bereits entdeckt`:s.prompt):available(s)?`${solved(s)?'✓ ':''}${s.name}${s.id===6?' · Neue Übungsrunden':s.boss?' · Bossfight':''}`:`🔒 ${s.name} · ${s.id===7?'Beende zuerst «Genauigkeit üben».':`Löse zuerst Mission ${s.id-1}.`}`):'Erkunde den Forschungsplaneten. Gold markiert dein nächstes Ziel.';
+        const s=nearby();let text=s?(s.travel?window.worldTravel.prompt(s):s.secret?(solved(s)?`✓ ${s.name} · Bereits entdeckt`:s.prompt):available(s)?`${solved(s)?'✓ ':''}${s.name}${s.id===6?' · Neue Übungsrunden':s.boss?' · Bossfight':''}`:`🔒 ${s.name} · ${s.id===7?'Beende zuerst «Genauigkeit üben».':`Löse zuerst Quest ${s.id-1}.`}`):'Erkunde den Forschungsplaneten. Gold markiert dein nächstes Ziel.';
         document.getElementById('planet-prompt-text').closest('.island-prompt').hidden=!gameplayHintsEnabled()&&(!s||!available(s));
         document.getElementById('planet-prompt-text').closest('.island-prompt').classList.toggle('island-prompt-compact',!gameplayHintsEnabled());
         if(text!==lastPrompt){document.getElementById('planet-prompt-text').textContent=text;lastPrompt=text;}
@@ -6474,7 +6480,7 @@ const PlanetLevel3=(()=>{
     }
     function refresh(){
         if(!appState.agentName)return;
-        const next=nextSite();document.getElementById('planet-progress').textContent=`${appState.sector3Completed.filter(Boolean).length} / 7 Missionen gelöst`;
+        const next=nextSite();document.getElementById('planet-progress').textContent=`${appState.sector3Completed.filter(Boolean).length} / 7 Quests gelöst`;
         document.getElementById('planet-next').textContent=next?`Nächstes Ziel: ${next.name}`:'✓ NULLOX besiegt · Alle drei Kapitel geschafft';updatePrompt();
     }
     function focus(){keys.clear();if(active())canvas.focus({preventScroll:true});}
@@ -7130,7 +7136,7 @@ const LearningBook=(()=>{
         for(const section of [menu]){
             section.querySelector('button').disabled=!ready;
             section.querySelector('button').textContent=ready?'Theoriemerkheft herunterladen':'Theoriemerkheft noch gesperrt';
-            section.querySelector('.learning-book-description').textContent=ready?`Deine kompakte Lernhilfe für Niveau ${niveau}: die Heldentipps sowie Addition und Subtraktion mit kurzen Beispielen.`:`Nach Abschluss aller 19 Missionen erhältst du dein Theoriemerkheft mit gelösten Beispielen und Heldentipps für dein Niveau. Fortschritt: ${solvedCount()}/19 Missionen.`;
+            section.querySelector('.learning-book-description').textContent=ready?`Deine kompakte Lernhilfe für Niveau ${niveau}: die Heldentipps sowie Addition und Subtraktion mit kurzen Beispielen.`:`Nach Abschluss aller 19 Quests erhältst du dein Theoriemerkheft mit gelösten Beispielen und Heldentipps für dein Niveau. Fortschritt: ${solvedCount()}/19 Quests.`;
             if(!ready)section.querySelector('.learning-book-status').textContent='';
         }
     }
@@ -7167,10 +7173,11 @@ const GameFullscreen=(()=>{
         catch(error){unavailable();}
         finally{pending=false;button.disabled=false;sync();focusGame();}
     }
+    function enter(){if(!document.fullscreenElement)return toggle();sync();}
     button.addEventListener('click',toggle);
     document.addEventListener('fullscreenchange',()=>{sync();focusGame();});
     document.addEventListener('fullscreenerror',unavailable);
-    sync();return {toggle,sync};
+    sync();return {toggle,sync,enter};
 })();
 
 // Chapter-specific guidance. Building labels and roof statuses are drawn with the houses.
@@ -7475,16 +7482,16 @@ const SettingsMenu=(()=>{
     instructions.innerHTML=`<div class="game-instructions">
         <section><h3>Bewegen und handeln</h3><p>Bewege deine Figur mit den <kbd>Pfeiltasten</kbd> oder <kbd>W A S D</kbd>. Gehe vor einen Gebäudeeingang oder nahe an einen besonderen Gegenstand.</p><p>Drücke <kbd>E</kbd> oder die <kbd>Leertaste</kbd>, wenn eine Aktion möglich ist. Du kannst auch den Aktionsknopf unter der Karte anklicken.</p></section>
 <section><h3>Zahlen eingeben und runden</h3><p>Beim Bilden von Dezimalzahlen und Bestimmen von Stellenwerten wird nicht gerundet, z. B. 5 Tausendstel = 0.005. Bei Rechenaufgaben darfst du erst am Schluss oder nach jedem Rechenschritt auf zwei Nachkommastellen runden. Beide Ergebnisse werden anerkannt. Runde die gegebenen Zahlen nicht vorab. Bei Rundungsaufgaben gilt die verlangte Stelle; Vergleiche und Überschläge bleiben wie angegeben. Schreibe Zahlen ab 1’000 mit Tausender-Apostroph, z. B. 25’000.</p><p>Gib nur die gesuchte Zahl ein; die Einheit steht beim Eingabefeld. Dezimalpunkt und Dezimalkomma sind erlaubt. Rechne die gegebenen Masse zuerst exakt in passende gemeinsame Einheiten um.</p></section>
-        <section><h3>Orientierung</h3><ul><li>Die goldene Markierung zeigt die nächste Mission.</li><li>Ein grünes Häkchen bedeutet: Mission abgeschlossen.</li><li>Ein schwebendes Schloss bedeutet: noch gesperrt. Löse zuerst die vorherigen Missionen.</li><li>Bei «Einfach» zeigen alle Niveaus Missionsnummern, goldene Zielmarkierungen, «Nächstes Ziel» und ausführliche Aktionshinweise. Bei «Schwierig» suchst du selbst; bei einer möglichen Aktion erscheint nur «Aktion ausführen · E». Du kannst dies unter Einstellungen → Schwierigkeit jederzeit ändern. Das Aufgabenniveau bleibt gleich.</li></ul></section>
+        <section><h3>Orientierung</h3><ul><li>Die goldene Markierung zeigt die nächste Quest.</li><li>Ein grünes Häkchen bedeutet: Quest abgeschlossen.</li><li>Ein schwebendes Schloss bedeutet: noch gesperrt. Löse zuerst die vorherigen Quests.</li><li>Bei «Einfach» zeigen alle Niveaus Questnummern, goldene Zielmarkierungen, «Nächstes Ziel» und ausführliche Aktionshinweise. Bei «Schwierig» suchst du selbst; bei einer möglichen Aktion erscheint nur «Aktion ausführen · E». Du kannst dies unter Einstellungen → Schwierigkeit jederzeit ändern. Das Aufgabenniveau bleibt gleich.</li></ul></section>
         <section><h3>Die drei Welten</h3><p><strong>Insel:</strong> Folge dem Küstenweg um den Waldsee. Der Shop steht beim Landesteg im Süden.</p><p><strong>Technikstadt:</strong> Erkunde Laborviertel, Reaktorplatz und Energiequartier. Die Festung von MECHATRON X steht im Nordosten.</p><p><strong>Mondbasis:</strong> Die Forschungsstationen liegen rund um NULLOX’ Arena. Ringweg und Verbindungswege führen durch Krater und Kristalle.</p><p>Das Flugzeug verbindet Chapter 1 und 2. Die Rakete verbindet Chapter 2 und 3. Auf demselben Weg kommst du zurück. Die Chapter oben zeigen deinen Fortschritt.</p></section>
         <section><h3>Shop und Geheimnisse</h3><p>Den Shop kannst du auf der Insel betreten. Dort kannst du Coins für Helden, Farben, Titel und Siegeseffekte ausgeben oder 20 Coins gegen 1 Astrostutz eintauschen.</p><p>In jeder Welt gibt es zwei Eastereggs. Untersuche die Umgebung. Den Wartungsroboter musst du zuerst aus nächster Nähe zum Anhalten bringen.</p></section>
-        <section><h3>Speichern und fortsetzen</h3><p>Position, Antworten, Coins und Fortschritt sicherst du oben über <strong>SPEICHERN</strong> als JSON-Datei. Lade diese Datei beim nächsten Start mit <strong>DATEN HOCHLADEN</strong>, um weiterzuspielen.</p><p>Nach einem besiegten Boss bearbeitest du den Zwischenstopp auf LearningView. Trage danach im Zwischenstopp deine erreichten Punkte ein. Bei voller Punktzahl geht es direkt weiter. Sonst übst du die Inhalte auf LearningView und bestätigst anschliessend hier, dass du geübt hast. Deine Ergebnisse findest du unter <strong>Einstellungen → Zwischenstopp</strong>.</p><p>Wenn alle 19 Missionen abgeschlossen sind, findest du das Theoriemerkheft unter <strong>Einstellungen → Zusammenfassung</strong>.</p></section>
+        <section><h3>Speichern und fortsetzen</h3><p>Position, Antworten, Coins und Fortschritt sicherst du oben über <strong>SPEICHERN</strong> als JSON-Datei. Lade diese Datei beim nächsten Start mit <strong>DATEN HOCHLADEN</strong>, um weiterzuspielen.</p><p>Nach einem besiegten Boss bearbeitest du den Zwischenstopp auf LearningView. Trage danach im Zwischenstopp deine erreichten Punkte ein. Bei voller Punktzahl geht es direkt weiter. Sonst übst du die Inhalte auf LearningView und bestätigst anschliessend hier, dass du geübt hast. Deine Ergebnisse findest du unter <strong>Einstellungen → Zwischenstopp</strong>.</p><p>Wenn alle 19 Quests abgeschlossen sind, findest du das Theoriemerkheft unter <strong>Einstellungen → Zusammenfassung</strong>.</p></section>
     </div>`;
     const difficulty=document.createElement('div');difficulty.id='difficulty-content';difficulty.className='mission-content hidden';
     difficulty.innerHTML=`<div class="game-instructions"><section><h3>Schwierigkeit</h3><p>Die Schwierigkeit bestimmt die Orientierungshilfen. Dein Aufgabenniveau bleibt gleich.</p><fieldset class="legend-field"><legend>WÄHLE DEINE SCHWIERIGKEIT</legend><div class="legend-niveaux difficulty-choices">
                     <label class="niveau-label" data-tooltip="Du kriegst Hinweise, wohin du gehen musst"><input type="radio" name="settingsDifficulty" value="easy" class="legend-niveau-input" aria-label="Einfach: Du kriegst Hinweise, wohin du gehen musst" checked><div>Einfach</div></label>
                     <label class="niveau-label" data-tooltip="Du kriegst keine Hinweise und musst deine Aufgaben selbst suchen"><input type="radio" name="settingsDifficulty" value="hard" class="legend-niveau-input" aria-label="Schwierig: Du kriegst keine Hinweise und musst deine Aufgaben selbst suchen"><div>Schwierig</div></label>
-                </div></fieldset><p id="difficulty-status" role="status" aria-live="polite"></p></section></div>`;
+                </div></fieldset></section></div>`;
     const summary=document.createElement('div');summary.id='summary-content';summary.className='mission-content hidden';
     const checks=document.createElement('div');checks.id='formative-results-content';checks.className='mission-content hidden';
     const results=document.createElement('div');results.className='game-instructions';
@@ -7505,9 +7512,8 @@ const SettingsMenu=(()=>{
     }
     function sync(){
         document.querySelectorAll('input[name="settingsDifficulty"]').forEach(input=>input.checked=input.value===(gameplayHintsEnabled()?'easy':'hard'));
-        document.getElementById('difficulty-status').textContent=gameplayHintsEnabled()?'Einfach: Du kriegst Hinweise, wohin du gehen musst':'Schwierig: Du kriegst keine Hinweise und musst deine Aufgaben selbst suchen';
         const ready=LearningBook.unlocked();document.getElementById('settings-summary').disabled=!ready;
-        document.getElementById('settings-summary-status').textContent=ready?'Dein Theoriemerkheft mit gelösten Beispielen herunterladen.':'Nach Abschluss aller 19 Missionen verfügbar.';
+        document.getElementById('settings-summary-status').textContent=ready?'Dein Theoriemerkheft mit gelösten Beispielen herunterladen.':'Nach Abschluss aller 19 Quests verfügbar.';
         document.getElementById('settings-summary-symbol').textContent=ready?'›':'🔒';
         const progress=FormativeResults.state();
         for(const chapter of [1,2,3]){
@@ -7689,6 +7695,11 @@ const AdventureRewards=(()=>{
             help.version=1;help.used=help.used===true;
             if(!Number.isSafeInteger(help.coins)||help.coins<0)help.coins=0;
         }
+        const support=appState.spaceSuitSupport,ownsSuit=shop.owned.includes('emblem-rocket');
+        if(typeof support.redeemed!=='boolean')support.redeemed=ownsSuit&&support.used;
+        if(typeof support.voucherActive!=='boolean')support.voucherActive=support.used&&!ownsSuit&&!support.redeemed;
+        if(ownsSuit)support.voucherActive=false;
+        if(!Number.isSafeInteger(support.voucherDiscount)||support.voucherDiscount<0)support.voucherDiscount=0;
     }
     function credit(amount){
         if(!Number.isSafeInteger(amount)||amount<0)return;
@@ -7712,9 +7723,10 @@ const MoonSuitGate=(()=>{
     const hasSuit=()=>Array.isArray(appState.shop?.owned)&&appState.shop.owned.includes('emblem-rocket');
     const modal=document.getElementById('modalOverlay');
     const section=document.createElement('div');section.id='space-suit-content';section.className='mission-content hidden space-y-6';
-    const message=document.createElement('p');message.textContent='Du fliegst zu einer Mondbasis! Für diese Mission benötigst du einen Astronautensuit.';
+    const message=document.createElement('p');message.textContent='Du fliegst zu einer Mondbasis! Für diese Quest benötigst du einen Astronautensuit.';
+    const supportNote=document.createElement('p');supportNote.textContent='Im Shop erhältst du bei Bedarf eine einmalige Kaufgutschrift für die fehlenden Coins. Sie gilt nur für den Astronautensuit. Kaufe ihn selbst auf der Insel.';
     const confirm=document.createElement('button');confirm.type='button';confirm.id='space-suit-confirm';confirm.className='mcu-btn px-6 py-3 font-bold';confirm.textContent='Verstanden';
-    section.append(message,confirm);document.getElementById('modalContent').appendChild(section);
+    section.append(message,supportNote,confirm);document.getElementById('modalContent').appendChild(section);
     let noticeOwner=null;
     function show(){
         if(!appState.agentName||LearningViewCheckpoint.isBlocked())return false;
@@ -7727,12 +7739,21 @@ const MoonSuitGate=(()=>{
         if(noticeOwner!==appState){closeModal();return;}
         AdventureRewards.prepare();const help=appState.spaceSuitSupport;
         if(!hasSuit()&&!help.used){
-            const shop=ensureShopState().state,amount=Math.max(0,shopItem('emblem-rocket').price-shop.balance);
-            help.used=true;help.coins=amount;help.at=new Date().toISOString();AdventureRewards.credit(amount);
-            if(amount>0)showCreditToast(`Für deinen Astronautensuit: +${amount} Coins! Kaufe ihn im Shop auf der Insel.`);
+            help.used=true;help.voucherActive=true;help.redeemed=false;help.at=new Date().toISOString();
+            showCreditToast('Kaufgutschrift für den Astronautensuit verfügbar. Löse sie im Shop auf der Insel ein.');
         }
         noticeOwner=null;closeModal();[null,IslandLevel1,CityLevel2,PlanetLevel3][appState.currentViewSector].focus();
     });
+    function purchaseCredit(id){
+        if(id!=='emblem-rocket'||hasSuit())return 0;
+        AdventureRewards.prepare();const help=appState.spaceSuitSupport;
+        return help?.voucherActive&&!help.redeemed?Math.max(0,shopItem(id).price-ensureShopState().state.balance):0;
+    }
+    function redeemCredit(amount){
+        const help=appState.spaceSuitSupport;
+        if(!help?.voucherActive||help.redeemed)return false;
+        help.voucherActive=false;help.redeemed=true;help.voucherDiscount=amount;help.redeemedAt=new Date().toISOString();return true;
+    }
     function requireSuit(){return hasSuit()||show();}
     function syncTab(){
         const ready=(directorMode||appState.sector2Completed[5])&&hasSuit();
@@ -7750,8 +7771,66 @@ const MoonSuitGate=(()=>{
     window.openMission=function(sector,...args){if(sector===3&&!requireSuit())return false;return originalMission.call(this,sector,...args);};
     const originalBuy=window.buyShopItem;
     window.buyShopItem=function(id){const result=originalBuy.call(this,id);if(id==='emblem-rocket')syncTab();return result;};
-    const api={hasSuit,requireSuit};window.moonSuitGate=api;return api;
+    const api={hasSuit,requireSuit,purchaseCredit,redeemCredit};window.moonSuitGate=api;return api;
 })();
+
+// Decorative title art only. It never reads or writes the player or quest state.
+const TitlePixelScene=(()=>{
+    const screen=document.getElementById('screen-login'),canvas=document.getElementById('legend-title-scene');
+    const c=canvas.getContext('2d'),W=1600,H=1000,reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
+    const terrain=document.createElement('canvas');terrain.width=W;terrain.height=H;
+    const t=terrain.getContext('2d');let ready=false,raf=0,last=0;
+    const trees=[
+        [22,548,160],[118,533,157],[218,520,141],[78,650,188],[180,635,160],
+        [15,783,199],[124,795,175],[263,685,151],[330,667,143],
+        [49,1019,232],[200,1029,202],[321,1009,157],
+        [758,624,161],[845,614,179],[926,645,194],[852,752,192],[962,797,202],
+        [769,952,195],[906,1025,231],[1078,1024,200],[1199,1005,196],
+        [1368,966,208],[1494,994,217],[1594,890,212],
+        [1044,526,155],[1198,510,155],[1351,527,162],[1508,537,167]
+    ];
+    function build(){
+        t.imageSmoothingEnabled=false;
+        const sky=t.createLinearGradient(0,0,0,530);sky.addColorStop(0,'#0a202b');sky.addColorStop(.65,'#1c3e3b');sky.addColorStop(1,'#567563');t.fillStyle=sky;t.fillRect(0,0,W,H);
+        // Distant stepped ridges echo the maps' tile silhouettes.
+        for(const [color,points] of [
+            ['#254d43',[[0,372],[110,372],[110,344],[218,344],[218,316],[303,316],[303,348],[405,348],[405,302],[510,302],[510,278],[600,278],[600,321],[742,321],[742,294],[835,294],[835,336],[980,336],[980,309],[1100,309],[1100,365],[1280,365],[1280,333],[1410,333],[1410,370],[1600,370]]],
+            ['#173a32',[[0,424],[180,424],[180,391],[330,391],[330,419],[462,419],[462,374],[625,374],[625,406],[762,406],[762,381],[960,381],[960,421],[1110,421],[1110,389],[1280,389],[1280,426],[1460,426],[1460,399],[1600,399]]]
+        ]){t.fillStyle=color;t.beginPath();t.moveTo(0,510);for(const p of points)t.lineTo(...p);t.lineTo(W,510);t.closePath();t.fill();}
+        IslandArtwork.surface(t,'water',0,477,W,H-477,'#244f5b',.52);
+        const land=new Path2D('M -40 570 L 110 570 L 110 530 L 292 530 L 292 494 L 500 494 L 500 478 L 705 478 L 705 504 L 871 504 L 871 546 L 1010 546 L 1010 575 L 1190 575 L 1190 536 L 1438 536 L 1438 574 L 1650 574 L 1650 1050 L -40 1050 Z');
+        t.save();t.clip(land);IslandArtwork.surface(t,'grass',0,450,W,600,'#516c38',.65);t.restore();t.strokeStyle='#879b69';t.lineWidth=10;t.stroke(land);
+        const path=new Path2D('M 360 1050 L 360 930 L 458 832 L 514 754 L 535 668 L 585 610 L 585 575');
+        t.lineCap='square';t.lineJoin='round';t.strokeStyle='#52643a';t.lineWidth=75;t.stroke(path);t.strokeStyle='#ae955b';t.lineWidth=65;t.stroke(path);
+        t.save();t.strokeStyle=IslandArtwork.pattern(t,'path')||'#c3a871';t.lineWidth=55;t.stroke(path);t.restore();
+        IslandArtwork.sprite(t,'mission-house',220,740,162,146);
+        IslandArtwork.sprite(t,'arena',584,613,402,242);
+        DetailArtwork.sprite(t,'ruin-floor',1217,790,136,104);
+        DetailArtwork.sprite(t,'wall-horizontal',1217,724,136,38);
+        for(const [x,y,w] of trees.sort((a,b)=>a[1]-b[1]))IslandArtwork.sprite(t,'tree-oak',x,y,w,w*1.38);
+        for(const [i,x,y] of [[0,680,735],[1,729,787],[2,513,935],[0,1090,860]])DetailArtwork.sprite(t,'rock-'+i,x,y,45,35);
+        t.fillStyle='#1b2c2377';t.beginPath();t.ellipse(434,861,20,7,0,0,Math.PI*2);t.fill();HeroSprites.draw(t,'emblem-agent',434,861,'up',false,0,65);
+        const shade=t.createLinearGradient(0,0,0,H);shade.addColorStop(0,'#06151a19');shade.addColorStop(.42,'#06151a08');shade.addColorStop(1,'#03120c35');t.fillStyle=shade;t.fillRect(0,0,W,H);
+        ready=true;paint(0);
+    }
+    function paint(time){
+        c.clearRect(0,0,W,H);c.imageSmoothingEnabled=false;c.drawImage(terrain,0,0);
+        const calm=reduced.matches;
+        for(let i=0;i<21;i++){
+            const x=43+(i*137)%870+(calm?0:Math.sin(time/3600+i)*5),y=90+(i*91)%795;
+            c.globalAlpha=calm?.25:.12+.45*Math.max(0,Math.sin(time/1550+i*1.9));c.fillStyle=i%3?'#e1cf81':'#b8d69b';c.fillRect(Math.round(x),Math.round(y),i%4?2:3,i%4?2:3);
+        }c.globalAlpha=1;
+    }
+    function frame(time){
+        raf=0;if(!ready||screen.classList.contains('hidden')||document.hidden)return;
+        if(time-last>40){last=time;paint(time);}if(!reduced.matches)raf=requestAnimationFrame(frame);
+    }
+    function sync(){if(raf)cancelAnimationFrame(raf);raf=0;if(ready&&!screen.classList.contains('hidden')&&!document.hidden){paint(performance.now());if(!reduced.matches)raf=requestAnimationFrame(frame);}}
+    Promise.all([IslandArtwork.ready,DetailArtwork.ready,HeroSprites.ready]).then(()=>{build();sync();});
+    new MutationObserver(sync).observe(screen,{attributes:true,attributeFilter:['class']});document.addEventListener('visibilitychange',sync);reduced.addEventListener('change',sync);
+    return {sync};
+})();
+
 
 NumberWriting.observe();
     </script>
