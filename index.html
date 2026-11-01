@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de" data-sprite-base="sprites/">
+<html lang="de" data-sprite-base="sprites/" data-game-version="2.0">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -636,6 +636,7 @@ body[data-shop-color]:not([data-shop-color="color-blue"]) [class*="border-sky-"]
 #modalOverlay[data-menu] #modalTitle { color:#eedbab; font:700 clamp(24px,2.6vw,33px)/1.25 Georgia,serif; letter-spacing:.025em; }
 #modalOverlay[data-menu] .mission-heading > button { color:#d4c798; }
 .settings-entries { display:grid; gap:14px; }
+.settings-version { margin:20px 0 0; color:#b8bca7; text-align:right; font:13px/1.5 monospace; letter-spacing:.04em; }
 .settings-entry { display:flex; gap:17px; align-items:center; width:100%; text-align:left; padding:19px; border:1px solid #71887888; background:linear-gradient(120deg,#1a3334,#162432); color:#e8e7d5; cursor:pointer; }
 .settings-entry:hover:not(:disabled) { border-color:#dfc386; background:linear-gradient(120deg,#24423b,#1d3040); }
 .settings-entry:focus-visible,.settings-back:focus-visible { outline:2px solid #ebd294; outline-offset:3px; }
@@ -888,7 +889,8 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
 #screen-login .legend-logo-main { background:linear-gradient(180deg,#fff1bc 0 36%,#e2c779 36% 51%,#f5dfa0 51% 72%,#bd9852 72% 100%); -webkit-background-clip:text; background-clip:text; filter:drop-shadow(0 3px 0 #493c24) drop-shadow(0 6px 0 #071b17) drop-shadow(0 9px 18px #061820); }
 #screen-login .legend-title-rule { color:#dfc47f; max-width:390px; margin:22px 0 17px; }
 #screen-login .legend-title-rule i { background:linear-gradient(90deg,#d5bc79aa,#d5bc7915); }
-#screen-login .legend-author { color:#e7d8ae; font-size:15px; opacity:1; text-shadow:1px 2px #061c14; }
+#screen-login .legend-author { margin-top:20px; color:#e7d8ae; font-size:15px; opacity:1; text-shadow:1px 2px #061c14; }
+#screen-login .legend-version { margin:7px 0 0; color:#c9bf96; font:13px/1.5 monospace; letter-spacing:.04em; text-shadow:1px 2px #061c14; }
 #screen-login .legend-gate { border:3px solid #89936c; border-radius:3px; background:linear-gradient(145deg,#19352def,#0d211fee); padding:26px 27px 21px; box-shadow:0 0 0 2px #081a16,inset 0 0 0 1px #d3b97955,7px 8px 0 #06160e77,0 20px 55px #06140f88; backdrop-filter:none; }
 #screen-login .legend-gate::before,#screen-login .legend-gate::after { width:22px; height:22px; border-color:#e1c483; border-width:3px; }
 #screen-login #legend-gate-title { font-size:29px; color:#f1dfad; text-shadow:1px 2px #092119; }
@@ -937,8 +939,8 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
 
     <div class="legend-story">
         <h1 class="legend-logo" aria-label="THE LEGEND OF DECIMALS"><span class="legend-logo-top">THE LEGEND OF</span><span class="legend-logo-main">DECIMALS</span></h1>
-        <div class="legend-title-rule" aria-hidden="true"><i></i><span>✦</span><i></i></div>
         <p class="legend-author">developed by R. Behrens</p>
+        <p class="legend-version" data-game-version-label></p>
     </div>
     <section class="legend-gate" aria-labelledby="legend-gate-title">
         <h2 id="legend-gate-title">Deine Reise beginnt.</h2>
@@ -957,10 +959,10 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
                 </div>
             </fieldset>
             <fieldset class="legend-field">
-                <legend>WÄHLE DEINE SCHWIERIGKEIT</legend>
+                <legend>WÄHLE DEINEN SPIELMODUS</legend>
                 <div class="legend-niveaux difficulty-choices">
-                    <label class="niveau-label" data-tooltip="Du kriegst Hinweise, wohin du gehen musst"><input type="radio" name="loginDifficulty" value="easy" class="legend-niveau-input" aria-label="Einfach: Du kriegst Hinweise, wohin du gehen musst" checked><div>Einfach</div></label>
-                    <label class="niveau-label" data-tooltip="Du kriegst keine Hinweise und musst deine Aufgaben selbst suchen"><input type="radio" name="loginDifficulty" value="hard" class="legend-niveau-input" aria-label="Schwierig: Du kriegst keine Hinweise und musst deine Aufgaben selbst suchen"><div>Schwierig</div></label>
+                    <label class="niveau-label" data-tooltip="Hinweise und Zielmarkierungen zeigen dir den Weg."><input type="radio" name="loginDifficulty" value="easy" class="legend-niveau-input" aria-label="Geführt: Hinweise und Zielmarkierungen zeigen dir den Weg." checked><div>Geführt</div></label>
+                    <label class="niveau-label" data-tooltip="Du suchst die Aufgaben selbst."><input type="radio" name="loginDifficulty" value="hard" class="legend-niveau-input" aria-label="Freies Erkunden: Du suchst die Aufgaben selbst."><div>Freies Erkunden</div></label>
                 </div>
             </fieldset>
             <button type="submit" id="legend-start-button" class="legend-start-button"><span>Abenteuer beginnen</span><span aria-hidden="true">→</span></button>
@@ -5346,27 +5348,68 @@ const IslandLevel1=(()=>{
         }
     }
 
+    // Visual contours only: retain the original land/water collision grid.
+    function roundedTerrainOutline(tiles,radius){
+        const occupied=new Set(tiles.map(p=>`${p.x},${p.y}`)),edges=new Map();
+        const add=(ax,ay,bx,by)=>edges.set(`${ax},${ay}`,[bx,by]);
+        for(const {x,y} of tiles){
+            if(!occupied.has(`${x},${y-T}`))add(x,y,x+T,y);
+            if(!occupied.has(`${x+T},${y}`))add(x+T,y,x+T,y+T);
+            if(!occupied.has(`${x},${y+T}`))add(x+T,y+T,x,y+T);
+            if(!occupied.has(`${x-T},${y}`))add(x,y+T,x,y);
+        }
+        const path=new Path2D();
+        while(edges.size){
+            const first=edges.keys().next().value,points=[];let key=first;
+            do{
+                points.push(key.split(',').map(Number));const next=edges.get(key);edges.delete(key);
+                key=next.join(',');
+            }while(key!==first&&edges.has(key));
+            const corners=points.filter((p,i)=>{
+                const a=points[(i+points.length-1)%points.length],b=points[(i+1)%points.length];
+                return (p[0]-a[0])*(b[1]-p[1])!==(p[1]-a[1])*(b[0]-p[0]);
+            });
+            for(let i=0;i<corners.length;i++){
+                const a=corners[(i+corners.length-1)%corners.length],p=corners[i],b=corners[(i+1)%corners.length];
+                const before=Math.hypot(p[0]-a[0],p[1]-a[1]),after=Math.hypot(b[0]-p[0],b[1]-p[1]),r=Math.min(radius,before/2,after/2);
+                const entry=[p[0]-(p[0]-a[0])*r/before,p[1]-(p[1]-a[1])*r/before];
+                const exit=[p[0]+(b[0]-p[0])*r/after,p[1]+(b[1]-p[1])*r/after];
+                if(i===0)path.moveTo(...entry);else path.lineTo(...entry);
+                path.quadraticCurveTo(...p,...exit);
+            }
+            path.closePath();
+        }
+        return path;
+    }
+    const coastTiles=[];
+    for(let ty=2;ty<=35;ty++)for(let tx=2;tx<61;tx++)if(land(tx,ty))coastTiles.push({x:tx*T,y:ty*T});
+    const coastOutline=roundedTerrainOutline(coastTiles,48);
+    const lakeOutline=roundedTerrainOutline([...lakeTiles,...smallLakes],40);
+
     const fill=(c,x,y,w,h)=>{g.fillStyle=c;g.fillRect(x,y,w,h);};
     function drawTerrain(){
         IslandArtwork.surface(g,'water',0,0,W,H,'#194f69',.55);
         for(let y=0;y<H;y+=16)for(let x=0;x<W;x+=16){
             const n=hash(x,y);if(n<.25)fill(n<.1?'#24627a':'#205a73',x+2,y+8,n<.1?10:6,2);
         }
-        // Three stepped coastal layers, wide beaches and distinct inland biomes.
-        for(const [c,pad] of [['#3e7d86',15],['#70a89b',8],['#d5c18a',2]])
-            for(let y=2;y<=35;y++)for(let x=2;x<61;x++)if(land(x,y))fill(c,x*T-pad,y*T-pad,T+pad*2,T+pad*2);
-        for(let ty=2;ty<=35;ty++)for(let tx=2;tx<61;tx++)if(land(tx,ty)){
-            const x=tx*T,y=ty*T,n=hash(tx,ty);
-            const beach=(!land(tx-1,ty)||!land(tx+1,ty)||!land(tx,ty-1)||!land(tx,ty+1))||((tx<7&&ty>18)||(tx>54&&ty>23));
-            const stone=ty<8&&tx>27&&tx<43,wood=forest(x,y);
-            const color=beach?'#d8c38d':stone?'#8b9675':wood?'#64844f':'#799b5c';
-            IslandArtwork.surface(g,beach?'sand':stone?'path':'grass',x,y,T,T,color,beach?.65:stone?.25:.82);
-            if(wood&&!beach){g.fillStyle='#173b271b';g.fillRect(x,y,T,T);}
-            if(n<.7){fill(beach?'#c4ad77':stone?'#7a876c':'#527b49',x+10,y+19,2,4);fill(beach?'#ead69f':'#8ca968',x+12,y+18,2,5);}
-            if(n>.77&&!beach){fill('#d8cc8c',x+20,y+10,3,3);fill(wood?'#a491ba':'#c78d9b',x+24,y+21,3,3);}
-            if(beach&&n>.8){fill('#f0dfb5',x+7,y+9,5,3);fill('#b7a27b',x+8,y+12,3,1);}
+        // Continuous coastal bands follow the rounded outline, without tile seams.
+        g.lineJoin='round';g.lineCap='round';
+        for(const [color,width] of [['#3e7d86',30],['#70a89b',16]]){
+            g.strokeStyle=color;g.lineWidth=width;g.stroke(coastOutline);
         }
-        // Paths are clipped to dry land; their stepped edges match the tile art.
+        g.save();g.clip(coastOutline);
+        IslandArtwork.surface(g,'grass',0,0,W,H,'#64844f',.82);
+        for(let ty=2;ty<=35;ty++)for(let tx=2;tx<61;tx++)if(land(tx,ty)){
+            const x=tx*T,y=ty*T,n=hash(tx,ty),stone=ty<8&&tx>27&&tx<43,wood=forest(x,y);
+            if(stone)IslandArtwork.surface(g,'path',x,y,T,T,'#8b9675',.25);
+            else if(wood){g.fillStyle='#173b271b';g.fillRect(x,y,T,T);}
+            if(n<.7){fill(stone?'#7a876c':'#527b49',x+10,y+19,2,4);fill('#8ca968',x+12,y+18,2,5);}
+            if(n>.77){fill('#d8cc8c',x+20,y+10,3,3);fill(wood?'#a491ba':'#c78d9b',x+24,y+21,3,3);}
+        }
+        g.strokeStyle='#b9a374';g.lineWidth=68;g.stroke(coastOutline);
+        g.strokeStyle=IslandArtwork.pattern(g,'sand')||'#d8c38d';g.lineWidth=60;g.stroke(coastOutline);
+        g.restore();
+        // Keep paths and their rounded junctions inside the same coastal outline.
         const pathMask=document.createElement('canvas');pathMask.width=W;pathMask.height=H;
         const pg=pathMask.getContext('2d'),trails=new Path2D();
         const visibleRoutes=routeLines.map(points=>points.at(-1)[0]===1040&&points.at(-1)[1]===448?[...points.slice(0,-1),[1136,448]]:points);
@@ -5394,11 +5437,17 @@ const IslandLevel1=(()=>{
             for(const s of sites){pg.beginPath();pg.roundRect(s.door.x-29-(width-44)/2,s.door.y+3,58+(width-44),38,12);pg.fill();}
         }
         pg.globalCompositeOperation='destination-in';pg.fillStyle='#000';
-        pg.beginPath();for(let y=2;y<=35;y++)for(let x=2;x<61;x++)if(land(x,y))pg.rect(x*T,y*T,T,T);pg.fill();g.drawImage(pathMask,0,0);
-        // A large irregular lake, the original fish pond and a quiet lagoon.
-        for(const p of pools)fill('#c5b887',p.x-6,p.y-6,p.w+12,p.h+12);
-        for(const p of pools)IslandArtwork.surface(g,'water',p.x,p.y,p.w,p.h,'#205d78',.38);
+        pg.fill(coastOutline);g.drawImage(pathMask,0,0);
+        // Natural lakes have a continuous rounded bank; the built pond stays square.
+        g.fillStyle='#c5b887';g.strokeStyle='#c5b887';g.lineWidth=12;g.stroke(lakeOutline);g.fill(lakeOutline);
+        g.save();g.clip(lakeOutline);
+        IslandArtwork.surface(g,'water',0,0,W,H,'#205d78',.38);
+        g.strokeStyle='#699e9366';g.lineWidth=7;g.stroke(lakeOutline);
         for(let y=288;y<1100;y+=24)for(let x=480;x<1700;x+=32)if(onWater(x,y)&&onWater(x+20,y))fill('#79b6ae66',x,y,20,2);
+        g.restore();
+        fill('#c5b887',pond.x-6,pond.y-6,pond.w+12,pond.h+12);
+        IslandArtwork.surface(g,'water',pond.x,pond.y,pond.w,pond.h,'#205d78',.38);
+        for(let y=pond.y+12;y<pond.y+pond.h;y+=24)fill('#79b6ae66',pond.x+14,y,pond.w-28,2);
         for(const [x,y] of [[674,320],[864,544],[1024,608],[1536,1040]])if(onWater(x,y,1)){fill('#586e3f',x,y,12,7);fill('#a7c36e',x-1,y-3,12,4);}
         // A short landing stage is kept at its original save/travel coordinates.
         fill('#634d36',212,636,56,51);for(let y=636;y<688;y+=8)fill('#a48153',214,y,52,6);
@@ -6261,12 +6310,16 @@ const PlanetLevel3=(()=>{
     const terrain=document.createElement('canvas');terrain.width=W;terrain.height=H;const g=terrain.getContext('2d');
     const fill=(c,x,y,w,h)=>{g.fillStyle=c;g.fillRect(x,y,w,h);};
     function ellipse(c,x,y,rx,ry){g.fillStyle=c;g.beginPath();g.ellipse(x,y,rx,ry,0,0,Math.PI*2);g.fill();}
+    // Only the visual rim changes; the original movement grid stays intact.
+    const plateauOutline=new Path2D();plateauOutline.ellipse(1008,608,976,576,0,0,Math.PI*2);
     function drawTerrain(){
         fill('#18172d',0,0,W,H);
         // The sky stars are painted separately so their light can gently vary.
-        // Layered cliffs surround the expanded, dusty expedition plateau.
-        for(let y=2;y<=35;y++)for(let x=1;x<W/T;x++)if(land(x,y)){fill('#342d4b',x*T-6,y*T+7,T+12,T+16);fill('#574563',x*T-5,y*T+1,T+10,T+10);}
-        for(let y=2;y<=35;y++)for(let x=1;x<W/T;x++)if(land(x,y))fill('#b496a2',x*T-2,y*T-2,T+4,T+4);
+        // Continuous cliff layers round off the plateau without changing its interior.
+        for(const [color,dy,width] of [['#342d4b',17,12],['#574563',7,10],['#b496a2',0,4]]){
+            g.save();g.translate(0,dy);g.fillStyle=color;g.strokeStyle=color;g.lineWidth=width;g.fill(plateauOutline);g.stroke(plateauOutline);g.restore();
+        }
+        g.save();g.clip(plateauOutline);
         for(let y=2;y<=35;y++)for(let x=1;x<W/T;x++)if(land(x,y)){
             const dark=x>37&&y>13,crystalline=crystalField(x*T,y*T);
             const soil=dark?'#7d6b87':crystalline?'#817e98':'#927b90';
@@ -6277,15 +6330,16 @@ const PlanetLevel3=(()=>{
             if(hash(x+9,y)<.55){fill('#a48d9c',x*T+8,y*T+18,10,2);fill('#726177',x*T+18,y*T+10,4,2);}
             if(hash(x+21,y)>.84)ellipse('#826b82',x*T+16,y*T+18,9,4);
         }
-        // Continuous dust texture follows the original plateau silhouette.
+        g.restore();
+        // The dust keeps its original texture and colours, inside the rounded rim.
         if(PlanetArtwork.has('dust')){
-            g.save();g.beginPath();for(let yy=2;yy<=35;yy++)for(let xx=1;xx<W/T;xx++)if(land(xx,yy))g.rect(xx*T,yy*T,T,T);g.clip();
+            g.save();g.clip(plateauOutline);
             PlanetArtwork.surface(g,'dust',0,0,W,H,'#927b90',.85);
             g.fillStyle='#48345522';g.fillRect(1216,448,W-1216,H-448);g.restore();
         }
         g.lineJoin='round';g.lineCap='round';
         // Clip trails to the plateau so no path appears to lead into space.
-        g.save();g.beginPath();for(let y=2;y<=35;y++)for(let x=1;x<W/T;x++)if(land(x,y))g.rect(x*T,y*T,T,T);g.clip();
+        g.save();g.clip(plateauOutline);
         for(const [color,width] of [['#68576e',38],['#c2afb3',30]]){g.strokeStyle=color;g.lineWidth=width;for(const points of paths){g.beginPath();points.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.stroke();}}
         const trail=PlanetArtwork.pattern(g,'path');if(trail){g.save();g.strokeStyle=trail;g.globalAlpha=.88;g.lineWidth=30;for(const points of paths){g.beginPath();points.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.stroke();}g.restore();}g.restore();
         for(const r of rifts){
@@ -6332,10 +6386,10 @@ const PlanetLevel3=(()=>{
     }
     function orbitPosition(){
         const t=window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:tick/8500;
-        return {x:W-118+Math.sin(t)*35,y:43+Math.sin(t*1.7)*12};
+        return {x:W-128+Math.sin(t)*35,y:60+Math.sin(t*1.7)*12};
     }
     function orbitingPlanet(){
-        const {x,y}=orbitPosition();ctx.save();ctx.translate(x,y);
+        const {x,y}=orbitPosition();ctx.save();ctx.translate(x,y);ctx.scale(2,2);
         if(PlanetArtwork.sprite(ctx,'orbit',0,22,90,44)){ctx.restore();return;}
         ctx.strokeStyle='#b7a1b866';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(0,0,45,9,-.3,Math.PI,Math.PI*2);ctx.stroke();
         ctx.fillStyle='#6d6588';ctx.beginPath();ctx.ellipse(0,0,29,22,0,0,Math.PI*2);ctx.fill();
@@ -7483,23 +7537,23 @@ const SettingsMenu=(()=>{
     settings.innerHTML=`<div class="settings-entries">
         <button type="button" class="settings-entry" id="settings-goals"><span class="settings-entry-icon" aria-hidden="true">📜</span><span class="settings-entry-label"><strong>Lernziele</strong><small>Was du in den drei Welten lernst.</small></span><span class="settings-entry-arrow" aria-hidden="true">›</span></button>
         <button type="button" class="settings-entry" id="settings-instructions"><span class="settings-entry-icon" aria-hidden="true">🧭</span><span class="settings-entry-label"><strong>Spielanleitung</strong><small>Steuerung, Orientierung und Spielstand speichern.</small></span><span class="settings-entry-arrow" aria-hidden="true">›</span></button>
-        <button type="button" class="settings-entry" id="settings-difficulty"><span class="settings-entry-icon" aria-hidden="true">🧭</span><span class="settings-entry-label"><strong>Schwierigkeit</strong><small>Orientierungshilfen ein- oder ausschalten.</small></span><span class="settings-entry-arrow" aria-hidden="true">›</span></button>
+        <button type="button" class="settings-entry" id="settings-difficulty"><span class="settings-entry-icon" aria-hidden="true">🧭</span><span class="settings-entry-label"><strong>Spielmodus</strong><small>Geführt oder frei erkunden – das Aufgabenniveau bleibt gleich.</small></span><span class="settings-entry-arrow" aria-hidden="true">›</span></button>
         <button type="button" class="settings-entry" id="settings-checks"><span class="settings-entry-icon" aria-hidden="true">📝</span><span class="settings-entry-label"><strong>Zwischenstopp</strong><small>Deine Ergebnisse der drei Zwischenstopps.</small></span><span class="settings-entry-arrow" aria-hidden="true">›</span></button>
         <button type="button" class="settings-entry" id="settings-summary" disabled><span class="settings-entry-icon" aria-hidden="true">📖</span><span class="settings-entry-label"><strong>Zusammenfassung</strong><small id="settings-summary-status"></small></span><span class="settings-entry-arrow" id="settings-summary-symbol" aria-hidden="true">🔒</span></button>
-    </div>`;
+    </div><p class="settings-version" data-game-version-label></p>`;
     const instructions=document.createElement('div');instructions.id='instructions-content';instructions.className='mission-content hidden';
     instructions.innerHTML=`<div class="game-instructions">
         <section><h3>Bewegen und handeln</h3><p>Bewege deine Figur mit den <kbd>Pfeiltasten</kbd> oder <kbd>W A S D</kbd>. Gehe vor einen Gebäudeeingang oder nahe an einen besonderen Gegenstand.</p><p>Drücke <kbd>E</kbd> oder die <kbd>Leertaste</kbd>, wenn eine Aktion möglich ist. Du kannst auch den Aktionsknopf unter der Karte anklicken.</p></section>
 <section><h3>Zahlen eingeben und runden</h3><p>Beim Bilden von Dezimalzahlen und Bestimmen von Stellenwerten wird nicht gerundet, z. B. 5 Tausendstel = 0.005. Bei Rechenaufgaben darfst du erst am Schluss oder nach jedem Rechenschritt auf zwei Nachkommastellen runden. Beide Ergebnisse werden anerkannt. Runde die gegebenen Zahlen nicht vorab. Bei Rundungsaufgaben gilt die verlangte Stelle; Vergleiche und Überschläge bleiben wie angegeben. Schreibe Zahlen ab 1’000 mit Tausender-Apostroph, z. B. 25’000.</p><p>Gib nur die gesuchte Zahl ein; die Einheit steht beim Eingabefeld. Dezimalpunkt und Dezimalkomma sind erlaubt. Rechne die gegebenen Masse zuerst exakt in passende gemeinsame Einheiten um.</p></section>
-        <section><h3>Orientierung</h3><ul><li>Die goldene Markierung zeigt die nächste Quest.</li><li>Ein grünes Häkchen bedeutet: Quest abgeschlossen.</li><li>Ein schwebendes Schloss bedeutet: noch gesperrt. Löse zuerst die vorherigen Quests.</li><li>Bei «Einfach» zeigen alle Niveaus Questnummern, goldene Zielmarkierungen, «Nächstes Ziel» und ausführliche Aktionshinweise. Bei «Schwierig» suchst du selbst; bei einer möglichen Aktion erscheint nur «Aktion ausführen · E». Du kannst dies unter Einstellungen → Schwierigkeit jederzeit ändern. Das Aufgabenniveau bleibt gleich.</li></ul></section>
+        <section><h3>Orientierung</h3><ul><li>Die goldene Markierung zeigt die nächste Quest.</li><li>Ein grünes Häkchen bedeutet: Quest abgeschlossen.</li><li>Ein schwebendes Schloss bedeutet: noch gesperrt. Löse zuerst die vorherigen Quests.</li><li>Bei «Geführt» zeigen alle Niveaus Questnummern, goldene Zielmarkierungen, «Nächstes Ziel» und ausführliche Aktionshinweise. Bei «Freies Erkunden» suchst du selbst; bei einer möglichen Aktion erscheint nur «Aktion ausführen · E». Du kannst dies unter Einstellungen → Spielmodus jederzeit ändern. Das Aufgabenniveau bleibt gleich.</li></ul></section>
         <section><h3>Die drei Welten</h3><p><strong>Insel:</strong> Folge dem Küstenweg um den Waldsee. Der Shop steht beim Landesteg im Süden.</p><p><strong>Technikstadt:</strong> Erkunde Laborviertel, Reaktorplatz und Energiequartier. Die Festung von MECHATRON X steht im Nordosten.</p><p><strong>Mondbasis:</strong> Die Forschungsstationen liegen rund um NULLOX’ Arena. Ringweg und Verbindungswege führen durch Krater und Kristalle.</p><p>Das Flugzeug verbindet Chapter 1 und 2. Die Rakete verbindet Chapter 2 und 3. Auf demselben Weg kommst du zurück. Die Chapter oben zeigen deinen Fortschritt.</p></section>
         <section><h3>Shop und Geheimnisse</h3><p>Den Shop kannst du auf der Insel betreten. Dort kannst du Coins für Helden, Farben, Titel und Siegeseffekte ausgeben oder 20 Coins gegen 1 Astrostutz eintauschen.</p><p>In jeder Welt gibt es zwei Eastereggs. Untersuche die Umgebung. Den Wartungsroboter musst du zuerst aus nächster Nähe zum Anhalten bringen.</p></section>
         <section><h3>Speichern und fortsetzen</h3><p>Position, Antworten, Coins und Fortschritt sicherst du oben über <strong>SPEICHERN</strong> als JSON-Datei. Lade diese Datei beim nächsten Start mit <strong>DATEN HOCHLADEN</strong>, um weiterzuspielen.</p><p>Nach einem besiegten Boss bearbeitest du den Zwischenstopp auf LearningView. Trage danach im Zwischenstopp deine erreichten Punkte ein. Bei voller Punktzahl geht es direkt weiter. Sonst übst du die Inhalte auf LearningView und bestätigst anschliessend hier, dass du geübt hast. Deine Ergebnisse findest du unter <strong>Einstellungen → Zwischenstopp</strong>.</p><p>Wenn alle 19 Quests abgeschlossen sind, findest du das Theoriemerkheft unter <strong>Einstellungen → Zusammenfassung</strong>.</p></section>
     </div>`;
     const difficulty=document.createElement('div');difficulty.id='difficulty-content';difficulty.className='mission-content hidden';
-    difficulty.innerHTML=`<div class="game-instructions"><section><h3>Schwierigkeit</h3><p>Die Schwierigkeit bestimmt die Orientierungshilfen. Dein Aufgabenniveau bleibt gleich.</p><fieldset class="legend-field"><legend>WÄHLE DEINE SCHWIERIGKEIT</legend><div class="legend-niveaux difficulty-choices">
-                    <label class="niveau-label" data-tooltip="Du kriegst Hinweise, wohin du gehen musst"><input type="radio" name="settingsDifficulty" value="easy" class="legend-niveau-input" aria-label="Einfach: Du kriegst Hinweise, wohin du gehen musst" checked><div>Einfach</div></label>
-                    <label class="niveau-label" data-tooltip="Du kriegst keine Hinweise und musst deine Aufgaben selbst suchen"><input type="radio" name="settingsDifficulty" value="hard" class="legend-niveau-input" aria-label="Schwierig: Du kriegst keine Hinweise und musst deine Aufgaben selbst suchen"><div>Schwierig</div></label>
+    difficulty.innerHTML=`<div class="game-instructions"><section><h3>Spielmodus</h3><p>Der Spielmodus bestimmt die Orientierungshilfen. Dein Aufgabenniveau bleibt gleich.</p><fieldset class="legend-field" aria-label="Spielmodus"><div class="legend-niveaux difficulty-choices">
+                    <label class="niveau-label" data-tooltip="Hinweise und Zielmarkierungen zeigen dir den Weg."><input type="radio" name="settingsDifficulty" value="easy" class="legend-niveau-input" aria-label="Geführt: Hinweise und Zielmarkierungen zeigen dir den Weg." checked><div>Geführt</div></label>
+                    <label class="niveau-label" data-tooltip="Du suchst die Aufgaben selbst."><input type="radio" name="settingsDifficulty" value="hard" class="legend-niveau-input" aria-label="Freies Erkunden: Du suchst die Aufgaben selbst."><div>Freies Erkunden</div></label>
                 </div></fieldset></section></div>`;
     const summary=document.createElement('div');summary.id='summary-content';summary.className='mission-content hidden';
     const checks=document.createElement('div');checks.id='formative-results-content';checks.className='mission-content hidden';
@@ -7512,6 +7566,7 @@ const SettingsMenu=(()=>{
         card.append(title,points,status);results.appendChild(card);
     }
     checks.appendChild(results);content.append(settings,instructions,summary,checks,difficulty);summary.appendChild(document.getElementById('learning-book-menu'));
+    document.querySelectorAll('[data-game-version-label]').forEach(label=>{label.textContent='Version '+document.documentElement.dataset.gameVersion;});
     const originalGoals=window.openLernziele;
     const allowed=()=>!LearningViewCheckpoint.isBlocked()&&!BossEncounters.isOpen()&&!WorldTravel.isTravelling();
     function decorate(title){delete modal.dataset.chapter;modal.dataset.menu='true';document.getElementById('modalTitle').textContent=title;}
@@ -7535,7 +7590,7 @@ const SettingsMenu=(()=>{
     function openInstructions(){return show(instructions,'SPIELANLEITUNG');}
     function openSummary(){if(!LearningBook.unlocked()||!allowed())return false;return show(summary,'ZUSAMMENFASSUNG');}
     function openChecks(){return show(checks,'ZWISCHENSTOPP');}
-    function openDifficulty(){return show(difficulty,'SCHWIERIGKEIT');}
+    function openDifficulty(){return show(difficulty,'SPIELMODUS');}
     difficulty.addEventListener('change',event=>{
         if(event.target.name!=='settingsDifficulty'||!allowed())return;
         appState.gameDifficulty=event.target.value==='hard'?'hard':'easy';
@@ -7801,13 +7856,12 @@ const TitlePixelScene=(()=>{
         return {x:585,y:610};
     }
     const trees=[
-        [22,548,160],[118,533,157],[218,520,141],[78,650,188],[180,635,160],
+        [78,650,188],[180,635,160],
         [15,783,199],[124,795,175],[330,667,143],
         [49,1019,232],[200,1029,202],[321,1009,157],
         [758,624,161],[845,614,179],[926,645,194],[852,752,192],[962,797,202],
         [769,952,195],[906,1025,231],[1078,1024,200],[1199,1005,196],
-        [1368,966,208],[1494,994,217],[1594,890,212],
-        [1044,526,155],[1198,510,155],[1351,527,162],[1508,537,167]
+        [1368,966,208],[1494,994,217],[1594,890,212]
     ];
     function build(){
         t.imageSmoothingEnabled=false;
