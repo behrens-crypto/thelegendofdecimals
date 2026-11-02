@@ -568,6 +568,7 @@ body[data-shop-color]:not([data-shop-color="color-blue"]) [class*="border-sky-"]
 #boss-encounter[data-chapter="3"] { --boss-line:#b49ad8; --boss-wash:#623c8355; --boss-ink:#dec4fc; }
 .boss-encounter-art { width:100%; aspect-ratio:1; overflow:hidden; border:1px solid #bacbce26; background:#09151d; }
 .boss-encounter-art svg { display:block; width:100%; height:100%; }
+.boss-encounter-art canvas { display:block; width:100%; height:100%; image-rendering:pixelated; }
 #boss-encounter h2 { margin:0; color:var(--boss-ink); font:700 clamp(28px,3.3vw,42px)/1.15 Georgia,serif; overflow-wrap:anywhere; }
 #boss-encounter[data-chapter="2"] h2 { font-family:'Orbitron',Arial,sans-serif; font-size:clamp(27px,3.1vw,38px); }
 #boss-encounter[data-chapter="3"] h2 { letter-spacing:.06em; }
@@ -7492,7 +7493,92 @@ const LearningViewCheckpoint=(()=>{
     const api={isBlocked,sync};window.learningViewCheckpoint=api;sync();return api;
 })();
 
-// Original inline character art: no external image, font or animation files required.
+// Original vector portraits remain as a fallback if a pixel sprite is unavailable.
+// Presentation only: sprite sheets and existing scenery textures, no game state.
+const BossPortraits=(()=>{
+    const atlas={"1":{"file":"krabbor.png","name":"Krabbor","maxWidth":326,"maxHeight":244,"baseline":315,"span":722,"height":377,"frames":[{"x":23,"y":87,"w":720,"h":375,"anchorX":359,"anchorY":373},{"x":784,"y":85,"w":720,"h":379,"anchorX":359,"anchorY":377},{"x":23,"y":575,"w":720,"h":373,"anchorX":359,"anchorY":371},{"x":782,"y":574,"w":722,"h":373,"anchorX":359,"anchorY":371}]},"2":{"file":"mechatron-x.png","name":"MECHATRON X","maxWidth":286,"maxHeight":288,"baseline":322,"span":524,"height":526,"frames":[{"x":87,"y":50,"w":521,"h":525,"anchorX":260,"anchorY":523},{"x":687,"y":47,"w":522,"h":528,"anchorX":261,"anchorY":526},{"x":86,"y":621,"w":523,"h":526,"anchorX":260,"anchorY":524},{"x":687,"y":622,"w":523,"h":525,"anchorX":261,"anchorY":523}]},"3":{"file":"nullox.png","name":"NULLOX","maxWidth":258,"maxHeight":292,"baseline":318,"span":465,"height":609,"frames":[{"x":113,"y":13,"w":448,"h":604,"anchorX":220,"anchorY":602},{"x":683,"y":13,"w":452,"h":609,"anchorX":224,"anchorY":607},{"x":105,"y":639,"w":465,"h":611,"anchorX":228,"anchorY":609},{"x":695,"y":639,"w":440,"h":604,"anchorX":212,"anchorY":602}]}},images=new Map(),backgrounds=new Map();
+    const base=new URL('../assets/bosses/',new URL(document.documentElement.dataset.spriteBase||'sprites/',document.baseURI));
+    const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
+    let active=null,raf=0,ticket=0,last=0;
+    for(const [key,meta] of Object.entries(atlas)){
+        const image=new Image(),entry={image,loaded:false,error:false};images.set(Number(key),entry);
+        entry.ready=new Promise(resolve=>{
+            image.onload=()=>{entry.loaded=true;resolve(true);};
+            image.onerror=()=>{entry.error=true;resolve(false);};
+            image.src=new URL(meta.file,base).href;
+        });
+    }
+    const ready=Promise.all([...images.values()].map(entry=>entry.ready));
+    function background(sector){
+        if(backgrounds.has(sector))return backgrounds.get(sector);
+        const canvas=document.createElement('canvas');canvas.width=360;canvas.height=360;
+        const g=canvas.getContext('2d');g.imageSmoothingEnabled=false;
+        const fill=(color,x,y,w,h)=>{g.fillStyle=color;g.fillRect(x,y,w,h);};
+        if(sector===1){
+            IslandArtwork.surface(g,'water',0,0,360,360,'#205d69',.65);
+            const shore=new Path2D('M0 0H360V150Q275 173 180 147T0 157Z');
+            g.save();g.clip(shore);IslandArtwork.surface(g,'grass',0,0,360,180,'#4e7043',.82);g.restore();
+            g.strokeStyle='#b9b383';g.lineWidth=6;g.stroke(shore);
+            IslandArtwork.sprite(g,'tree-oak',32,132,100,143);
+            IslandArtwork.sprite(g,'tree-oak',321,130,110,154);
+            const sand=new Path2D('M0 257Q90 232 180 249T360 252V360H0Z');
+            g.save();g.clip(sand);IslandArtwork.surface(g,'sand',0,230,360,130,'#c9b67d',.82);g.restore();
+            g.strokeStyle='#a7c2a566';g.lineWidth=5;g.stroke(sand);
+            for(const [x,y] of [[22,187],[276,199],[48,222]]){fill('#9bcbb355',x,y,38,2);fill('#9bcbb333',x+12,y+5,20,1);}
+            DetailArtwork.sprite(g,'rock-0',24,338,38,28);DetailArtwork.sprite(g,'rock-1',335,329,34,24);
+        }else if(sector===2){
+            CityArtwork.surface(g,'paving',0,0,360,360,'#243d48',.86);
+            fill('#0a1f2c99',0,0,360,220);
+            for(const x of [8,344]){fill('#172d39',x,0,8,268);fill('#65818a',x,0,2,268);}
+            for(let y=42;y<200;y+=26){fill('#77bec06b',20,y,17,3);fill('#77bec06b',323,y+11,17,3);}
+            CityArtwork.sprite(g,'server',37,237,45,114);CityArtwork.sprite(g,'server',324,237,45,114);
+            CityArtwork.surface(g,'asphalt',0,256,360,104,'#22333b',.52);
+            fill('#112630',28,335,304,9);
+            for(let x=30;x<326;x+=24){fill('#bda064',x,336,14,5);fill('#6a8587',x+2,347,12,2);}
+        }else{
+            fill('#14182b',0,0,360,360);
+            for(let i=0;i<25;i++){const x=11+(i*79)%340,y=9+(i*43)%151;fill(i%3?'#a8b1c37a':'#e0cde4aa',x,y,i%4?1:2,1);}
+            const plateau=new Path2D('M-10 169Q180 116 370 169V370H-10Z');
+            g.fillStyle='#625471';g.strokeStyle='#a293aa';g.lineWidth=7;g.fill(plateau);g.stroke(plateau);
+            g.save();g.clip(plateau);PlanetArtwork.surface(g,'dust',0,122,360,238,'#786e8c',.8);g.restore();
+            PlanetArtwork.sprite(g,'crystal',30,268,40,68);PlanetArtwork.sprite(g,'crystal',328,244,43,72);
+            PlanetArtwork.sprite(g,'rock',29,333,44,30);PlanetArtwork.sprite(g,'rock',327,322,41,28);
+        }
+        fill('#06121a26',0,0,360,360);backgrounds.set(sector,canvas);return canvas;
+    }
+    const poses=[{frame:0,ms:1500},{frame:1,ms:500},{frame:3,ms:800},{frame:1,ms:500},{frame:0,ms:1500},{frame:2,ms:160}];
+    function frameAt(time){let t=time%4960;for(const pose of poses){if(t<pose.ms)return pose.frame;t-=pose.ms;}return 0;}
+    function paint(time){
+        if(!active)return;
+        const {canvas,sector,start}=active,g=canvas.getContext('2d'),meta=atlas[sector],calm=reduced.matches;
+        const index=calm?0:frameAt(time-start),frame=meta.frames[index];
+        const scale=Math.min(meta.maxWidth/meta.span,meta.maxHeight/meta.height),bob=sector===3&&!calm?Math.round(Math.sin((time-start)/1100)*3):0;
+        g.imageSmoothingEnabled=false;g.clearRect(0,0,360,360);g.drawImage(background(sector),0,0);
+        g.fillStyle=sector===3?'#38254866':'#071c1766';g.beginPath();g.ellipse(180,meta.baseline+2,sector===1?127:sector===2?91:62,sector===1?13:11,0,0,Math.PI*2);g.fill();
+        const x=Math.round(180-frame.anchorX*scale),y=Math.round(meta.baseline-frame.anchorY*scale+bob);
+        g.drawImage(images.get(sector).image,frame.x,frame.y,frame.w,frame.h,x,y,Math.round(frame.w*scale),Math.round(frame.h*scale));
+        active.frame=index;active.draws++;canvas.dataset.frame=String(index);
+    }
+    function running(){return active&&!document.hidden&&!document.getElementById('boss-encounter').hidden&&active.canvas.isConnected;}
+    function loop(time){raf=0;if(!running())return;if(time-last>=60){last=time;paint(time);}if(!reduced.matches)raf=requestAnimationFrame(loop);}
+    function resume(){if(raf)cancelAnimationFrame(raf);raf=0;if(!running())return;paint(performance.now());if(!reduced.matches)raf=requestAnimationFrame(loop);}
+    function unmount(){ticket++;if(raf)cancelAnimationFrame(raf);raf=0;active=null;}
+    function mount(host,sector){
+        unmount();const ownTicket=ticket,entry=images.get(sector);host.dataset.bossArt='fallback';
+        const install=()=>{
+            if(ownTicket!==ticket||!entry.loaded||document.getElementById('boss-encounter').hidden)return;
+            const canvas=document.createElement('canvas');canvas.width=360;canvas.height=360;canvas.setAttribute('role','img');
+            canvas.setAttribute('aria-label',atlas[sector].name+' – animierte Pixel-Art');
+            host.replaceChildren(canvas);host.dataset.bossArt='pixel';active={canvas,sector,start:performance.now(),frame:0,draws:0};last=0;resume();
+        };
+        if(entry.loaded)install();else entry.ready.then(install);
+    }
+    Promise.all([IslandArtwork.ready,CityArtwork.ready,PlanetArtwork.ready,DetailArtwork.ready]).then(()=>{backgrounds.clear();resume();});
+    document.addEventListener('visibilitychange',resume);reduced.addEventListener('change',resume);
+    return {ready,mount,unmount,status:()=>Object.fromEntries([...images].map(([key,e])=>[key,{loaded:e.loaded,error:e.error}])),current:()=>active?{sector:active.sector,frame:active.frame,draws:active.draws}:null};
+})();
+
+
 const BossEncounters=(()=>{
     const bosses={
         1:{mission:6,name:'Krabbor',epithet:'Der Inselwächter',world:'CHAPTER I · INSEL',story:'Ein gigantischer Panzerkrebs steigt aus dem Meer. Mit seinen mächtigen Scheren bewacht Krabbor den Weg zur nächsten Welt.',challenge:'Durchschaue seine Denkfallen und zeige, dass du Dezimalzahlen sicher einschätzen kannst. Knackst du seine Prüfung, ist der Weg frei.'},
@@ -7576,6 +7662,7 @@ const BossEncounters=(()=>{
     const originalOpen=window.openMission,inertBefore=new Map();let target=null;
     const isOpen=()=>!overlay.hidden;
     function dismiss(focus=true){
+        BossPortraits.unmount();
         overlay.hidden=true;target=null;document.getElementById('boss-encounter-art').replaceChildren();
         for(const [element,inert] of inertBefore)element.inert=inert;inertBefore.clear();
         if(focus)[null,IslandLevel1,CityLevel2,PlanetLevel3][appState.currentViewSector]?.focus();
@@ -7586,7 +7673,7 @@ const BossEncounters=(()=>{
         for(const id of ['screen-map','modalOverlay','shop-overlay','passwordModalOverlay','easteregg-overlay']){const element=document.getElementById(id);if(!inertBefore.has(element)){inertBefore.set(element,element.inert);element.inert=true;}}
         document.getElementById('boss-encounter-art').innerHTML=art[sector]();
         for(const [id,key] of [['name','name'],['epithet','epithet'],['story','story'],['challenge','challenge']])document.getElementById('boss-encounter-'+id).textContent=boss[key];
-        overlay.hidden=false;enter.focus({preventScroll:true});
+        overlay.hidden=false;BossPortraits.mount(document.getElementById('boss-encounter-art'),sector);enter.focus({preventScroll:true});
     }
     window.openMission=function(sector,mission,...args){
         if(LearningViewCheckpoint.isBlocked()){LearningViewCheckpoint.sync();return;}
