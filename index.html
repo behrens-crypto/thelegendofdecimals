@@ -930,6 +930,74 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
 }
 
 </style>
+<style id="shop-island-theme">
+/* The Island's forest greens and warm golds, scoped to the existing shop. */
+#shop-overlay {
+    background:#04140fe8;
+    backdrop-filter:blur(7px);
+}
+#shop-overlay .shop-dialog {
+    color:#e6ead8;
+    background:radial-gradient(ellipse at 5% 0%,#b59d561c,transparent 55%),linear-gradient(145deg,#18372e,#102821 60%,#0c211b);
+    border:2px solid #bda86b;
+    border-radius:5px;
+    box-shadow:0 0 0 3px #06140e,inset 0 0 0 1px #d3b97925,0 22px 80px #0009;
+    font-family:Arial,sans-serif;
+    scrollbar-width:thin;
+    scrollbar-color:#bda86b #102821;
+}
+#shop-overlay .shop-dialog::-webkit-scrollbar { width:8px; height:8px; }
+#shop-overlay .shop-dialog::-webkit-scrollbar-track { background:#102821; }
+#shop-overlay .shop-dialog::-webkit-scrollbar-thumb { background:#bda86b; border-radius:5px; }
+#shop-overlay .shop-dialog::-webkit-scrollbar-corner { background:#102821; }
+#shop-overlay .shop-heading { padding-bottom:18px; border-bottom:1px solid #bda86b66; }
+#shop-overlay .shop-heading h2 { margin:0; color:#f0dfa3; font:700 clamp(24px,2.8vw,34px)/1.2 Georgia,'Times New Roman',serif; letter-spacing:.015em; text-shadow:0 2px 4px #06140e99; }
+#shop-overlay .shop-subtitle { color:#c4cdb4; font-size:15px; line-height:1.5; }
+#shop-overlay .shop-close { color:#f0dfa3; background:#10241f; border-color:#8c9e70; border-radius:3px; line-height:1; padding:8px 12px; }
+#shop-overlay .shop-close:hover { background:#294737; border-color:#dfc27b; }
+#shop-overlay #shop-balance { color:#f2dfa1; background:#3b3e24; border-color:#bda86b; border-radius:3px; }
+#shop-overlay .shop-astro-total { color:#bad8aa; font-size:14px; line-height:1.5; }
+#shop-overlay .shop-help { color:#d4dcc5; padding:12px 14px; border-left:3px solid #bda86b; background:#10241f99; font-size:14px; line-height:1.65; }
+#shop-overlay .shop-save-help { color:#becaaf; font-size:13px; line-height:1.6; }
+#shop-overlay .shop-profile-preview { background:linear-gradient(110deg,#1d3c30,#10241f); border:1px solid #768961; border-left:3px solid var(--preview-accent); border-radius:4px; box-shadow:inset 0 1px #ffffff08; }
+#shop-overlay #shop-preview-name { font:700 23px/1.3 Georgia,'Times New Roman',serif; letter-spacing:.025em; }
+#shop-overlay #shop-preview-title { color:#f0dfa3; line-height:1.5; }
+#shop-overlay #shop-preview-caption,#shop-overlay #shop-preview-effect { color:#c4cdb4; font-size:13px; line-height:1.6; }
+#shop-overlay #shop-message { color:#f0dfa3; line-height:1.6; overflow-wrap:anywhere; }
+#shop-overlay .shop-tabs { gap:8px; }
+#shop-overlay .shop-tabs button,#shop-overlay .shop-view-filter button { color:#d7e2c7; background:#10241f; border:1px solid #657d57; border-radius:3px; padding:10px 15px; font:700 14px/1.4 Arial,sans-serif; box-shadow:inset 0 -2px #061b1466; }
+#shop-overlay .shop-tabs button:hover,#shop-overlay .shop-view-filter button:hover { color:#f0dfa3; background:#264331; border-color:#bda86b; }
+#shop-overlay .shop-tabs button[aria-selected="true"],#shop-overlay .shop-view-filter button[aria-pressed="true"] { color:#f5e4b1; background:#3d4c31; border-color:#dfc27b; box-shadow:inset 0 -2px #22351e; }
+#shop-overlay .shop-switch-help { color:#cbd9bf; background:#19352c; border-color:#546b50; border-radius:3px; font-size:14px; line-height:1.6; }
+#shop-overlay #shop-items-heading { color:#f0dfa3; margin:18px 0 14px; font:700 24px/1.3 Georgia,'Times New Roman',serif; }
+#shop-overlay .shop-grid { grid-template-columns:repeat(auto-fit,minmax(min(100%,235px),1fr)); gap:16px; }
+#shop-overlay .shop-card { color:#e6ead8; background:linear-gradient(145deg,#1d3a2e,#152d25); border:1px solid #546b50; border-radius:4px; box-shadow:inset 0 1px #ffffff08,0 3px 8px #06140e33; padding:20px; gap:12px; }
+#shop-overlay .shop-card[data-owned="true"]:not(.shop-card-active) { border-color:#839d6b; }
+#shop-overlay .shop-card-active { border-color:#d9bd7b; background:linear-gradient(145deg,#344831,#1d3528); box-shadow:inset 0 3px #d9bd7b,0 3px 10px #06140e44; }
+#shop-overlay .shop-card h4 { color:#f3e7c2; font:700 22px/1.3 Georgia,'Times New Roman',serif; }
+#shop-overlay .shop-card > p:not(.shop-item-status) { color:#c4cdb4; font-size:14px; line-height:1.6; }
+#shop-overlay .shop-title-visual { color:#f0dfa3; font-family:Georgia,'Times New Roman',serif; letter-spacing:.08em; }
+#shop-overlay .shop-card-visual:has(.pixel-hero-icon) { background:radial-gradient(ellipse at 50% 82%,#a7bd6b26,transparent 72%); }
+#shop-overlay .shop-item-status { color:#ead499; font-size:14px; line-height:1.5; }
+#shop-overlay .shop-card small { color:#becaaf; font-size:13px; line-height:1.5; }
+#shop-overlay .shop-card-actions { margin-top:auto; gap:8px; }
+#shop-overlay .shop-card-actions button { color:#dce5cc; background:#10241f; border-color:#71865e; border-radius:3px; padding:9px 12px; font:700 14px/1.4 Arial,sans-serif; }
+#shop-overlay .shop-card-actions button:hover:not(:disabled) { color:#f4e5ba; background:#2a4734; border-color:#d9bd7b; }
+#shop-overlay .shop-card-actions .shop-primary { color:#233020; background:linear-gradient(180deg,#efdda5,#c9ac68); border-color:#f0dca3; box-shadow:inset 0 -2px #a98a4c55; }
+#shop-overlay .shop-card-actions .shop-primary:hover:not(:disabled) { color:#182515; background:linear-gradient(180deg,#fff0bd,#dfc27e); border-color:#fae7af; }
+#shop-overlay .shop-card-actions button:disabled { opacity:.55; cursor:default; }
+#shop-overlay .shop-dialog button:focus-visible { outline:2px solid #f0dfa3; outline-offset:3px; }
+@media(max-width:600px) {
+    #shop-overlay .shop-heading { gap:10px; }
+    #shop-overlay .shop-profile-preview { gap:12px; }
+    #shop-overlay .shop-tabs button,#shop-overlay .shop-view-filter button { padding:9px 12px; }
+    #shop-overlay .shop-card { padding:16px; }
+}
+#shop-overlay #shop-message:empty { display:none; }
+#shop-overlay .shop-card-locked { border-color:#546b50; background:#142a22; }
+#shop-overlay .shop-card-locked .shop-card-visual { filter:grayscale(.8); opacity:.6; }
+#shop-overlay .shop-card-locked .shop-item-status { color:#becaaf; }
+</style>
 </head>
 <body class="min-h-screen flex flex-col hologram-bg">
 
@@ -1581,8 +1649,6 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
             <div class="shop-heading"><div><h2 id="shop-title">Hütergilde-Ausrüstungskammer</h2><p class="shop-subtitle">Dein Held. Deine Ausrüstung.</p></div><button type="button" id="shop-close" class="shop-close" aria-label="Shop schliessen" onclick="closeShop()">×</button></div>
             <p id="shop-balance">🪙 0 Coins</p>
             <p id="shop-astro-total" class="shop-astro-total">💵 Bisher eingetauscht: 0 Astrostutz</p>
-            <p class="shop-help">Quest erstmals abschliessen: 10 Coins · Boss erstmals besiegen: 30 Coins · Übungsaufgabe erstmals richtig korrigieren: 2 Coins. Neue Übungsrunden bringen neue Verdienstmöglichkeiten. Fehler kosten keine Coins.</p>
-            <p class="shop-save-help">Coinstand, Käufe und Ausrüstung über SPEICHERN als JSON-Datei sichern und später mit DATEN HOCHLADEN laden.</p>
             <div id="shop-profile-preview" class="shop-profile-preview"><span id="shop-preview-icon" aria-hidden="true"></span><div><p id="shop-preview-caption"></p><p id="shop-preview-name"></p><p id="shop-preview-title"></p><p id="shop-preview-effect"></p></div></div>
             <p id="shop-message" role="status" aria-live="polite"></p>
             <div class="shop-tabs" role="tablist" aria-label="Shop-Kategorien">
@@ -4824,7 +4890,7 @@ const SHOP_ITEMS = [
     {id:'emblem-fox',kind:'emblem',legacyHero:true,name:'Fuchs',icon:'🦊',price:20,description:'Mit Köpfchen durch jede Quest.'},
     {id:'emblem-dragon',kind:'emblem',name:'Drache',icon:'🐉',price:20,description:'Bereit für grosse Herausforderungen.'},
     {id:'emblem-owl',kind:'emblem',name:'Zauberer',icon:'🦉',price:20,description:'Mit Hut, Umhang und Zauberstab durch dein Zahlenabenteuer.'},
-    {id:'emblem-rocket',kind:'emblem',name:'Astronaut',icon:'🐸',price:20,description:'Im Raumanzug bereit für jede deiner drei Welten.'},
+    {id:'emblem-rocket',kind:'emblem',name:'Astronaut',icon:'🐸',price:0,description:'Wird für die Reise zur Moonbase freigeschaltet.'},
     {id:'emblem-shield',kind:'emblem',legacyHero:true,name:'Löwe',icon:'🦁',price:20,description:'Mutig und entschlossen durch jedes Chapter.'},
     {id:'emblem-lightning',kind:'emblem',name:'Einhorn',icon:'🦄',price:20,description:'Ein magischer Begleiter für deine Zahlenabenteuer.'},
     {id:'emblem-spider',kind:'emblem',legacyHero:true,name:'Spinne',icon:'🕷️',price:20,description:'Alle Zusammenhänge im Netz.'},
@@ -4991,24 +5057,22 @@ function previewShopItem(id) {
 function equipShopItem(id) {
     const item=shopItem(id),s=ensureShopState().state;
     if(!item || item.kind==='astro' || !s.owned.includes(id))return;
+    if(id==='emblem-rocket'&&!window.moonSuitGate?.eligible())return;
     s.equipped[item.kind]=id;s.updatedAt=new Date().toISOString();shopPreview=null;
     if(item.kind==='effect')playShopEffect(item.id);
     applyShopAppearance();renderShop();
-    document.getElementById('shop-message').textContent=`${item.name} ist jetzt aktiv. Der Wechsel ist kostenlos. Sichere deine Ausrüstung mit SPEICHERN als JSON-Datei.`;
+    document.getElementById('shop-message').textContent=id==='emblem-rocket'?'':`${item.name} ist jetzt aktiv. Der Wechsel ist kostenlos. Sichere deine Ausrüstung mit SPEICHERN als JSON-Datei.`;
 }
 function buyShopItem(id) {
     const item=shopItem(id),s=ensureShopState().state;
     if(!item)return;
+    if(id==='emblem-rocket'){if(s.owned.includes(id)&&window.moonSuitGate?.eligible())equipShopItem(id);return;}
     if(item.kind==='astro'){redeemAstrostutz();return;}
     if(s.owned.includes(id)){equipShopItem(id);return;}
-    const suitCredit=window.moonSuitGate?.purchaseCredit(id)||0;
-    if(s.balance+suitCredit<item.price){document.getElementById('shop-message').textContent=`Für ${item.name} fehlen noch ${item.price-s.balance} Coins.`;return;}
-    s.balance-=item.price-suitCredit;s.owned.push(id);
-    if(id==='emblem-rocket')window.moonSuitGate?.redeemCredit(suitCredit);
+    if(s.balance<item.price){document.getElementById('shop-message').textContent=`Für ${item.name} fehlen noch ${item.price-s.balance} Coins.`;return;}
+    s.balance-=item.price;s.owned.push(id);
     equipShopItem(id);
-    document.getElementById('shop-message').textContent=suitCredit>0
-        ? `Astronaut gekauft und aktiviert! Die Kaufgutschrift übernimmt ${suitCredit} Coins. Sichere deinen Spielstand mit SPEICHERN als JSON-Datei.`
-        : `${item.name} gekauft und aktiviert! Sichere deinen Coinstand und deine Ausrüstung mit SPEICHERN als JSON-Datei.`;
+    document.getElementById('shop-message').textContent=`${item.name} gekauft und aktiviert! Sichere deinen Coinstand und deine Ausrüstung mit SPEICHERN als JSON-Datei.`;
 }
 function redeemAstrostutz() {
     const s=ensureShopState().state;
@@ -5030,7 +5094,7 @@ document.querySelectorAll('[data-shop-category]').forEach(button=>{
     const filter=document.getElementById('shop-view-filter');filter.hidden=shopCategory==='astro';
     filter.querySelectorAll('button').forEach(button=>button.setAttribute('aria-pressed',String((button.dataset.shopView==='owned')===shopOwnedOnly)));
     document.getElementById('shop-items-heading').textContent=SHOP_CATEGORIES[shopCategory]+(shopOwnedOnly&&shopCategory!=='astro'?' · Freigeschaltet':'');
-    SHOP_ITEMS.filter(item=>!item.legacyHero&&item.kind===shopCategory&&(item.kind==='astro'||!shopOwnedOnly||s.owned.includes(item.id))).forEach(item=>{
+    SHOP_ITEMS.filter(item=>!item.legacyHero&&item.kind===shopCategory&&(item.kind==='astro'||!shopOwnedOnly||(s.owned.includes(item.id)&&(item.id!=='emblem-rocket'||window.moonSuitGate?.eligible())))).forEach(item=>{
         if(item.kind==='astro'){
             const card=document.createElement('article');card.className='shop-card shop-astro-card';card.dataset.itemId=item.id;
             const icon=document.createElement('div');icon.className='shop-card-visual';icon.textContent=item.icon;icon.setAttribute('aria-hidden','true');
@@ -5044,26 +5108,29 @@ document.querySelectorAll('[data-shop-category]').forEach(button=>{
             if(s.balance<20){const missing=document.createElement('small');missing.textContent=`Noch ${20-s.balance} Coins bis zum nächsten Astrostutz.`;card.appendChild(missing);}
             list.appendChild(card);return;
         }
-        const owned=s.owned.includes(item.id),active=s.equipped[item.kind]===item.id,suitCredit=window.moonSuitGate?.purchaseCredit(item.id)||0;
+        const owned=s.owned.includes(item.id),active=s.equipped[item.kind]===item.id;
+        const astronaut=item.id==='emblem-rocket',astronautLocked=astronaut&&!window.moonSuitGate?.eligible();
         const card=document.createElement('article');card.className='shop-card';card.dataset.itemId=item.id;
         card.dataset.owned=String(owned);
-        if(active)card.classList.add('shop-card-active');
+        if(astronautLocked)card.classList.add('shop-card-locked');
+        if(active&&!astronautLocked)card.classList.add('shop-card-active');
         const visual=document.createElement('div');visual.className='shop-card-visual';visual.setAttribute('aria-hidden','true');
         if(item.kind==='color'){visual.classList.add('shop-color-swatch');visual.style.setProperty('--swatch',item.color);}
         else if(item.kind==='emblem')HeroSprites.mount(visual,item.id,80,true);
         else {visual.textContent=item.icon || 'HELD';if(item.kind==='title')visual.classList.add('shop-title-visual');}
         const name=document.createElement('h4');name.textContent=item.name;
         const description=document.createElement('p');description.textContent=item.description;
-        const status=document.createElement('p');status.className='shop-item-status';status.textContent=active?'✓ Aktiv':owned?'✓ Freigeschaltet':`🪙 ${item.price} Coins${suitCredit>0?' · Kaufgutschrift: '+suitCredit+' Coins':''}`;
+        const status=document.createElement('p');status.className='shop-item-status';status.textContent=astronautLocked?'🔒 Gesperrt':active?'✓ Aktiv':owned?'✓ Freigeschaltet':astronaut?'Freischaltung nach dem Zwischenstopp':`🪙 ${item.price} Coins`;
         const actions=document.createElement('div');actions.className='shop-card-actions';
-        const preview=document.createElement('button');preview.type='button';preview.textContent='Vorschau';preview.addEventListener('click',()=>previewShopItem(item.id));
+        const preview=document.createElement('button');preview.type='button';preview.textContent='Vorschau';preview.addEventListener('click',()=>previewShopItem(item.id));preview.disabled=astronautLocked;
         const action=document.createElement('button');action.type='button';action.className='shop-primary';
-        action.textContent=active?'✓ Aktiv':owned?'Auswählen':suitCredit>0?'Mit Kaufgutschrift kaufen':`Kaufen · ${item.price} 🪙`;
-        action.disabled=active || (!owned && s.balance+suitCredit<item.price);
+        action.textContent=astronautLocked?'🔒 Gesperrt':active?'✓ Aktiv':astronaut?(owned?'Anziehen':'Noch nicht freigeschaltet'):owned?'Auswählen':`Kaufen · ${item.price} 🪙`;
+        action.disabled=astronaut?(astronautLocked||active||!owned):(active||(!owned&&s.balance<item.price));
         action.addEventListener('click',()=>owned?equipShopItem(item.id):buyShopItem(item.id));
         actions.append(preview,action);
         card.append(visual,name,description,status,actions);
-        if(!owned && s.balance+suitCredit<item.price){const missing=document.createElement('small');missing.textContent=`Noch ${item.price-s.balance} Coins bis zu diesem Gegenstand.`;card.appendChild(missing);}
+        if(astronaut&&(astronautLocked||!owned)){const hint=document.createElement('small');hint.textContent=astronautLocked?'Nach Robotown und dem Zwischenstopp verfügbar.':'Wird nach dem Zwischenstopp von Robotown automatisch freigeschaltet.';card.appendChild(hint);}
+        if(!owned && s.balance<item.price){const missing=document.createElement('small');missing.textContent=`Noch ${item.price-s.balance} Coins bis zu diesem Gegenstand.`;card.appendChild(missing);}
         list.appendChild(card);
     });
 }
@@ -7368,8 +7435,12 @@ const LearningViewCheckpoint=(()=>{
     function sync(){
         const boss=pending();
         if(!boss){
+            const releasedChapter=!overlay.hidden&&shownOwner===appState?shownChapter:null;
             const wasOpen=!overlay.hidden;overlay.hidden=true;shownChapter=null;shownStage=null;shownOwner=null;input.value='';error.hidden=true;restoreBackground();
-            if(wasOpen){closeModal();const w=[null,IslandLevel1,CityLevel2,PlanetLevel3][appState.currentViewSector];w?.focus();}
+            if(wasOpen){
+                closeModal();const w=[null,IslandLevel1,CityLevel2,PlanetLevel3][appState.currentViewSector];w?.focus();
+                if(releasedChapter===2){const owner=appState;queueMicrotask(()=>{if(appState===owner)window.moonSuitGate?.afterCheckpoint();});}
+            }
             return;
         }
         pauseBackground();overlay.hidden=false;overlay.dataset.chapter=String(boss.chapter);
@@ -7755,18 +7826,9 @@ const AdventureRewards=(()=>{
             const key='eastereggs:'+sector;
             if(ids.every(id=>appState.easterEggs.solved.includes(id))&&!Object.hasOwn(shop.earned,key))shop.earned[key]=0;
         }
+        // Keep historical support records readable, but never issue a new voucher.
         const help=appState.spaceSuitSupport;
-        if(!help||typeof help!=='object'||Array.isArray(help)){
-            appState.spaceSuitSupport={version:1,used:false,coins:0};
-        }else{
-            help.version=1;help.used=help.used===true;
-            if(!Number.isSafeInteger(help.coins)||help.coins<0)help.coins=0;
-        }
-        const support=appState.spaceSuitSupport,ownsSuit=shop.owned.includes('emblem-rocket');
-        if(typeof support.redeemed!=='boolean')support.redeemed=ownsSuit&&support.used;
-        if(typeof support.voucherActive!=='boolean')support.voucherActive=support.used&&!ownsSuit&&!support.redeemed;
-        if(ownsSuit)support.voucherActive=false;
-        if(!Number.isSafeInteger(support.voucherDiscount)||support.voucherDiscount<0)support.voucherDiscount=0;
+        if(help&&typeof help==='object'&&!Array.isArray(help))help.voucherActive=false;
     }
     function credit(amount){
         if(!Number.isSafeInteger(amount)||amount<0)return;
@@ -7785,43 +7847,37 @@ const AdventureRewards=(()=>{
 })();
 window.adventureRewards=AdventureRewards;
 
-// Owning the existing Astronaut hero is sufficient; it need not be equipped.
+// The Astronaut is a progression unlock, never a shop purchase.
 const MoonSuitGate=(()=>{
-    const hasSuit=()=>Array.isArray(appState.shop?.owned)&&appState.shop.owned.includes('emblem-rocket');
+    const eligible=()=>directorMode||(appState.sector2Completed?.[5]===true&&FormativeResults.state().approved.includes(2));
+    const ownsSuit=()=>Array.isArray(appState.shop?.owned)&&appState.shop.owned.includes('emblem-rocket');
+    const hasSuit=()=>eligible()&&ownsSuit()&&appState.shop.equipped?.emblem==='emblem-rocket';
+    function unlock(){
+        if(!eligible())return false;
+        const shop=ensureShopState().state;if(shop.owned.includes('emblem-rocket'))return false;
+        shop.owned.push('emblem-rocket');shop.updatedAt=new Date().toISOString();return true;
+    }
     const modal=document.getElementById('modalOverlay');
     const section=document.createElement('div');section.id='space-suit-content';section.className='mission-content hidden space-y-6';
-    const message=document.createElement('p');message.textContent='Du fliegst zu einer Mondbasis! Für diese Quest benötigst du einen Astronautensuit.';
-    const supportNote=document.createElement('p');supportNote.textContent='Im Shop erhältst du bei Bedarf eine einmalige Kaufgutschrift für die fehlenden Coins. Sie gilt nur für den Astronautensuit. Kaufe ihn selbst auf der Insel.';
+    const message=document.createElement('p'),instruction=document.createElement('p');
     const confirm=document.createElement('button');confirm.type='button';confirm.id='space-suit-confirm';confirm.className='mcu-btn px-6 py-3 font-bold';confirm.textContent='Verstanden';
-    section.append(message,supportNote,confirm);document.getElementById('modalContent').appendChild(section);
-    let noticeOwner=null;
-    function show(){
+    section.append(message,instruction,confirm);document.getElementById('modalContent').appendChild(section);
+    function show(newlyUnlocked=false){
         if(!appState.agentName||LearningViewCheckpoint.isBlocked())return false;
-        AdventureRewards.prepare();noticeOwner=appState;
+        const ready=eligible();
+        message.textContent=!ready?'Der Astronaut ist noch gesperrt. Schliesse zuerst Robotown und den Zwischenstopp ab.':newlyUnlocked?'Der Astronaut wurde freigeschaltet!':'Der Astronaut ist freigeschaltet.';
+        instruction.textContent=ready?'Ziehe den Astronauten im Shop auf The Island an, bevor du zur Moonbase weiterreist.':'Nach dem Zwischenstopp wird er automatisch freigeschaltet.';
         hideAllModalContent();delete modal.dataset.menu;modal.dataset.chapter=String(appState.currentViewSector);
-        document.getElementById('modalTitle').textContent='ASTRONAUTENSUIT';section.classList.remove('hidden');modal.classList.remove('hidden');
+        document.getElementById('modalTitle').textContent=ready?'ASTRONAUT FREIGESCHALTET':'ASTRONAUT GESPERRT';section.classList.remove('hidden');modal.classList.remove('hidden');
         confirm.focus({preventScroll:true});return false;
     }
     confirm.addEventListener('click',()=>{
-        if(noticeOwner!==appState){closeModal();return;}
-        AdventureRewards.prepare();const help=appState.spaceSuitSupport;
-        if(!hasSuit()&&!help.used){
-            help.used=true;help.voucherActive=true;help.redeemed=false;help.at=new Date().toISOString();
-            showCreditToast('Kaufgutschrift für den Astronautensuit verfügbar. Löse sie im Shop auf der Insel ein.');
-        }
-        noticeOwner=null;closeModal();[null,IslandLevel1,CityLevel2,PlanetLevel3][appState.currentViewSector].focus();
+        closeModal();[null,IslandLevel1,CityLevel2,PlanetLevel3][appState.currentViewSector].focus();
     });
-    function purchaseCredit(id){
-        if(id!=='emblem-rocket'||hasSuit())return 0;
-        AdventureRewards.prepare();const help=appState.spaceSuitSupport;
-        return help?.voucherActive&&!help.redeemed?Math.max(0,shopItem(id).price-ensureShopState().state.balance):0;
+    function requireSuit(){const newlyUnlocked=unlock();return hasSuit()||show(newlyUnlocked);}
+    function afterCheckpoint(){
+        if(!eligible())return;const newlyUnlocked=unlock();syncTab();if(newlyUnlocked||!hasSuit())show(newlyUnlocked);
     }
-    function redeemCredit(amount){
-        const help=appState.spaceSuitSupport;
-        if(!help?.voucherActive||help.redeemed)return false;
-        help.voucherActive=false;help.redeemed=true;help.voucherDiscount=amount;help.redeemedAt=new Date().toISOString();return true;
-    }
-    function requireSuit(){return hasSuit()||show();}
     function syncTab(){
         const ready=(directorMode||appState.sector2Completed[5])&&hasSuit();
         document.getElementById('tab-3').classList.toggle('locked',!ready);
@@ -7829,16 +7885,19 @@ const MoonSuitGate=(()=>{
     }
     const originalShow=window.showMainUI;
     window.showMainUI=function(...args){
+        if(!eligible()&&appState.shop?.equipped?.emblem==='emblem-rocket')appState.shop.equipped.emblem='emblem-agent';
+        const newlyUnlocked=unlock();
         const blocked=appState.currentViewSector===3&&!hasSuit();
         if(blocked)appState.currentViewSector=appState.sector1Completed[5]?2:1;
         const result=originalShow.apply(this,args);AdventureRewards.prepare();syncTab();
-        if(blocked)show();return result;
+        if(newlyUnlocked||blocked)show(newlyUnlocked);return result;
     };
     const originalMission=window.openMission;
     window.openMission=function(sector,...args){if(sector===3&&!requireSuit())return false;return originalMission.call(this,sector,...args);};
-    const originalBuy=window.buyShopItem;
-    window.buyShopItem=function(id){const result=originalBuy.call(this,id);if(id==='emblem-rocket')syncTab();return result;};
-    const api={hasSuit,requireSuit,purchaseCredit,redeemCredit};window.moonSuitGate=api;return api;
+    for(const name of ['buyShopItem','equipShopItem']){
+        const original=window[name];window[name]=function(...args){const result=original.apply(this,args);syncTab();return result;};
+    }
+    const api={hasSuit,requireSuit,eligible,afterCheckpoint};window.moonSuitGate=api;return api;
 })();
 
 // Decorative title art only. It never reads or writes the player or quest state.
