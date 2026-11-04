@@ -999,7 +999,23 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
 #shop-overlay .shop-card-locked .shop-card-visual { filter:grayscale(.8); opacity:.6; }
 #shop-overlay .shop-card-locked .shop-item-status { color:#becaaf; }
 </style>
-<style id="companion-additions-style">#shop-preview-icon{position:relative}#shop-preview-companion{position:absolute;left:64px;bottom:0;display:block}#companion-moon-notice p{margin-bottom:1.5rem}#companion-moon-notice button{margin-right:1rem;margin-bottom:1rem}#purchases-status{margin-top:1.25rem}</style>
+<style id="companion-additions-style">#shop-preview-icon{position:relative;width:100px;min-width:100px;height:82px;flex:0 0 100px}#shop-preview-companion{position:absolute;left:48px;bottom:1px;display:block;width:42px;height:42px}#companion-moon-notice p{margin-bottom:1.5rem}#companion-moon-notice button{margin-right:1rem;margin-bottom:1rem}#purchases-status{margin-top:1.25rem}</style>
+<style id="title-powers-style">
+.title-ability-hint{position:absolute;bottom:10px;left:12px;z-index:2;padding:7px 11px;color:#eddda7;background:#102622e8;border:1px solid #af9a66;border-radius:4px;font:12px monospace;pointer-events:none;box-shadow:0 2px 8px #0005}
+.title-ability-hint[hidden]{display:none}
+#shop-overlay .shop-title-visual{font:bold 42px Georgia,serif;color:#e8d295}
+#screen-map .game-header-button{color:var(--header-text,#f4d58c);border-color:var(--header-accent,#d4b469);background:var(--header-surface,#4a3b1c);box-shadow:none}
+#screen-map .game-header-button:hover:not(:disabled){color:var(--header-text,#fff0bd);border-color:var(--header-accent,#e8cc8c);background:var(--header-hover,#655024);box-shadow:none}
+#screen-map .game-header-button:focus-visible{outline-color:var(--header-accent,#f5dfa5)}
+#screen-map .game-header-button::before,#screen-map .game-header-button::after{border-color:var(--header-accent,#d4b469)}
+#screen-map .sector-tab.active{border-bottom-color:var(--header-accent,#dfc386)}
+#screen-map .sector-tab[data-complete="true"]::after,#save-state-note[data-unsaved="true"]{color:var(--header-text,#f1cc7c)}
+#purchase-transfer-content .purchase-export-actions{margin-top:1.5em}
+#purchases-export{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:12px 18px;border:1px solid var(--header-accent,#d4b469);border-radius:0;color:var(--header-text,#f4d58c);background:var(--header-surface,#4a3b1c);font:700 14px/1.2 Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px)}
+#purchases-export:hover{background:var(--header-hover,#655024)}
+#purchases-export:focus-visible{outline:2px solid var(--header-accent,#f5dfa5);outline-offset:3px}
+@media(max-width:600px){.title-ability-hint{font-size:10px;bottom:7px}}
+</style>
 </head>
 <body class="min-h-screen flex flex-col hologram-bg">
 
@@ -4875,7 +4891,8 @@ const HeroSprites=(()=>{
     }
     function paintPreview(item,time){
         const {canvas,id,size,animate,facing}=item,ctx=canvas.getContext('2d');ctx.clearRect(0,0,size,size);
-        draw(ctx,id,size/2,size*.94,facing,animate,time,size*.88);
+        if(canvas.dataset.titlePower&&window.titlePowers)window.titlePowers.preview(ctx,item,time);
+        else draw(ctx,id,size/2,size*.94,facing,animate,time,size*.88);
     }
     function update(time){
         for(const item of previews){
@@ -4917,19 +4934,20 @@ const SHOP_ITEMS = [
     {id:'emblem-spider',kind:'emblem',legacyHero:true,name:'Spinne',icon:'🕷️',price:20,description:'Alle Zusammenhänge im Netz.'},
     {id:'emblem-robot',kind:'emblem',legacyHero:true,name:'Dinosaurier',icon:'🦖',price:20,description:'Mit urzeitlicher Kraft zur nächsten Quest.'},
     {id:'companion-none',kind:'companion',name:'Ohne Begleiter',icon:'–',price:0,description:'Alleine auf Entdeckungstour.'},
-    {id:'companion-dog',kind:'companion',name:'Hund',price:20,description:'Ein treuer Freund mit neugieriger Nase. Wartet während deiner Mondreise in Robotown.'},
-    {id:'companion-frog',kind:'companion',name:'Frosch',price:20,description:'Ein kleiner hüpfender Weggefährte. Wartet während deiner Mondreise in Robotown.'},
-    {id:'companion-spider',kind:'companion',name:'Spinne',price:20,description:'Ein flinker Freund auf acht Beinen. Wartet während deiner Mondreise in Robotown.'},
+    {id:'companion-dog',kind:'companion',name:'Hund',price:20,description:'Ein treuer Freund mit neugieriger Nase.'},
+    {id:'companion-frog',kind:'companion',name:'Frosch',price:20,description:'Ein kleiner hüpfender Weggefährte.'},
+    {id:'companion-spider',kind:'companion',name:'Spinne',price:20,description:'Ein flinker Freund auf acht Beinen.'},
     {id:'color-blue',kind:'color',name:'Hütergilde-Blau',color:'#0ea5e9',rgb:'14,165,233',price:0,description:'Die klassische Heldenfarbe.'},
     {id:'color-red',kind:'color',name:'Stark-Rot',color:'#fb7185',rgb:'251,113,133',price:60,description:'Ein neuer Anstrich für deine Oberfläche.'},
     {id:'color-green',kind:'color',name:'Hulk-Grün',color:'#4ade80',rgb:'74,222,128',price:60,description:'Grüne Energie für deine Ausrüstung.'},
     {id:'color-gold',kind:'color',name:'Asgard-Gold',color:'#fbbf24',rgb:'251,191,36',price:60,description:'Ein goldener Auftritt für deinen Helden.'},
     {id:'color-purple',kind:'color',name:'Kosmos-Violett',color:'#c084fc',rgb:'192,132,252',price:60,description:'Dein Held im Zeichen des Kosmos.'},
     {id:'title-agent',kind:'title',name:'Ohne Zusatztitel',title:'',price:0,description:'Dein Heldenname steht für sich.'},
-    {id:'title-comma',kind:'title',name:'Komma-Könner',title:'Komma-Könner',price:80,description:'Du kennst dich mit dem Komma aus.'},
-    {id:'title-strategy',kind:'title',name:'Zahlen-Stratege',title:'Zahlen-Stratege',price:80,description:'Mit einem guten Plan ans Ziel.'},
-    {id:'title-decimal',kind:'title',name:'Dezimal-Profi',title:'Dezimal-Profi',price:80,description:'Dezimalzahlen sind dein Einsatzgebiet.'},
-    {id:'title-legend',kind:'title',name:'Hütergilde-Legende',title:'Hütergilde-Legende',price:150,description:'Ein besonderer Titel für deinen Helden.'},
+    {id:'title-comma',kind:'title',name:'Komma-Könner',title:'Komma-Könner',price:80,description:'Beim Laufen hinterlässt du eine kurze, leuchtende Kommaspur.'},
+    {id:'title-strategy',kind:'title',name:'Zahlen-Stratege',title:'Zahlen-Stratege',price:80,description:'Drücke M, um drei Sekunden lang herauszuzoomen und die Umgebung zu überblicken.'},
+    {id:'title-decimal',kind:'title',name:'Dezimal-Profi',title:'Dezimal-Profi',price:80,description:'Du läufst 1.5-mal so schnell. Dein Begleiter hält mit.'},
+    {id:'title-legend',kind:'title',name:'Hütergilde-Legende',title:'Hütergilde-Legende',price:150,description:'Eine sanft pulsierende goldene Aura und aufsteigende Lichtpartikel lassen deinen Helden leuchten.'},
+    {id:'title-runner',kind:'title',name:'Sternenläufer',title:'Sternenläufer',price:80,description:'Drücke Shift für zwei Sekunden doppeltes Lauftempo. Danach erholst du dich sechs Sekunden.'},
     {id:'effect-none',kind:'effect',name:'Ohne Siegeseffekt',icon:'◌',price:0,description:'Deine Erfolgsmeldung bleibt ruhig.'},
     {id:'effect-stars',kind:'effect',name:'Sternenregen',icon:'✨',price:100,description:'Ein kurzer, lautloser Sternenregen bei einer neuen Belohnung.'},
     {id:'effect-gold',kind:'effect',name:'Goldene Funken',icon:'🌟',price:100,description:'Goldene Funken feiern deinen nächsten Erfolg.'},
@@ -5007,6 +5025,13 @@ function activeShopItems(preview=null) {
 function applyShopAppearance() {
     const active=activeShopItems(),color=active.color;
     document.body.dataset.shopColor=color.id;
+    // The free starting colour keeps the established gold header. Purchased palettes colour all controls.
+    const headerRGB=(color.id==='color-blue'?'244,213,140':color.rgb).split(',').map(Number);
+    const tint=(amount,base)=>'rgb('+headerRGB.map((v,i)=>Math.round(v*amount+base[i]*(1-amount))).join(',')+')';
+    document.body.style.setProperty('--header-accent',tint(1,[0,0,0]));
+    document.body.style.setProperty('--header-text',tint(.78,[255,255,255]));
+    document.body.style.setProperty('--header-surface',tint(.25,[15,23,35]));
+    document.body.style.setProperty('--header-hover',tint(.38,[15,23,35]));
     document.body.style.setProperty('--shield-blue',color.color);
     document.body.style.setProperty('--shield-glow',`rgba(${color.rgb},0.5)`);
     document.body.style.setProperty('--shop-border',`rgba(${color.rgb},0.45)`);
@@ -5067,7 +5092,7 @@ function closeShop() {
 function renderShopPreview() {
     const item=shopPreview?shopItem(shopPreview):null,active=activeShopItems(item);
     document.getElementById('shop-profile-preview').style.setProperty('--preview-accent',active.color.color);
-    HeroSprites.mount(document.getElementById('shop-preview-icon'),active.emblem.id,76,true);
+    HeroSprites.mount(document.getElementById('shop-preview-icon'),active.emblem.id,76,true).dataset.titlePower=active.title.id;
     let companionPreview=document.getElementById('shop-preview-companion');
     if(!companionPreview){companionPreview=document.createElement('span');companionPreview.id='shop-preview-companion';document.getElementById('shop-preview-icon').appendChild(companionPreview);}
     companionPreview.setAttribute('aria-label',active.companion.name);
@@ -5147,7 +5172,7 @@ document.querySelectorAll('[data-shop-category]').forEach(button=>{
         if(item.kind==='color'){visual.classList.add('shop-color-swatch');visual.style.setProperty('--swatch',item.color);}
         else if(item.kind==='emblem')HeroSprites.mount(visual,item.id,80,true);
         else if(item.kind==='companion'&&item.id!=='companion-none')CompanionSprites.mount(visual,item.id,70);
-        else {visual.textContent=item.icon || 'HELD';if(item.kind==='title')visual.classList.add('shop-title-visual');}
+        else {visual.textContent=item.kind==='title'?window.titlePowers.icon(item.id):item.icon || 'HELD';if(item.kind==='title')visual.classList.add('shop-title-visual');}
         const name=document.createElement('h4');name.textContent=item.name;
         const description=document.createElement('p');description.textContent=item.description;
         const status=document.createElement('p');status.className='shop-item-status';status.textContent=astronautLocked?'🔒 Gesperrt':active?'✓ Aktiv':owned?'✓ Freigeschaltet':astronaut?'Freischaltung nach dem Zwischenstopp':`🪙 ${item.price} Coins`;
@@ -5674,7 +5699,7 @@ const IslandLevel1=(()=>{
         if(window.worldTravel?.hidesHero(1))return;
         const p=position();
         ctx.fillStyle='#203c3b77';ctx.beginPath();ctx.ellipse(p.x,p.y+4,14,5,0,0,Math.PI*2);ctx.fill();
-        HeroSprites.draw(ctx,activeShopItems().emblem.id,p.x,p.y,p.facing,moving,tick);
+        window.titlePowers.hero(ctx,activeShopItems().emblem.id,p.x,p.y,p.facing,moving,tick);
     }
     // No scale is applied: a world pixel remains a viewport pixel. Rounding
     // one shared camera offset keeps terrain, sprites and interaction art aligned.
@@ -5692,16 +5717,16 @@ const IslandLevel1=(()=>{
     const viewportObserver=new ResizeObserver(resizeViewport);viewportObserver.observe(canvas);
     window.addEventListener('resize',resizeViewport);
     function camera(){
-        const p=window.worldTravel?.cameraAnchor(1)||position();cameraState.x=Math.round(Math.max(0,Math.min(W-VW,p.x-VW/2)));
-        cameraState.y=Math.round(Math.max(0,Math.min(H-VH,p.y-16-VH/2)));
-        return {...cameraState};
+        const p=window.worldTravel?.cameraAnchor(1)||position();
+        const view=window.titlePowers?.view(1,p,VW,VH,W,H)||{x:Math.round(Math.max(0,Math.min(W-VW,p.x-VW/2))),y:Math.round(Math.max(0,Math.min(H-VH,p.y-16-VH/2))),width:VW,height:VH,scale:1};
+        cameraState.x=view.x;cameraState.y=view.y;return view;
     }
     function draw(){
         if(!viewportReady)resizeViewport();
         const cam=camera(),p=position();
-        ctx.clearRect(0,0,VW,VH);ctx.save();ctx.translate(-cam.x,-cam.y);
+        ctx.clearRect(0,0,VW,VH);ctx.fillStyle='#102c28';ctx.fillRect(0,0,VW,VH);ctx.save();ctx.scale(cam.scale,cam.scale);ctx.translate(-cam.x,-cam.y);
         ctx.imageSmoothingEnabled=false;
-        ctx.drawImage(terrain,cam.x,cam.y,VW,VH,cam.x,cam.y,VW,VH);
+        ctx.drawImage(terrain,0,0);
         if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
             ctx.save();ctx.fillStyle='#b4dfd3';
             for(const [i,x,y] of [[0,560,314],[1,642,394],[2,896,580],[3,1020,650],[4,528,784]]){
@@ -5709,7 +5734,8 @@ const IslandLevel1=(()=>{
             }ctx.restore();
         }
         drawSceneryFish();window.worldTravel?.paint(ctx,1);window.islandSecrets?.paint(ctx);
-        const visible=(x,y,margin=120)=>x>=cam.x-margin&&x<=cam.x+VW+margin&&y>=cam.y-margin&&y<=cam.y+VH+margin;
+        const visible=(x,y,margin=120)=>x>=cam.x-margin&&x<=cam.x+cam.width+margin&&y>=cam.y-margin&&y<=cam.y+cam.height+margin;
+        window.titlePowers?.trail(ctx,1);
         const objects=[...trees.filter(t=>visible(t.x,t.y)).map(t=>({y:t.y,paint:()=>tree(t)})),
             ...rocks.filter(t=>visible(t.x,t.y)).map(t=>({y:t.y,paint:()=>rock(t)})),
             ...sites.filter(s=>visible(s.door.x,s.door.y,220)).map(s=>({y:s.y+s.h,paint:()=>building(s)})),{y:p.y,paint:avatar}];
@@ -5720,19 +5746,20 @@ const IslandLevel1=(()=>{
                 const x=36+i*113,y=24+(i%2)*(H-48);ctx.fillRect(x+Math.sin(tick/1800+i)*9,y,13,2);
             }
         }
-        window.worldTravel?.paintFlight(ctx,1,cam,VW,VH);
+        window.worldTravel?.paintFlight(ctx,1,cam,cam.width,cam.height);
         ctx.restore();
     }
     function frame(time){
         const dt=last?Math.min((time-last)/1000,.04):0;last=time;tick=time;moving=false;
+        window.titlePowers?.update(1,dt,active());
         if(active()){
             let dx=Number(keys.has('ArrowRight')||keys.has('d'))-Number(keys.has('ArrowLeft')||keys.has('a'));
             let dy=Number(keys.has('ArrowDown')||keys.has('s'))-Number(keys.has('ArrowUp')||keys.has('w'));
             if(dx||dy){
-                const p=position(),norm=Math.hypot(dx,dy),speed=170*dt;dx=dx/norm*speed;dy=dy/norm*speed;
+                const p=position(),norm=Math.hypot(dx,dy),speed=170*(window.titlePowers?.multiplier()||1)*dt;dx=dx/norm*speed;dy=dy/norm*speed;
                 p.facing=Math.abs(dx)>Math.abs(dy)?dx>0?'right':'left':dy>0?'down':'up';
                 // Resolve each axis separately, so walls slide rather than trap the player.
-                if(walkable(p.x+dx,p.y)){p.x+=dx;moving=true;}if(walkable(p.x,p.y+dy)){p.y+=dy;moving=true;}
+                moving=window.companions.moveHero(1,p,dx,dy,time);
             }
             updatePrompt();
         }else keys.clear();
@@ -6187,7 +6214,7 @@ const CityLevel2=(()=>{
         if(window.worldTravel?.hidesHero(2))return;
         const p=position();
         ctx.fillStyle='#0b1c2c99';ctx.beginPath();ctx.ellipse(p.x,p.y+4,14,5,0,0,Math.PI*2);ctx.fill();
-        HeroSprites.draw(ctx,activeShopItems().emblem.id,p.x,p.y,p.facing,moving,tick);
+        window.titlePowers.hero(ctx,activeShopItems().emblem.id,p.x,p.y,p.facing,moving,tick);
     }
     const cameraState={x:0,y:0};
     function resizeViewport(){
@@ -6203,16 +6230,17 @@ const CityLevel2=(()=>{
     const viewportObserver=new ResizeObserver(resizeViewport);viewportObserver.observe(canvas);
     window.addEventListener('resize',resizeViewport);
     function camera(){
-        const p=window.worldTravel?.cameraAnchor(2)||position();cameraState.x=Math.round(Math.max(0,Math.min(W-VW,p.x-VW/2)));
-        cameraState.y=Math.round(Math.max(0,Math.min(H-VH,p.y-16-VH/2)));
-        return {...cameraState};
+        const p=window.worldTravel?.cameraAnchor(2)||position();
+        const view=window.titlePowers?.view(2,p,VW,VH,W,H)||{x:Math.round(Math.max(0,Math.min(W-VW,p.x-VW/2))),y:Math.round(Math.max(0,Math.min(H-VH,p.y-16-VH/2))),width:VW,height:VH,scale:1};
+        cameraState.x=view.x;cameraState.y=view.y;return view;
     }
     function draw(){
         if(!viewportReady)resizeViewport();
-        const cam=camera();ctx.clearRect(0,0,VW,VH);ctx.save();ctx.translate(-cam.x,-cam.y);ctx.imageSmoothingEnabled=false;
-        ctx.drawImage(terrain,cam.x,cam.y,VW,VH,cam.x,cam.y,VW,VH);window.worldTravel?.paint(ctx,2);
+        const cam=camera();ctx.clearRect(0,0,VW,VH);ctx.fillStyle='#182d39';ctx.fillRect(0,0,VW,VH);ctx.save();ctx.scale(cam.scale,cam.scale);ctx.translate(-cam.x,-cam.y);ctx.imageSmoothingEnabled=false;
+        ctx.drawImage(terrain,0,0);window.worldTravel?.paint(ctx,2);
         for(const light of avenueLights){ctx.fillStyle=appState.sector2Completed[light.mission]?'#90cbbc':'#395968';ctx.fillRect(light.x,356,light.w,3);}
-        const inView=(x,y,margin=160)=>x>=cam.x-margin&&x<=cam.x+VW+margin&&y>=cam.y-margin&&y<=cam.y+VH+margin;
+        const inView=(x,y,margin=160)=>x>=cam.x-margin&&x<=cam.x+cam.width+margin&&y>=cam.y-margin&&y<=cam.y+cam.height+margin;
+        window.titlePowers?.trail(ctx,2);
         const objects=[...sites.filter(s=>inView(s.door.x,s.door.y,260)).map(s=>({y:s.y+s.h,paint:()=>building(s)})),
             ...obstacles.filter(o=>inView(o.x,o.y)).map(o=>({y:o.y+o.h,paint:()=>utility(o)})),
             ...lamps.filter(l=>inView(l.x,l.y)).map(l=>({y:l.y,paint:()=>lamp(l)})),{y:position().y,paint:avatar}];
@@ -6222,18 +6250,19 @@ const CityLevel2=(()=>{
             ctx.fillStyle='#b9e4e226';for(let x=160;x<W-96;x+=288)ctx.fillRect(x+(tick/120)%16,402,19,2);
             for(let y=480;y<H-96;y+=192)ctx.fillRect(1176,y+(tick/120)%16,2,19);
         }
-        window.worldTravel?.paintFlight(ctx,2,cam,VW,VH);
+        window.worldTravel?.paintFlight(ctx,2,cam,cam.width,cam.height);
         ctx.restore();
     }
     function frame(time){
         const dt=last?Math.min((time-last)/1000,.04):0;last=time;tick=time;moving=false;
+        window.titlePowers?.update(2,dt,active());
         if(active()){
             let dx=Number(keys.has('ArrowRight')||keys.has('d'))-Number(keys.has('ArrowLeft')||keys.has('a'));
             let dy=Number(keys.has('ArrowDown')||keys.has('s'))-Number(keys.has('ArrowUp')||keys.has('w'));
             if(dx||dy){
-                const p=position(),norm=Math.hypot(dx,dy),speed=170*dt;dx=dx/norm*speed;dy=dy/norm*speed;
+                const p=position(),norm=Math.hypot(dx,dy),speed=170*(window.titlePowers?.multiplier()||1)*dt;dx=dx/norm*speed;dy=dy/norm*speed;
                 p.facing=Math.abs(dx)>Math.abs(dy)?dx>0?'right':'left':dy>0?'down':'up';
-                if(walkable(p.x+dx,p.y)){p.x+=dx;moving=true;}if(walkable(p.x,p.y+dy)){p.y+=dy;moving=true;}
+                moving=window.companions.moveHero(2,p,dx,dy,time);
             }
             updateRobot(dt);updatePrompt();
         }else {keys.clear();robotMoving=false;}
@@ -6408,7 +6437,7 @@ const PlanetLevel3=(()=>{
     }
     function moonStep(dt,dx,dy){
         const p=position(),norm=Math.hypot(dx,dy),inside=craterAt(p.x,p.y)>=0;
-        const speed=inside&&motion.z===0?72:170,response=1-Math.exp(-dt/((dx||dy)? .20:.34));
+        const speed=(inside&&motion.z===0?72:170)*(window.titlePowers?.multiplier()||1),response=1-Math.exp(-dt/((dx||dy)? .20:.34));
         motion.vx+=((norm?dx/norm*speed:0)-motion.vx)*response;
         motion.vy+=((norm?dy/norm*speed:0)-motion.vy)*response;
         if(!norm&&Math.hypot(motion.vx,motion.vy)<1.5)motion.vx=motion.vy=0;
@@ -6704,7 +6733,7 @@ const PlanetLevel3=(()=>{
         if(window.worldTravel?.hidesHero(3))return;
         const p=position();
         ctx.fillStyle='#342d4c77';ctx.beginPath();ctx.ellipse(p.x,p.y+4+motion.depth,14*(1-Math.min(.4,motion.z/140)),5,0,0,Math.PI*2);ctx.fill();
-        HeroSprites.draw(ctx,activeShopItems().emblem.id,p.x,p.y-motion.z+motion.depth,p.facing,moving,tick);
+        window.titlePowers.hero(ctx,activeShopItems().emblem.id,p.x,p.y-motion.z+motion.depth,p.facing,moving,tick);
     }
     const cameraState={x:0,y:0};
     function resizeViewport(){
@@ -6720,14 +6749,14 @@ const PlanetLevel3=(()=>{
     const viewportObserver=new ResizeObserver(resizeViewport);viewportObserver.observe(canvas);
     window.addEventListener('resize',resizeViewport);
     function camera(){
-        const p=window.worldTravel?.cameraAnchor(3)||position();cameraState.x=Math.round(Math.max(0,Math.min(W-VW,p.x-VW/2)));
-        cameraState.y=Math.round(Math.max(0,Math.min(H-VH,p.y-16-VH/2)));
-        return {...cameraState};
+        const p=window.worldTravel?.cameraAnchor(3)||position();
+        const view=window.titlePowers?.view(3,p,VW,VH,W,H)||{x:Math.round(Math.max(0,Math.min(W-VW,p.x-VW/2))),y:Math.round(Math.max(0,Math.min(H-VH,p.y-16-VH/2))),width:VW,height:VH,scale:1};
+        cameraState.x=view.x;cameraState.y=view.y;return view;
     }
     function draw(){
         if(!viewportReady)resizeViewport();
-        const cam=camera();ctx.clearRect(0,0,VW,VH);ctx.save();ctx.translate(-cam.x,-cam.y);ctx.imageSmoothingEnabled=false;
-        ctx.drawImage(terrain,cam.x,cam.y,VW,VH,cam.x,cam.y,VW,VH);twinklingStars(cam);orbitingPlanet();window.worldTravel?.paint(ctx,3);
+        const cam=camera();ctx.clearRect(0,0,VW,VH);ctx.fillStyle='#171222';ctx.fillRect(0,0,VW,VH);ctx.save();ctx.scale(cam.scale,cam.scale);ctx.translate(-cam.x,-cam.y);ctx.imageSmoothingEnabled=false;
+        ctx.drawImage(terrain,0,0);twinklingStars(cam);orbitingPlanet();window.worldTravel?.paint(ctx,3);
         // Keep the existing six progress beacons beside the relocated arena.
         const boss=sites.find(s=>s.boss);
         for(let i=0;i<6;i++){
@@ -6736,16 +6765,18 @@ const PlanetLevel3=(()=>{
             ctx.beginPath();ctx.moveTo(x+4,y-10);ctx.lineTo(x+12,y-1);ctx.lineTo(x+4,y+6);ctx.lineTo(x-4,y-1);ctx.fill();
             if(done){ctx.fillStyle='#f6e7d0';ctx.fillRect(x+2,y-7,3,3);}sparkle(x+5,y-5,i*.9,.65);
         }
-        const inView=(x,y,margin=160)=>x>=cam.x-margin&&x<=cam.x+VW+margin&&y>=cam.y-margin&&y<=cam.y+VH+margin;
+        const inView=(x,y,margin=160)=>x>=cam.x-margin&&x<=cam.x+cam.width+margin&&y>=cam.y-margin&&y<=cam.y+cam.height+margin;
+        window.titlePowers?.trail(ctx,3);
         const objects=[...sites.filter(s=>inView(s.door.x,s.door.y,260)).map(s=>({y:s.y+s.h,paint:()=>station(s)})),
             ...props.filter(o=>inView(o.x,o.y)).map(o=>({y:o.y+o.h,paint:()=>prop(o)})),{y:position().y,paint:avatar}];
         objects.sort((a,b)=>a.y-b.y).forEach(o=>o.paint());
         if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){ctx.fillStyle='#d7c7e330';for(let i=0;i<12;i++)ctx.fillRect(24+i*169+Math.sin(tick/2500+i)*4,i%2?H-24:24,3,2);}
-        window.worldTravel?.paintFlight(ctx,3,cam,VW,VH);
+        window.worldTravel?.paintFlight(ctx,3,cam,cam.width,cam.height);
         ctx.restore();
     }
     function frame(time){
         const dt=last?Math.min((time-last)/1000,.04):0;last=time;tick=time;moving=false;
+        window.titlePowers?.update(3,dt,active());
         if(active()){
             let dx=Number(keys.has('ArrowRight')||keys.has('d'))-Number(keys.has('ArrowLeft')||keys.has('a'));
             let dy=Number(keys.has('ArrowDown')||keys.has('s'))-Number(keys.has('ArrowUp')||keys.has('w'));
@@ -7282,7 +7313,7 @@ const WorldTravel=(()=>{
         c.restore();
         const companionId=window.companions?.activeId();const companionHero=heroPose();
         if(port.vehicle==='plane'&&companionId&&companionHero&&companionHero.alpha>0){c.save();c.globalAlpha=companionHero.alpha;CompanionSprites.draw(c,companionId,companionHero.x-16,companionHero.y+10,companionHero.facing,companionHero.moving,performance.now(),25);c.restore();}
-        const hero=heroPose();if(hero&&hero.alpha>0){c.save();c.globalAlpha=hero.alpha;c.fillStyle='#10202a44';c.beginPath();c.ellipse(hero.x,hero.y+4,13,4,0,0,Math.PI*2);c.fill();HeroSprites.draw(c,activeShopItems().emblem.id,hero.x,hero.y,hero.facing,hero.moving,performance.now());c.restore();}
+        const hero=heroPose();if(hero&&hero.alpha>0){c.save();c.globalAlpha=hero.alpha;c.fillStyle='#10202a44';c.beginPath();c.ellipse(hero.x,hero.y+4,13,4,0,0,Math.PI*2);c.fill();window.titlePowers.hero(c,activeShopItems().emblem.id,hero.x,hero.y,hero.facing,hero.moving,performance.now());c.restore();}
     }
     function tween(duration,update){return new Promise((resolve,reject)=>{let start;function step(now){try{if(start===undefined)start=now;const p=Math.min(1,(now-start)/duration);update(p);if(p<1)requestAnimationFrame(step);else resolve();}catch(e){reject(e);}}requestAnimationFrame(step);});}
     function animatePhase(phase,duration){
@@ -7293,7 +7324,6 @@ const WorldTravel=(()=>{
         const r=routes.find(r=>r.id===id);if(!r||busy||appState.currentViewSector!==r.sector||!available(r)||!world(r.sector).active()||world(r.sector).nearby()?.id!==id)return false;
         if(r.to===3&&!window.moonSuitGate.requireSuit())return false;
         const requestingOwner=appState;
-        if(r.to===3&&window.companions&&!(await window.companions.confirmMoon()))return false;
         if(appState!==requestingOwner||busy||appState.currentViewSector!==r.sector||!world(r.sector).active()||world(r.sector).nearby()?.id!==id)return false;
         const companionBefore=appState.companionTravel?JSON.parse(JSON.stringify(appState.companionTravel)):undefined;
         window.companions?.board(r);
@@ -7795,7 +7825,8 @@ const SettingsMenu=(()=>{
         <section><h3>Orientierung</h3><ul><li>Die goldene Markierung zeigt die nächste Quest.</li><li>Ein grünes Häkchen bedeutet: Quest abgeschlossen.</li><li>Ein schwebendes Schloss bedeutet: noch gesperrt. Löse zuerst die vorherigen Quests.</li><li>Bei «Geführt» zeigen alle Niveaus Questnummern, goldene Zielmarkierungen, «Nächstes Ziel» und ausführliche Aktionshinweise. Bei «Freies Erkunden» suchst du selbst; bei einer möglichen Aktion erscheint nur «Aktion ausführen · E». Du kannst dies unter Einstellungen → Spielmodus jederzeit ändern. Das Aufgabenniveau bleibt gleich.</li></ul></section>
         <section><h3>Die drei Welten</h3><p><strong>The Island:</strong> Folge dem Küstenweg um den Waldsee. Der Shop steht beim Landesteg im Süden.</p><p><strong>Robotown:</strong> Erkunde Laborviertel, Reaktorplatz und Energiequartier. Die Festung von MECHATRON X steht im Nordosten.</p><p><strong>Moonbase:</strong> Die Forschungsstationen liegen rund um NULLOX’ Arena. Ringweg und Verbindungswege führen durch Krater und Kristalle.</p><p>Das Flugzeug verbindet Chapter 1 und 2. Die Rakete verbindet Chapter 2 und 3. Auf demselben Weg kommst du zurück. Die Chapter oben zeigen deinen Fortschritt.</p></section>
         <section><h3>Moonbase: geringe Schwerkraft</h3><p>Auf der Moonbase braucht deine Figur etwas zum Anlaufen und gleitet nach. Mit <kbd>R</kbd> springst du. Halte gleichzeitig eine Richtung, um über Kristalle zu springen. Wenn du in einen Krater fällst, springst du mit R wieder hinaus. Gebäude, Raketen, Schluchten und der Kartenrand bleiben feste Grenzen.</p></section>
-        <section><h3>Shop und Geheimnisse</h3><p>Den Shop kannst du auf der Insel betreten. Dort kannst du Coins für Helden, Begleiter, Farben, Titel und Siegeseffekte ausgeben oder 20 Coins gegen 1 Astrostutz eintauschen.</p><p>In jeder Welt gibt es zwei Eastereggs. Untersuche die Umgebung. Den Wartungsroboter musst du zuerst aus nächster Nähe zum Anhalten bringen.</p><p>Wähle einen gekauften Begleiter im Shop aus. Er begleitet jeden Helden auf The Island und in Robotown und reist im Flugzeug mit. Bei Mondreisen wartet er beim Raketenstartplatz in Robotown. Unter Einstellungen → Käufe übertragen kannst du Freischaltungen ohne Coins für kompatible Spielwelten exportieren und importieren.</p></section>
+        <section><h3>Titel und Fähigkeiten</h3><p>Im Shop kannst du jeweils einen gekauften Titel aktivieren und kostenlos wechseln. Komma-Könner hinterlässt eine leuchtende Kommaspur. Zahlen-Stratege gibt dir mit <kbd>M</kbd> drei Sekunden Überblick. Dezimal-Profi erhöht dein Lauftempo auf das 1.5-Fache. Hütergilde-Legende lässt deinen Helden golden leuchten. Sternenläufer startet mit <kbd>Shift</kbd> einen zweisekündigen Sprint mit doppeltem Tempo; danach folgen sechs Sekunden Erholung. Dein Begleiter hält beim schnelleren Laufen mit.</p></section>
+        <section><h3>Shop und Geheimnisse</h3><p>Den Shop kannst du auf der Insel betreten. Dort kannst du Coins für Helden, Begleiter, Farben, Titel und Siegeseffekte ausgeben oder 20 Coins gegen 1 Astrostutz eintauschen.</p><p>In jeder Welt gibt es zwei Eastereggs. Untersuche die Umgebung. Den Wartungsroboter musst du zuerst aus nächster Nähe zum Anhalten bringen.</p><p>Wähle einen gekauften Begleiter im Shop aus. Er begleitet jeden Helden auf The Island und in Robotown und reist im Flugzeug mit. Bei Mondreisen wartet er beim Raketenstartplatz in Robotown. Unter Einstellungen → Käufe übertragen exportierst du deine Käufe als JSON-Datei ohne Coins für die nächste Spielwelt. Dort muss der Heldenname genau übereinstimmen.</p></section>
         <section><h3>Speichern und fortsetzen</h3><p>Position, Antworten, Coins und Fortschritt sicherst du oben über <strong>SPEICHERN</strong> als JSON-Datei. Lade diese Datei beim nächsten Start mit <strong>DATEN HOCHLADEN</strong>, um weiterzuspielen.</p><p>Nach einem besiegten Boss bearbeitest du den Zwischenstopp auf LearningView. Trage danach im Zwischenstopp deine erreichten Punkte ein. Bei voller Punktzahl geht es direkt weiter. Sonst übst du die Inhalte auf LearningView und bestätigst anschliessend hier, dass du geübt hast. Deine Ergebnisse findest du unter <strong>Einstellungen → Zwischenstopp</strong>.</p><p>Wenn alle 19 Quests abgeschlossen sind, findest du das Theoriemerkheft unter <strong>Einstellungen → Zusammenfassung</strong>.</p></section>
     </div>`;
     const difficulty=document.createElement('div');difficulty.id='difficulty-content';difficulty.className='mission-content hidden';
@@ -8148,11 +8179,90 @@ const TitlePixelScene=(()=>{
 })();
 
 
+// Purchased titles affect presentation/navigation only. Quest and reward data stay untouched.
+const TitlePowers=(()=>{
+    const worlds=()=>[null,IslandLevel1,CityLevel2,PlanetLevel3];
+    const calm=matchMedia('(prefers-reduced-motion: reduce)');
+    const icons={'title-agent':'–','title-comma':',','title-strategy':'⌖','title-decimal':'»','title-legend':'✦','title-runner':'☄'};
+    let owner=null,title='title-agent',clock=0,sprintEnd=0,readyAt=0,overviewEnd=0,zoom=1,commas=[],lastTrace=null;
+    const hints=new Map();
+    for(const [n,prefix] of [[1,'island'],[2,'city'],[3,'planet']]){
+        const hint=document.createElement('div');hint.className='title-ability-hint';hint.id=prefix+'-title-ability';hint.hidden=true;hint.setAttribute('role','status');hint.setAttribute('aria-live','polite');
+        document.getElementById(prefix+'-canvas').parentElement.appendChild(hint);hints.set(n,hint);
+    }
+    function selected(){const s=ensureShopState().state;return s.owned.includes(s.equipped.title)?s.equipped.title:'title-agent';}
+    function synchronize(){
+        const id=selected();
+        if(owner!==appState){owner=appState;clock=sprintEnd=readyAt=overviewEnd=0;zoom=1;commas=[];lastTrace=null;}
+        if(title!==id){title=id;sprintEnd=overviewEnd=0;zoom=1;commas=[];lastTrace=null;}
+        return id;
+    }
+    function allowed(){return !!appState.agentName&&!document.hidden&&worlds()[appState.currentViewSector]?.active();}
+    function use(action){
+        synchronize();if(!allowed())return false;
+        if(action==='overview'&&title==='title-strategy'){overviewEnd=clock+3;return true;}
+        if(action==='sprint'&&title==='title-runner'&&clock>=readyAt){sprintEnd=clock+2;readyAt=sprintEnd+6;return true;}
+        return false;
+    }
+    function multiplier(){synchronize();return title==='title-decimal'?1.5:title==='title-runner'&&clock<sprintEnd?2:1;}
+    function update(sector,dt,enabled){
+        synchronize();if(sector!==appState.currentViewSector)return;
+        if(enabled)clock+=dt;else{sprintEnd=overviewEnd=0;}
+        const target=(title==='title-strategy'&&clock<overviewEnd)? .66:1;
+        zoom=calm.matches?target:zoom+(target-zoom)*(1-Math.exp(-dt*12));if(Math.abs(zoom-target)<.001)zoom=target;
+        if(window.worldTravel?.isTravelling())zoom=1;
+        commas=commas.filter(p=>clock-p.born<1.1);
+        let text='';
+        if(title==='title-strategy')text=clock<overviewEnd?'⌖ Überblick · '+Math.ceil(overviewEnd-clock)+' s':'⌖ M · Überblick';
+        if(title==='title-runner')text=clock<sprintEnd?'☄ Sprint · '+Math.ceil(sprintEnd-clock)+' s':clock<readyAt?'☄ Erholung · '+Math.ceil(readyAt-clock)+' s':'☄ Shift · Sprint';
+        for(const [n,hint] of hints){hint.hidden=n!==sector||!text;if(n===sector&&hint.textContent!==text)hint.textContent=text;}
+    }
+    function view(sector,p,width,height,W,H){
+        const scale=window.worldTravel?.isTravelling()?1:zoom,vw=width/scale,vh=height/scale;
+        const x=vw>W?(W-vw)/2:Math.max(0,Math.min(W-vw,p.x-vw/2));
+        const y=vh>H?(H-vh)/2:Math.max(0,Math.min(H-vh,p.y-16-vh/2));
+        return {x:Math.round(x),y:Math.round(y),width:vw,height:vh,scale};
+    }
+    function trail(ctx,sector){
+        if(title!=='title-comma')return;
+        ctx.save();ctx.textAlign='center';ctx.font='bold 19px Georgia,serif';
+        for(const p of commas){if(p.sector!==sector)continue;const age=clock-p.born;ctx.globalAlpha=Math.max(0,1-age/1.1)*.85;ctx.fillStyle=p.color;ctx.shadowColor=p.color;ctx.shadowBlur=4;ctx.fillText(',',Math.round(p.x),Math.round(p.y-age*5));}ctx.restore();
+    }
+    function halo(ctx,x,y,size,time){
+        const pulse=calm.matches?1:1+Math.sin(time/950)*.07,r=size*.72*pulse,g=ctx.createRadialGradient(x,y-size*.43,3,x,y-size*.43,r);
+        g.addColorStop(0,'#ffeaa533');g.addColorStop(.5,'#f4cb6138');g.addColorStop(1,'#f4cb6100');ctx.fillStyle=g;ctx.fillRect(x-r,y-size*.43-r,r*2,r*2);
+    }
+    function hero(ctx,id,x,y,facing,moving,time,size=40,power=title,preview=false){
+        ctx.save();if(power==='title-legend'){halo(ctx,x,y,size,time);ctx.filter='brightness(1.18) drop-shadow(0px 0px 2px #eac56a)';}
+        const drawn=HeroSprites.draw(ctx,id,x,y,facing,moving,time,size);ctx.restore();
+        if(power==='title-legend'&&!calm.matches){ctx.save();ctx.fillStyle='#f8df91';for(let i=0;i<5;i++){const t=(time/1900+i*.21)%1;ctx.globalAlpha=Math.sin(t*Math.PI)*.75;ctx.fillRect(Math.round(x+Math.sin(i*2.4+time/2500)*size*.5),Math.round(y-t*size*1.3),2,2);}ctx.restore();}
+        if(!preview&&power==='title-comma'&&moving&&!calm.matches){
+            if(!lastTrace||lastTrace.sector!==appState.currentViewSector||Math.hypot(x-lastTrace.x,y-lastTrace.y)>140)lastTrace={x,y,sector:appState.currentViewSector};
+            else if(Math.hypot(x-lastTrace.x,y-lastTrace.y)>9){commas.push({x:x+(commas.length%2?5:-5),y:y+4,sector:appState.currentViewSector,born:clock,color:commas.length%2?'#e8d292':'#b6ddc7'});lastTrace={x,y,sector:appState.currentViewSector};}
+        }
+        return drawn;
+    }
+    function preview(ctx,item,time){
+        const {size,id,canvas}=item,power=canvas.dataset.titlePower;
+        if(power==='title-comma'){ctx.save();ctx.font='bold 17px Georgia';ctx.fillStyle='#ead68f';ctx.fillText(',',size*.15,size*.78);ctx.fillText(',',size*.8,size*.87);ctx.restore();}
+        hero(ctx,id,size/2,size*.94,item.facing,item.animate,time,size*.88,power,true);
+        if(['title-decimal','title-strategy','title-runner'].includes(power)){ctx.save();ctx.font='bold 15px Georgia';ctx.fillStyle='#ead68f';ctx.fillText(icons[power],size*.77,size*.26);ctx.restore();}
+    }
+    document.addEventListener('keydown',event=>{
+        if(event.repeat||event.ctrlKey||event.metaKey||event.altKey||!allowed())return;
+        const canvas=document.getElementById([null,'island-canvas','city-canvas','planet-canvas'][appState.currentViewSector]);if(event.target!==canvas&&event.target!==document.body)return;
+        const key=event.key.toLowerCase();if((key==='m'&&use('overview'))||(key==='shift'&&use('sprint')))event.preventDefault();
+    });
+    window.addEventListener('blur',()=>{sprintEnd=overviewEnd=0;});document.addEventListener('visibilitychange',()=>{if(document.hidden)sprintEnd=overviewEnd=0;});
+    const api={update,view,trail,hero,preview,multiplier,use,icon:id=>icons[id]||'✦',status:()=>({title,clock,sprint:Math.max(0,sprintEnd-clock),cooldown:Math.max(0,readyAt-clock),overview:Math.max(0,overviewEnd-clock),scale:zoom,commas:commas.length})};window.titlePowers=api;return api;
+})();
+
+
 // Optional companions share the existing shop inventory. No quest or reward data changes.
 const Companions=(()=>{
     const ids=['companion-dog','companion-frog','companion-spider'];
     const map=n=>n===1?IslandLevel1:CityLevel2;
-    let owner=null,selected=null,follower=null,trail=[],detour=[],target=null,nextIdle=0,serial=0,lastSample=null,retryAt=0;
+    let owner=null,selected=null,follower=null,trail=[],detour=[],target=null,nextIdle=0,serial=0,lastSample=null,retryAt=0,yieldRequest=null,yieldTarget=null;
     function state(){
         let s=appState.companionTravel;
         if(!s||s.version!==1||typeof s!=='object')appState.companionTravel=s={version:1,waiting:null,positions:{}};
@@ -8161,7 +8271,7 @@ const Companions=(()=>{
         return s;
     }
     function activeId(){const s=ensureShopState().state,id=s.equipped.companion;return ids.includes(id)&&s.owned.includes(id)?id:null;}
-    function reset(){owner=appState;selected=activeId();follower=null;trail=[];detour=[];target=null;lastSample=null;nextIdle=0;retryAt=0;}
+    function reset(){owner=appState;selected=activeId();follower=null;trail=[];detour=[];target=null;lastSample=null;nextIdle=0;retryAt=0;yieldRequest=yieldTarget=null;}
     function safe(sector,x,y){return map(sector).walkable(x,y);}
     function spot(sector,p){
         for(const radius of [34,46,58,22,10,0])for(let i=0;i<16;i++){
@@ -8179,22 +8289,63 @@ const Companions=(()=>{
             return {id:selected,x:s.waiting.x,y:s.waiting.y,facing:'down',moving:false,waiting:true};
         }
         if(!follower||follower.sector!==sector||Math.hypot(follower.x-p.x,follower.y-p.y)>450){
-            const saved=s.positions[sector],start=saved&&Number.isFinite(saved.x)&&Number.isFinite(saved.y)&&safe(sector,saved.x,saved.y)&&Math.hypot(saved.x-p.x,saved.y-p.y)<130?saved:spot(sector,p);
-            follower={id:selected,sector,x:start.x,y:start.y,facing:'down',moving:false,waiting:false};trail=[];detour=[];lastSample={x:p.x,y:p.y};target=null;
+            const saved=s.positions[sector],start=saved&&Number.isFinite(saved.x)&&Number.isFinite(saved.y)&&safe(sector,saved.x,saved.y)&&Math.hypot(saved.x-p.x,saved.y-p.y)<130&&Math.hypot(saved.x-p.x,saved.y-p.y)>=18?saved:spot(sector,p);
+            follower={id:selected,sector,x:start.x,y:start.y,facing:'down',moving:false,waiting:false};trail=[];detour=[];lastSample={x:p.x,y:p.y};target=null;nextIdle=performance.now()+4500;
         }return follower;
     }
     function segment(sector,a,b){const d=Math.hypot(b.x-a.x,b.y-a.y),n=Math.max(1,Math.ceil(d));for(let i=1;i<=n;i++)if(!safe(sector,a.x+(b.x-a.x)*i/n,a.y+(b.y-a.y)*i/n))return false;return true;}
-    function aroundCorner(sector,f){
+    function petSegment(sector,a,b,hero){
+        if(!segment(sector,a,b))return false;
+        const dx=b.x-a.x,dy=b.y-a.y,d=dx*dx+dy*dy,before=Math.hypot(a.x-hero.x,a.y-hero.y),after=Math.hypot(b.x-hero.x,b.y-hero.y);
+        if(before<18)return after>before+.01;
+        const t=d?Math.max(0,Math.min(1,((hero.x-a.x)*dx+(hero.y-a.y)*dy)/d)):0;
+        return Math.hypot(a.x+dx*t-hero.x,a.y+dy*t-hero.y)>=18;
+    }
+    function blocksHero(sector,from,x,y){
+        const f=sync(sector,from);if(!f||window.worldTravel?.isTravelling())return false;
+        const before=Math.hypot(from.x-f.x,from.y-f.y),after=Math.hypot(x-f.x,y-f.y);
+        return before<18?after<before-.001:after<18;
+    }
+    function moveHero(sector,p,dx,dy,time=performance.now()){
+        const f=sync(sector,p),norm=Math.hypot(dx,dy);let moved=false;
+        if(f&&!f.waiting&&norm&&Math.hypot(p.x-f.x,p.y-f.y)<38){
+            const along=((f.x-p.x)*dx+(f.y-p.y)*dy)/norm,side=Math.abs((f.x-p.x)*dy-(f.y-p.y)*dx)/norm;
+            if(along>0&&side<21)yieldRequest={sector,dx:dx/norm,dy:dy/norm,until:time+500};
+        }
+        const count=Math.max(1,Math.ceil(norm/3));
+        for(let i=0;i<count;i++){
+            const x=p.x+dx/count;if(x!==p.x&&safe(sector,x,p.y)&&!blocksHero(sector,p,x,p.y)){p.x=x;moved=true;}
+            const y=p.y+dy/count;if(y!==p.y&&safe(sector,p.x,y)&&!blocksHero(sector,p,p.x,y)){p.y=y;moved=true;}
+        }return moved;
+    }
+    function dodge(sector,f,p,dt,time){
+        if(!yieldRequest||yieldRequest.sector!==sector||time>yieldRequest.until){yieldTarget=null;return false;}
+        const {dx,dy}=yieldRequest;
+        const along=(f.x-p.x)*dx+(f.y-p.y)*dy,side=Math.abs((f.x-p.x)*dy-(f.y-p.y)*dx);
+        if(side>=22||along<-12||Math.hypot(f.x-p.x,f.y-p.y)>52||(yieldTarget&&Math.hypot(f.x-yieldTarget.x,f.y-yieldTarget.y)<3)){yieldRequest=yieldTarget=null;return false;}
+        if(!yieldTarget||!petSegment(sector,f,yieldTarget,p)){
+            yieldTarget=null;
+            search:for(const radius of [25,36,48])for(const [ax,ay] of [[-dy,dx],[dy,-dx],[dx,dy]]){
+                const q={x:f.x+ax*radius,y:f.y+ay*radius};if(petSegment(sector,f,q,p)){yieldTarget=q;break search;}
+            }
+        }
+        if(!yieldTarget)return false;
+        const dx2=yieldTarget.x-f.x,dy2=yieldTarget.y-f.y,d=Math.hypot(dx2,dy2),step=Math.min(d,240*(window.titlePowers?.multiplier()||1)*dt);
+        if(d<.1)return false;const q={x:f.x+dx2/d*step,y:f.y+dy2/d*step};
+        if(!petSegment(sector,f,q,p))return false;
+        f.x=q.x;f.y=q.y;f.moving=true;f.facing=Math.abs(dx2)>Math.abs(dy2)?dx2>0?'right':'left':dy2>0?'down':'up';detour=[];target=null;nextIdle=time+600;return true;
+    }
+    function aroundCorner(sector,f,hero){
         // A small local search handles tight bends or a briefly obstructing robot.
         const T=4,N=49,C=24,start=C*N+C,parents=new Int32Array(N*N).fill(-1),queue=[start];parents[start]=start;
         const point=i=>({x:f.x+(i%N-C)*T,y:f.y+(Math.floor(i/N)-C)*T});
-        const goals=trail.slice(0,40).map((p,i)=>({...p,index:i})).filter(p=>safe(sector,p.x,p.y)&&Math.hypot(p.x-f.x,p.y-f.y)>3);
+        const goals=trail.map((p,i)=>({...p,index:i})).filter(p=>Math.hypot(p.x-f.x,p.y-f.y)>3&&Math.hypot(p.x-f.x,p.y-f.y)<150&&safe(sector,p.x,p.y));
         for(let at=0;at<queue.length;at++){
             const i=queue[at],p=point(i);let goal=null;
-            for(let k=goals.length-1;k>=0;k--)if(Math.hypot(p.x-goals[k].x,p.y-goals[k].y)<14&&segment(sector,p,goals[k])){goal=goals[k];break;}
+            for(let k=goals.length-1;k>=0;k--)if(Math.hypot(p.x-goals[k].x,p.y-goals[k].y)<14&&petSegment(sector,p,goals[k],hero)){goal=goals[k];break;}
             if(goal){const route=[{x:goal.x,y:goal.y}];let j=i;while(j!==start){route.push(point(j));j=parents[j];}trail.splice(0,goal.index);return route.reverse();}
             const x=i%N,y=Math.floor(i/N);
-            for(const [dx,dy] of [[1,0],[0,1],[-1,0],[0,-1]]){const xx=x+dx,yy=y+dy,j=yy*N+xx;if(xx<0||xx>=N||yy<0||yy>=N||parents[j]>=0)continue;const next=point(j);if(segment(sector,p,next)){parents[j]=i;queue.push(j);}}
+            for(const [dx,dy] of [[1,0],[0,1],[-1,0],[0,-1]]){const xx=x+dx,yy=y+dy,j=yy*N+xx;if(xx<0||xx>=N||yy<0||yy>=N||parents[j]>=0)continue;const next=point(j);if(petSegment(sector,p,next,hero)){parents[j]=i;queue.push(j);}}
         }return [];
     }
     function step(sector,p,dt,time,enabled){
@@ -8206,31 +8357,38 @@ const Companions=(()=>{
             const n=Math.ceil(distance/5);for(let i=1;i<=n;i++)trail.push({x:lastSample.x+(p.x-lastSample.x)*i/n,y:lastSample.y+(p.y-lastSample.y)*i/n});
             lastSample={x:p.x,y:p.y};nextIdle=time+650;target=null;
         }
+        if(dodge(sector,f,p,dt,time))return;
         const gap=selected==='companion-dog'?38:selected==='companion-frog'?48:43;
         let goal=null,following=false;
         if(trail.length&&Math.hypot(f.x-p.x,f.y-p.y)>gap){
             following=true;
             // Follow the travelled route around walls; short safe corner cuts vary the spacing.
             while(detour.length&&Math.hypot(f.x-detour[0].x,f.y-detour[0].y)<2)detour.shift();
-            if(detour.length&&!segment(sector,f,detour[0]))detour=[];
+            if(detour.length&&!petSegment(sector,f,detour[0],p))detour=[];
             if(detour.length)goal=detour[0];
             else{
-                while(trail.length>1&&Math.hypot(f.x-trail[0].x,f.y-trail[0].y)<8&&segment(sector,f,trail[1]))trail.shift();
-                for(let i=Math.min(trail.length-1,8);i>=0;i--)if(segment(sector,f,trail[i])){goal=trail[i];if(i)trail.splice(0,i);break;}
-                if((!goal||Math.hypot(goal.x-f.x,goal.y-f.y)<2)&&time>=retryAt){detour=aroundCorner(sector,f);goal=detour[0]||null;retryAt=time+350;}
+                while(trail.length>1&&Math.hypot(f.x-trail[0].x,f.y-trail[0].y)<8&&petSegment(sector,f,trail[1],p))trail.shift();
+                const lag=Math.hypot(f.x-p.x,f.y-p.y),lookahead=lag>gap+30?trail.length-1:Math.min(trail.length-1,8);
+                for(let i=lookahead;i>=0;i--)if(Math.hypot(trail[i].x-f.x,trail[i].y-f.y)<100&&petSegment(sector,f,trail[i],p)){goal=trail[i];if(i)trail.splice(0,i);break;}
+                if((!goal||Math.hypot(goal.x-f.x,goal.y-f.y)<2)&&time>=retryAt){detour=aroundCorner(sector,f,p);goal=detour[0]||null;retryAt=time+350;}
             }
         }else if(time>nextIdle){
-            if(!target||Math.hypot(f.x-target.x,f.y-target.y)<5){
-                const angle=(++serial*2.399+Math.random()*.7),radius=28+Math.random()*28;
-                const candidate={x:p.x+Math.cos(angle)*radius,y:p.y+Math.sin(angle)*radius};
-                target=segment(sector,f,candidate)?candidate:null;nextIdle=time+900+Math.random()*1600;
+            if(!target){
+                const angle=(++serial*2.399+Math.random()*.7),radius=12+Math.random()*12;
+                const candidate={x:f.x+Math.cos(angle)*radius,y:f.y+Math.sin(angle)*radius};
+                target=Math.hypot(candidate.x-p.x,candidate.y-p.y)<70&&petSegment(sector,f,candidate,p)?candidate:null;nextIdle=time+4500+Math.random()*3000;
             }goal=target;
         }else goal=target;
         if(goal){
             if(following&&!detour.length){const dx=goal.x-f.x,dy=goal.y-f.y,d=Math.hypot(dx,dy),sway=Math.sin(time/850+serial)*4;
-                if(d>10){const varied={x:goal.x-dy/d*sway,y:goal.y+dx/d*sway};if(segment(sector,f,varied))goal=varied;}}
-            const dx=goal.x-f.x,dy=goal.y-f.y,d=Math.hypot(dx,dy),speed=(following?210:55)*(selected==='companion-spider'?1.1:1),amount=Math.min(d,speed*dt);
-            if(d>.5){const x=f.x+dx/d*amount,y=f.y+dy/d*amount;if(segment(sector,f,{x,y})){f.x=x;f.y=y;f.moving=true;f.facing=Math.abs(dx)>Math.abs(dy)?dx>0?'right':'left':dy>0?'down':'up';}}
+                if(d>10){const varied={x:goal.x-dy/d*sway,y:goal.y+dx/d*sway};if(petSegment(sector,f,varied,p))goal=varied;}}
+            const dx=goal.x-f.x,dy=goal.y-f.y,d=Math.hypot(dx,dy),speed=(following?210*(window.titlePowers?.multiplier()||1):55)*(selected==='companion-spider'?1.1:1),amount=Math.min(d,speed*dt);
+            if(d>.5){const x=f.x+dx/d*amount,y=f.y+dy/d*amount;
+                if(petSegment(sector,f,{x,y},p)){f.x=x;f.y=y;f.moving=following;f.facing=Math.abs(dx)>Math.abs(dy)?dx>0?'right':'left':dy>0?'down':'up';}
+                else if(following&&time>=retryAt){detour=aroundCorner(sector,f,p);retryAt=time+350;}
+                else if(!following)target=null;
+            }
+            if(!following&&d<2)target=null;
         }
         // A disconnected old breadcrumb is discarded only when a clear line to the hero exists.
         if(trail.length>600){if(segment(sector,f,p))trail=[{x:p.x,y:p.y}];else trail=trail.slice(-600);}
@@ -8238,7 +8396,7 @@ const Companions=(()=>{
         // so a resting pet does not constantly trigger the unsaved-changes warning.
     }
     function sPosition(sector,f){state().positions[sector]={x:f.x,y:f.y};}
-    function pose(sector){if(!appState.agentName)return null;return sync(sector,map(sector).position());}
+    function pose(sector){if(!appState.agentName||sector===3)return null;return sync(sector,map(sector).position());}
     function draw(ctx,sector,time){
         const f=pose(sector);if(!f||(!f.waiting&&window.worldTravel?.hidesHero(sector)))return;
         ctx.save();ctx.fillStyle='#142c304d';ctx.beginPath();ctx.ellipse(f.x,f.y+2,8,3,0,0,Math.PI*2);ctx.fill();
@@ -8252,52 +8410,44 @@ const Companions=(()=>{
     function arrive(route){
         if(route.sector===3&&route.to===2)state().waiting=null;
         follower=null;trail=[];lastSample=null;
+        if(route.to===3&&activeId()){const owner=appState;queueMicrotask(()=>{if(appState===owner&&appState.currentViewSector===3&&!window.worldTravel?.isTravelling())showMoonInfo();});}
     }
     function rollback(saved){appState.companionTravel=saved;reset();}
     const modal=document.getElementById('modalOverlay'),section=document.createElement('div');section.id='companion-moon-notice';section.className='mission-content hidden';
-    const text=document.createElement('p');text.textContent='Dein Begleiter kann nicht mit zur Moonbase. Er wartet beim Raketenstartplatz in Robotown auf dich und kommt nach deiner Rückkehr wieder mit.';
-    const yes=document.createElement('button');yes.type='button';yes.className='mcu-btn px-6 py-3';yes.textContent='Verstanden · Rakete starten';
-    const no=document.createElement('button');no.type='button';no.className='mcu-btn px-6 py-3';no.textContent='Zurück';
-    section.append(text,yes,no);document.getElementById('modalContent').appendChild(section);let pending=null;
-    function finish(value){const done=pending;pending=null;closeModal();CityLevel2.focus();if(done)done(value);}
-    yes.addEventListener('click',()=>finish(true));no.addEventListener('click',()=>finish(false));
-    const close=window.closeModal;window.closeModal=function(...args){const done=pending;pending=null;const result=close.apply(this,args);if(done)done(false);return result;};
-    function confirmMoon(){
-        if(!activeId())return Promise.resolve(true);
-        hideAllModalContent();delete modal.dataset.menu;modal.dataset.chapter='2';document.getElementById('modalTitle').textContent='DEIN BEGLEITER WARTET';section.classList.remove('hidden');modal.classList.remove('hidden');yes.focus();
-        return new Promise(resolve=>pending=resolve);
+    const text=document.createElement('p');text.textContent='Dein Begleiter wartet während deiner Mondreise beim Raketenstartplatz in Robotown auf dich. Nach deiner Rückkehr begleitet er dich wieder.';
+    const yes=document.createElement('button');yes.type='button';yes.className='mcu-btn px-6 py-3';yes.textContent='Verstanden';
+    section.append(text,yes);document.getElementById('modalContent').appendChild(section);
+    yes.addEventListener('click',()=>{closeModal();PlanetLevel3.focus();});
+    function showMoonInfo(){
+        hideAllModalContent();delete modal.dataset.menu;modal.dataset.chapter='3';document.getElementById('modalTitle').textContent='DEIN BEGLEITER WARTET IN ROBOTOWN';section.classList.remove('hidden');modal.classList.remove('hidden');yes.focus();
     }
     const show=window.showMainUI;window.showMainUI=function(...args){reset();const s=state();if(appState.currentViewSector===3&&activeId()&&!s.waiting){const port=spot(2,{x:1074,y:624});s.waiting={id:activeId(),...port};}return show.apply(this,args);};
     const save=window.saveProgress;window.saveProgress=function(...args){if(follower&&!window.worldTravel?.isTravelling())sPosition(follower.sector,follower);return save.apply(this,args);};
-    const api={step,pose,draw,board,arrive,rollback,confirmMoon,state,activeId,reset};window.companions=api;return api;
+    const api={step,pose,draw,board,arrive,rollback,state,activeId,reset,blocksHero,moveHero};window.companions=api;return api;
 })();
 
-
-// A portable inventory is deliberately separate from a full save: no balance, identity or progress.
+// A named purchase export carries inventory and owner name; no balance or progress.
 const PurchaseTransfer=(()=>{
     const format='legend-of-decimals-purchases',eligible=item=>item&&item.price>0&&item.kind!=='astro';
-    function snapshot(){return {format,version:1,items:ensureShopState().state.owned.filter(id=>eligible(shopItem(id))).sort()};}
-    function download(){
-        const blob=new Blob([JSON.stringify(snapshot(),null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
-        a.href=url;a.download='The_Legend_of_Decimals_Kaeufe.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);status.textContent='Deine Freischaltungen wurden exportiert. Coins und Spielfortschritt sind nicht enthalten.';
+    function snapshot(){
+        const playerName=String(appState.agentName||'').trim().normalize('NFC');if(!playerName)throw Error('Es fehlt ein Heldenname.');
+        return {format,version:2,sourceGame:'the-legend-of-decimals',playerName,items:ensureShopState().state.owned.filter(id=>eligible(shopItem(id))).sort()};
     }
-    function merge(data){
-        if(!data||data.format!==format||data.version!==1||!Array.isArray(data.items)||data.items.length>200||data.items.some(id=>typeof id!=='string'||!eligible(shopItem(id))))throw Error('Ungültige Kaufdatei. Bitte wähle einen Export über «Käufe übertragen».');
-        const s=ensureShopState().state;let count=0;for(const id of new Set(data.items))if(!s.owned.includes(id)){s.owned.push(id);count++;}
-        ensureShopState();if(count)s.updatedAt=new Date().toISOString();applyShopAppearance();renderShop();
-        return count;
+    function download(){
+        const data=snapshot(),blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+        const name=data.playerName.replace(/[<>:"/\\|?*\u0000-\u001f]/g,'_').replace(/[. ]+$/g,'');
+        a.href=url;a.download='The_Legend_of_Decimals_Kaeufe_'+name+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+        status.textContent='Deine Käufe wurden für '+data.playerName+' exportiert. Coins und Spielfortschritt sind nicht enthalten.';
     }
     const section=document.createElement('div');section.id='purchase-transfer-content';section.className='mission-content hidden';
-    section.innerHTML='<button type="button" class="settings-back">‹ Zurück zu Einstellungen</button><div class="game-instructions"><section><h3>Käufe übertragen</h3><p>Exportiere deine gekauften Helden, Begleiter, Farben, Titel und Siegeseffekte für eine andere kompatible Spielwelt. Die Datei enthält nur Freischaltungen, keine Coins, Astrostutz oder Questergebnisse. Der Astronaut bleibt an den Spielfortschritt gebunden.</p><p>Importierte Käufe werden zu deiner Sammlung ergänzt. Wähle sie danach im Shop aus. Sichere sie anschliessend mit dem normalen Speichern-Button in deinem Spielstand.</p><button type="button" id="purchases-export" class="mcu-btn px-6 py-3">Käufe exportieren</button> <button type="button" id="purchases-import" class="mcu-btn px-6 py-3">Käufe importieren</button><input type="file" id="purchases-file" accept=".json,application/json" hidden><p id="purchases-status" role="status" aria-live="polite"></p></section></div>';
-    document.getElementById('modalContent').appendChild(section);const status=section.querySelector('#purchases-status'),file=section.querySelector('#purchases-file');
-    const button=document.createElement('button');button.type='button';button.className='settings-entry';button.id='settings-purchases';button.innerHTML='<span class="settings-entry-icon" aria-hidden="true">🎒</span><span class="settings-entry-label"><strong>Käufe übertragen</strong><small>Freischaltungen ohne Coins exportieren und importieren.</small></span><span class="settings-entry-arrow" aria-hidden="true">›</span>';
+    section.innerHTML='<button type="button" class="settings-back">‹ Zurück zu Einstellungen</button><div class="game-instructions"><section><h3>Käufe übertragen</h3><p>Exportiere deine gekauften Helden, Begleiter, Farben, Titel und Siegeseffekte als JSON-Datei für die nächste Spielwelt. Coins, Astrostutz und Questergebnisse werden nicht übertragen. Der Astronaut bleibt an den Spielfortschritt gebunden.</p><p>Die Datei enthält deinen Heldennamen: <strong id="purchases-player-name"></strong>. Im zweiten Spiel können die Käufe nur mit genau demselben Namen übernommen werden.</p><div class="purchase-export-actions"><button type="button" id="purchases-export" class="purchase-export-button">Käufe exportieren</button></div><p id="purchases-status" role="status" aria-live="polite"></p></section></div>';
+    document.getElementById('modalContent').appendChild(section);const status=section.querySelector('#purchases-status');
+    const button=document.createElement('button');button.type='button';button.className='settings-entry';button.id='settings-purchases';button.innerHTML='<span class="settings-entry-icon" aria-hidden="true">🎒</span><span class="settings-entry-label"><strong>Käufe übertragen</strong><small>Käufe als JSON-Datei für denselben Heldennamen exportieren.</small></span><span class="settings-entry-arrow" aria-hidden="true">›</span>';
     document.querySelector('#settings-content .settings-entries').appendChild(button);
-    button.addEventListener('click',()=>{if(!SettingsMenu.open())return;hideAllModalContent();section.classList.remove('hidden');document.getElementById('modalTitle').textContent='KÄUFE ÜBERTRAGEN';status.textContent='';});
-    section.querySelector('.settings-back').addEventListener('click',()=>SettingsMenu.open());section.querySelector('#purchases-export').addEventListener('click',download);section.querySelector('#purchases-import').addEventListener('click',()=>file.click());
-    file.addEventListener('change',async()=>{const selected=file.files[0],owner=appState;file.value='';if(!selected)return;try{if(selected.size>1024*1024)throw Error('Diese Datei ist zu gross. Bitte wähle eine Kaufdatei.');const data=JSON.parse(await selected.text());if(appState!==owner)return;const n=merge(data);status.textContent=n?n+' Freischaltungen ergänzt. Deine Coins und Quests bleiben unverändert.':'Diese Käufe sind bereits freigeschaltet.';}catch(error){status.textContent=error instanceof SyntaxError?'Diese Datei ist keine gültige JSON-Kaufdatei.':error.message;}});
-    return {snapshot,merge,download};
+    button.addEventListener('click',()=>{if(!SettingsMenu.open())return;hideAllModalContent();section.classList.remove('hidden');document.getElementById('modalTitle').textContent='KÄUFE ÜBERTRAGEN';section.querySelector('#purchases-player-name').textContent=appState.agentName;status.textContent='';});
+    section.querySelector('.settings-back').addEventListener('click',()=>SettingsMenu.open());section.querySelector('#purchases-export').addEventListener('click',download);
+    return {snapshot,download};
 })();
-
 
 NumberWriting.observe();
     </script>
