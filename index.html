@@ -1020,6 +1020,20 @@ body:has(#screen-map:not(.hidden) #sector-3-container:not(.hidden)) {
 #file-save-feedback{position:fixed;bottom:24px;right:24px;max-width:min(380px,calc(100vw - 48px));padding:14px 18px;z-index:11000;border:1px solid var(--header-accent,#d4b469);background:#142a24;color:#f0dfb0;box-shadow:0 4px 20px #0008;font:14px/1.5 Arial,sans-serif;overflow-wrap:anywhere}
 #file-save-feedback[hidden]{display:none}
 </style>
+
+<style id="roaming-npc-styles">
+.roaming-npc-conversation { display:flex; align-items:center; gap:clamp(18px,3vw,32px); padding:clamp(18px,3vw,30px); border:1px solid var(--mission-accent); background:linear-gradient(135deg,#213e36b3,#101e2ac7); border-radius:6px; }
+#modalOverlay[data-chapter="2"] .roaming-npc-conversation { background:linear-gradient(135deg,#173949b3,#111e2ec7); }
+#modalOverlay[data-chapter="3"] .roaming-npc-conversation { background:linear-gradient(135deg,#352c4ab3,#1a2033c7); }
+#roaming-npc-portrait { flex:0 0 144px; width:144px; height:144px; image-rendering:pixelated; }
+.roaming-npc-conversation > div { flex:1; min-width:0; }
+#roaming-npc-line { margin:0; color:#e4e8dc; font:500 clamp(20px,2.3vw,26px)/1.65 'Rajdhani',Arial,sans-serif; overflow-wrap:anywhere; }
+.roaming-npc-actions { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:16px; margin-top:26px; }
+.roaming-npc-actions button { min-height:48px; padding:13px 23px; border:1px solid var(--mission-accent); color:var(--mission-title); background:#1b3339; font:700 17px/1.4 'Rajdhani',Arial,sans-serif; cursor:pointer; border-radius:3px; }
+.roaming-npc-actions button:hover { background:#35504c; }
+.roaming-npc-actions button:focus-visible { outline:2px solid var(--mission-title); outline-offset:4px; }
+@media(max-width:620px) { .roaming-npc-conversation { flex-direction:column; gap:14px; text-align:center; } #roaming-npc-portrait { flex-basis:auto; width:105px; height:105px; } .roaming-npc-actions button { flex:1; } }
+</style>
 </head>
 <body class="min-h-screen flex flex-col hologram-bg">
 
@@ -5404,10 +5418,10 @@ const IslandLevel1=(()=>{
         if(!['up','down','left','right'].includes(p.facing))p.facing='up';
         return p;
     }
-    const available=s=>s.travel?window.worldTravel.available(s):s.secret===true||s.id==='shop'||directorMode||s.id===1||appState.sector1Completed[s.id-2]===true;
+    const available=s=>s.npc===true?true:s.travel?window.worldTravel.available(s):s.secret===true||s.id==='shop'||directorMode||s.id===1||appState.sector1Completed[s.id-2]===true;
     const solved=s=>s.secret===true?!!window.islandSecrets?.isSolved(s.id):s.id!=='shop'&&appState.sector1Completed[s.id-1]===true;
     function nextSite(){return sites.find(s=>s.id!=='shop'&&!solved(s));}
-    function nearby(){const p=position();return sites.find(s=>p.y>=s.door.y+6&&p.y<=s.door.y+72&&Math.abs(p.x-s.door.x)<44)||window.islandSecrets?.nearby(p,1)||window.worldTravel?.nearby(p,1)||null;}
+    function nearby(){const p=position();return sites.find(s=>p.y>=s.door.y+6&&p.y<=s.door.y+72&&Math.abs(p.x-s.door.x)<44)||window.islandSecrets?.nearby(p,1)||window.worldTravel?.nearby(p,1)||window.roamingNpcs?.nearby(p,1)||null;}
     function worldVisible(){return appState.agentName&&appState.currentViewSector===1&&!document.getElementById('screen-map').classList.contains('hidden');}
     function active(){return worldVisible()&&document.getElementById('modalOverlay').classList.contains('hidden')&&document.getElementById('shop-overlay').hidden&&!window.islandSecrets?.isOpen()&&!window.worldTravel?.isTravelling()&&!window.learningViewCheckpoint?.isBlocked()&&!window.bossEncounters?.isOpen();}
     function focus(){keys.clear();if(active())canvas.focus({preventScroll:true});}
@@ -5421,18 +5435,18 @@ const IslandLevel1=(()=>{
     let lastPrompt='';
     function updatePrompt(){
         const s=nearby();let text;
-        if(s){text=s.travel?window.worldTravel.prompt(s):s.secret?(solved(s)?`✓ ${s.name} · Bereits entdeckt`:s.prompt):available(s)?`${solved(s)?'✓ ':''}${s.name}${s.id==='shop'?' · Ausrüstung & Astrostutz':''}`:`🔒 ${s.name} · Löse zuerst Quest ${s.id-1}.`;}
+        if(s){text=s.npc?s.prompt:s.travel?window.worldTravel.prompt(s):s.secret?(solved(s)?`✓ ${s.name} · Bereits entdeckt`:s.prompt):available(s)?`${solved(s)?'✓ ':''}${s.name}${s.id==='shop'?' · Ausrüstung & Astrostutz':''}`:`🔒 ${s.name} · Löse zuerst Quest ${s.id-1}.`;}
         else text='Erkunde The Island. Die goldene Markierung zeigt dein nächstes Ziel.';
         document.getElementById('island-prompt-text').closest('.island-prompt').hidden=!gameplayHintsEnabled()&&(!s||!available(s));
         document.getElementById('island-prompt-text').closest('.island-prompt').classList.toggle('island-prompt-compact',!gameplayHintsEnabled());
         if(text!==lastPrompt){document.getElementById('island-prompt-text').textContent=text;lastPrompt=text;}
         document.getElementById('island-enter').hidden=!s||!available(s);
-        document.getElementById('island-enter').textContent=!gameplayHintsEnabled()?'Aktion ausführen · E':s?.travel?'Reisen · E':s?.secret?'Untersuchen · E':'Betreten · E';
+        document.getElementById('island-enter').textContent=!gameplayHintsEnabled()?'Aktion ausführen · E':s?.npc?'Sprechen · E':s?.travel?'Reisen · E':s?.secret?'Untersuchen · E':'Betreten · E';
     }
     function interact(){
         if(!active())return;
         const s=nearby();keys.clear();if(!s||!available(s))return;
-        if(s.travel)window.worldTravel.open(s.id);else if(s.secret)window.islandSecrets.open(s.id);else if(s.id==='shop')openShop();else openMission(1,s.id);
+        if(s.npc)window.roamingNpcs.open(s.id);else if(s.travel)window.worldTravel.open(s.id);else if(s.secret)window.islandSecrets.open(s.id);else if(s.id==='shop')openShop();else openMission(1,s.id);
     }
     // Additional swimming scenery. The separate twelve-fish riddle stays intact.
     const scenerySchools=[{id:'large-lake',tiles:lakeTiles,count:20},{id:'small-lake',tiles:smallLakes.filter(p=>p.x<640&&p.y>640&&p.y<960),count:5}];
@@ -5734,6 +5748,7 @@ const IslandLevel1=(()=>{
             ...rocks.filter(t=>visible(t.x,t.y)).map(t=>({y:t.y,paint:()=>rock(t)})),
             ...sites.filter(s=>visible(s.door.x,s.door.y,220)).map(s=>({y:s.y+s.h,paint:()=>building(s)})),{y:p.y,paint:avatar}];
         const companion=window.companions?.pose(1);if(companion)objects.push({y:companion.y,paint:()=>window.companions.draw(ctx,1,tick)});
+        const npc=window.roamingNpcs?.pose(1);if(npc)objects.push({y:npc.y,paint:()=>window.roamingNpcs.draw(ctx,1)});
         objects.sort((a,b)=>a.y-b.y).forEach(o=>o.paint());
         if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
             ctx.fillStyle='#91c7c32b';for(let i=0;i<18;i++){
@@ -5758,6 +5773,7 @@ const IslandLevel1=(()=>{
             updatePrompt();
         }else keys.clear();
         if(worldVisible())window.companions?.step(1,position(),dt,time,active());
+        if(worldVisible())window.roamingNpcs?.step(1,dt,time,active());
         if(worldVisible())draw();
         raf=requestAnimationFrame(frame);
     }
@@ -5988,10 +6004,10 @@ const CityLevel2=(()=>{
         if(!['up','down','left','right'].includes(p.facing))p.facing='up';
         return p;
     }
-    const available=s=>s.travel?window.worldTravel.available(s):s.secret===true||directorMode||s.id===1||appState.sector2Completed[s.id-2]===true;
+    const available=s=>s.npc===true?true:s.travel?window.worldTravel.available(s):s.secret===true||directorMode||s.id===1||appState.sector2Completed[s.id-2]===true;
     const solved=s=>s.secret===true?!!window.islandSecrets?.isSolved(s.id):appState.sector2Completed[s.id-1]===true;
     const nextSite=()=>sites.find(s=>!solved(s));
-    function nearby(){const p=position(),secret=window.islandSecrets?.nearby(p,2);return (secret?.id==='city-robot'?secret:null)||sites.find(s=>p.y>=s.door.y+6&&p.y<=s.door.y+72&&Math.abs(p.x-s.door.x)<44)||secret||window.worldTravel?.nearby(p,2)||null;}
+    function nearby(){const p=position(),secret=window.islandSecrets?.nearby(p,2);return (secret?.id==='city-robot'?secret:null)||sites.find(s=>p.y>=s.door.y+6&&p.y<=s.door.y+72&&Math.abs(p.x-s.door.x)<44)||secret||window.worldTravel?.nearby(p,2)||window.roamingNpcs?.nearby(p,2)||null;}
     function visible(){return appState.agentName&&appState.currentViewSector===2&&!document.getElementById('screen-map').classList.contains('hidden');}
     function active(){return visible()&&document.getElementById('modalOverlay').classList.contains('hidden')&&document.getElementById('shop-overlay').hidden&&!window.islandSecrets?.isOpen()&&!window.worldTravel?.isTravelling()&&!window.learningViewCheckpoint?.isBlocked()&&!window.bossEncounters?.isOpen();}
     const shell=document.createElement('section');shell.className='island-shell city-shell';shell.setAttribute('aria-label','Begehbare Technikstadt Robotown in Chapter 2');
@@ -6187,12 +6203,12 @@ const CityLevel2=(()=>{
     let moving=false,last=0,tick=0,lastPrompt='';
     function updatePrompt(){
         const s=nearby();
-        let text=s?(s.travel?window.worldTravel.prompt(s):s.secret?(solved(s)?`✓ ${s.name} · Bereits entdeckt`:s.prompt):available(s)?`${solved(s)?'✓ ':''}${s.name}${s.boss?' · Bossfight':''}`:`🔒 ${s.name} · Löse zuerst Quest ${s.id-1}.`):'Erkunde Robotown. Gold markiert deine nächste Quest.';
+        let text=s?(s.npc?s.prompt:s.travel?window.worldTravel.prompt(s):s.secret?(solved(s)?`✓ ${s.name} · Bereits entdeckt`:s.prompt):available(s)?`${solved(s)?'✓ ':''}${s.name}${s.boss?' · Bossfight':''}`:`🔒 ${s.name} · Löse zuerst Quest ${s.id-1}.`):'Erkunde Robotown. Gold markiert deine nächste Quest.';
         document.getElementById('city-prompt-text').closest('.island-prompt').hidden=!gameplayHintsEnabled()&&(!s||!available(s));
         document.getElementById('city-prompt-text').closest('.island-prompt').classList.toggle('island-prompt-compact',!gameplayHintsEnabled());
         if(text!==lastPrompt){document.getElementById('city-prompt-text').textContent=text;lastPrompt=text;}
         document.getElementById('city-enter').hidden=!s||!available(s);
-        document.getElementById('city-enter').textContent=!gameplayHintsEnabled()?'Aktion ausführen · E':s?.travel?'Reisen · E':s?.secret?'Untersuchen · E':'Betreten · E';
+        document.getElementById('city-enter').textContent=!gameplayHintsEnabled()?'Aktion ausführen · E':s?.npc?'Sprechen · E':s?.travel?'Reisen · E':s?.secret?'Untersuchen · E':'Betreten · E';
     }
     function refresh(){
         if(!appState.agentName)return;
@@ -6202,7 +6218,7 @@ const CityLevel2=(()=>{
     function focus(){keys.clear();if(active())canvas.focus({preventScroll:true});}
     function interact(){
         if(!active())return;
-        const s=nearby();keys.clear();if(s&&available(s)){if(s.travel)window.worldTravel.open(s.id);else if(s.secret)window.islandSecrets.open(s.id);else openMission(2,s.id);}
+        const s=nearby();keys.clear();if(s&&available(s)){if(s.npc)window.roamingNpcs.open(s.id);else if(s.travel)window.worldTravel.open(s.id);else if(s.secret)window.islandSecrets.open(s.id);else openMission(2,s.id);}
     }
     function avatar(){
         if(window.worldTravel?.hidesHero(2))return;
@@ -6239,6 +6255,7 @@ const CityLevel2=(()=>{
             ...obstacles.filter(o=>inView(o.x,o.y)).map(o=>({y:o.y+o.h,paint:()=>utility(o)})),
             ...lamps.filter(l=>inView(l.x,l.y)).map(l=>({y:l.y,paint:()=>lamp(l)})),{y:position().y,paint:avatar}];
         const companion=window.companions?.pose(2);if(companion)objects.push({y:companion.y,paint:()=>window.companions.draw(ctx,2,tick)});
+        const npc=window.roamingNpcs?.pose(2);if(npc)objects.push({y:npc.y,paint:()=>window.roamingNpcs.draw(ctx,2)});
         objects.sort((a,b)=>a.y-b.y).forEach(o=>o.paint());
         if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
             ctx.fillStyle='#b9e4e226';for(let x=160;x<W-96;x+=288)ctx.fillRect(x+(tick/120)%16,402,19,2);
@@ -6261,6 +6278,7 @@ const CityLevel2=(()=>{
             updateRobot(dt);updatePrompt();
         }else {keys.clear();robotMoving=false;}
         if(visible())window.companions?.step(2,position(),dt,time,active());
+        if(visible())window.roamingNpcs?.step(2,dt,time,active());
         if(visible())draw();requestAnimationFrame(frame);
     }
     document.addEventListener('keydown',e=>{
@@ -6416,6 +6434,7 @@ const PlanetLevel3=(()=>{
     }
     function canStep(p,x,y){
         if(!walkable(x,y,motion.z>12))return false;
+        if(motion.z<=12&&window.roamingNpcs?.blocksHero(3,p,x,y))return false;
         const c=craterAt(p.x,p.y);
         // A crater has a raised lip: walking enters it, but leaving needs a jump.
         return c<0||motion.z>12||craterAt(x,y)===c;
@@ -6468,10 +6487,10 @@ const PlanetLevel3=(()=>{
         if(motion.owner!==appState||motion.hero!==p)resetMotion(p);
         if(!['up','down','left','right'].includes(p.facing))p.facing='up';return p;
     }
-    const available=s=>s.travel?window.worldTravel.available(s):s.secret===true||directorMode||s.id===1||appState.sector3Completed[s.id-2]===true;
+    const available=s=>s.npc===true?true:s.travel?window.worldTravel.available(s):s.secret===true||directorMode||s.id===1||appState.sector3Completed[s.id-2]===true;
     const solved=s=>s.secret===true?!!window.islandSecrets?.isSolved(s.id):appState.sector3Completed[s.id-1]===true;
     const nextSite=()=>sites.find(s=>!solved(s));
-    function nearby(){const p=position();return sites.find(s=>p.y>=s.door.y+6&&p.y<=s.door.y+72&&Math.abs(p.x-s.door.x)<44)||window.islandSecrets?.nearby(p,3)||window.worldTravel?.nearby(p,3)||null;}
+    function nearby(){const p=position();return sites.find(s=>p.y>=s.door.y+6&&p.y<=s.door.y+72&&Math.abs(p.x-s.door.x)<44)||window.islandSecrets?.nearby(p,3)||window.worldTravel?.nearby(p,3)||window.roamingNpcs?.nearby(p,3)||null;}
     function visible(){return appState.agentName&&appState.currentViewSector===3&&!document.getElementById('screen-map').classList.contains('hidden');}
     function active(){return visible()&&document.getElementById('modalOverlay').classList.contains('hidden')&&document.getElementById('shop-overlay').hidden&&!window.islandSecrets?.isOpen()&&!window.worldTravel?.isTravelling()&&!window.learningViewCheckpoint?.isBlocked()&&!window.bossEncounters?.isOpen();}
     const shell=document.createElement('section');shell.className='island-shell planet-shell';shell.setAttribute('aria-label','Begehbare Mondbasis Moonbase in Chapter 3');
@@ -6707,14 +6726,14 @@ const PlanetLevel3=(()=>{
     }
     let moving=false,last=0,tick=0,lastPrompt='';
     function updatePrompt(){
-        const s=nearby();let text=s?(s.travel?window.worldTravel.prompt(s):s.secret?(solved(s)?`✓ ${s.name} · Bereits entdeckt`:s.prompt):available(s)?`${solved(s)?'✓ ':''}${s.name}${s.id===6?' · Neue Übungsrunden':s.boss?' · Bossfight':''}`:`🔒 ${s.name} · ${s.id===7?'Beende zuerst «Genauigkeit üben».':`Löse zuerst Quest ${s.id-1}.`}`):'Erkunde die Moonbase. Gold markiert dein nächstes Ziel.';
+        const s=nearby();let text=s?(s.npc?s.prompt:s.travel?window.worldTravel.prompt(s):s.secret?(solved(s)?`✓ ${s.name} · Bereits entdeckt`:s.prompt):available(s)?`${solved(s)?'✓ ':''}${s.name}${s.id===6?' · Neue Übungsrunden':s.boss?' · Bossfight':''}`:`🔒 ${s.name} · ${s.id===7?'Beende zuerst «Genauigkeit üben».':`Löse zuerst Quest ${s.id-1}.`}`):'Erkunde die Moonbase. Gold markiert dein nächstes Ziel.';
         if(motion.crater>=0)text='Im Krater · Drücke R und eine Richtung, um hinauszuspringen.';
         document.getElementById('planet-prompt-text').closest('.island-prompt').hidden=!gameplayHintsEnabled()&&(!s||!available(s));
         document.getElementById('planet-prompt-text').closest('.island-prompt').classList.toggle('island-prompt-compact',!gameplayHintsEnabled());
         if(text!==lastPrompt){document.getElementById('planet-prompt-text').textContent=text;lastPrompt=text;}
         document.getElementById('planet-enter').hidden=!s||!available(s);
         if(motion.crater>=0){document.getElementById('planet-prompt-text').closest('.island-prompt').hidden=false;document.getElementById('planet-prompt-text').closest('.island-prompt').classList.remove('island-prompt-compact');}
-        document.getElementById('planet-enter').textContent=!gameplayHintsEnabled()?'Aktion ausführen · E':s?.travel?'Reisen · E':s?.secret?'Untersuchen · E':'Betreten · E';
+        document.getElementById('planet-enter').textContent=!gameplayHintsEnabled()?'Aktion ausführen · E':s?.npc?'Sprechen · E':s?.travel?'Reisen · E':s?.secret?'Untersuchen · E':'Betreten · E';
     }
     function refresh(){
         if(!appState.agentName)return;
@@ -6722,7 +6741,7 @@ const PlanetLevel3=(()=>{
         document.getElementById('planet-next').textContent=next?`Nächstes Ziel: ${next.name}`:'✓ NULLOX besiegt · Alle drei Kapitel geschafft';updatePrompt();
     }
     function focus(){keys.clear();if(active())canvas.focus({preventScroll:true});}
-    function interact(){if(!active()||motion.z>0)return;const s=nearby();keys.clear();if(s&&available(s)){if(s.travel)window.worldTravel.open(s.id);else if(s.secret)window.islandSecrets.open(s.id);else openMission(3,s.id);}}
+    function interact(){if(!active()||motion.z>0)return;const s=nearby();keys.clear();if(s&&available(s)){if(s.npc)window.roamingNpcs.open(s.id);else if(s.travel)window.worldTravel.open(s.id);else if(s.secret)window.islandSecrets.open(s.id);else openMission(3,s.id);}}
     function avatar(){
         if(window.worldTravel?.hidesHero(3))return;
         const p=position();
@@ -6763,6 +6782,7 @@ const PlanetLevel3=(()=>{
         window.titlePowers?.trail(ctx,3);
         const objects=[...sites.filter(s=>inView(s.door.x,s.door.y,260)).map(s=>({y:s.y+s.h,paint:()=>station(s)})),
             ...props.filter(o=>inView(o.x,o.y)).map(o=>({y:o.y+o.h,paint:()=>prop(o)})),{y:position().y,paint:avatar}];
+        const npc=window.roamingNpcs?.pose(3);if(npc)objects.push({y:npc.y,paint:()=>window.roamingNpcs.draw(ctx,3)});
         objects.sort((a,b)=>a.y-b.y).forEach(o=>o.paint());
         if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){ctx.fillStyle='#d7c7e330';for(let i=0;i<12;i++)ctx.fillRect(24+i*169+Math.sin(tick/2500+i)*4,i%2?H-24:24,3,2);}
         window.worldTravel?.paintFlight(ctx,3,cam,cam.width,cam.height);
@@ -6776,6 +6796,7 @@ const PlanetLevel3=(()=>{
             let dy=Number(keys.has('ArrowDown')||keys.has('s'))-Number(keys.has('ArrowUp')||keys.has('w'));
             moonStep(dt,dx,dy);updatePrompt();
         }else {keys.clear();motion.vx=motion.vy=0;}
+        if(visible())window.roamingNpcs?.step(3,dt,time,active());
         if(visible())draw();requestAnimationFrame(frame);
     }
     document.addEventListener('keydown',e=>{
@@ -8308,8 +8329,8 @@ const Companions=(()=>{
         }
         const count=Math.max(1,Math.ceil(norm/3));
         for(let i=0;i<count;i++){
-            const x=p.x+dx/count;if(x!==p.x&&safe(sector,x,p.y)&&!blocksHero(sector,p,x,p.y)){p.x=x;moved=true;}
-            const y=p.y+dy/count;if(y!==p.y&&safe(sector,p.x,y)&&!blocksHero(sector,p,p.x,y)){p.y=y;moved=true;}
+            const x=p.x+dx/count;if(x!==p.x&&safe(sector,x,p.y)&&!blocksHero(sector,p,x,p.y)&&!window.roamingNpcs?.blocksHero(sector,p,x,p.y)){p.x=x;moved=true;}
+            const y=p.y+dy/count;if(y!==p.y&&safe(sector,p.x,y)&&!blocksHero(sector,p,p.x,y)&&!window.roamingNpcs?.blocksHero(sector,p,p.x,y)){p.y=y;moved=true;}
         }return moved;
     }
     function dodge(sector,f,p,dt,time){
@@ -8570,6 +8591,211 @@ const GameFileSave=(()=>{
     prime(appState);
     const api={save,prime,supported,isSaving:()=>busy,status:()=>({supported:supported(),busy,file:target?.handle.name||null,remembered:!!target})};window.gameFileSave=api;return api;
 })();
+
+
+const RoamingNPCSprites=(()=>{
+    const atlas={"bauer":{"file":"bauer.png","width":1254,"height":1254,"rows":["down","left","right","up"],"columns":["idle","step-left","passing","step-right"],"frames":[{"x":110,"y":52,"w":166,"h":259},{"x":396,"y":51,"w":166,"h":260},{"x":684,"y":51,"w":166,"h":260},{"x":975,"y":52,"w":167,"h":259},{"x":116,"y":342,"w":156,"h":257},{"x":398,"y":343,"w":157,"h":255},{"x":683,"y":342,"w":155,"h":257},{"x":979,"y":343,"w":158,"h":255},{"x":113,"y":633,"w":156,"h":261},{"x":395,"y":633,"w":160,"h":261},{"x":682,"y":633,"w":162,"h":261},{"x":971,"y":632,"w":160,"h":262},{"x":113,"y":924,"w":159,"h":260},{"x":394,"y":923,"w":160,"h":262},{"x":680,"y":923,"w":161,"h":262},{"x":975,"y":923,"w":160,"h":262}],"maxWidth":167,"maxHeight":262},"roboter":{"file":"roboter.png","width":1254,"height":1254,"rows":["down","left","right","up"],"columns":["idle","step-left","passing","step-right"],"frames":[{"x":139,"y":70,"w":138,"h":215},{"x":416,"y":69,"w":136,"h":216},{"x":693,"y":69,"w":136,"h":214},{"x":972,"y":69,"w":137,"h":214},{"x":147,"y":356,"w":113,"h":217},{"x":418,"y":356,"w":126,"h":216},{"x":702,"y":355,"w":114,"h":218},{"x":981,"y":355,"w":123,"h":217},{"x":152,"y":642,"w":115,"h":219},{"x":418,"y":642,"w":131,"h":217},{"x":700,"y":642,"w":118,"h":219},{"x":977,"y":642,"w":130,"h":217},{"x":138,"y":930,"w":139,"h":219},{"x":412,"y":930,"w":139,"h":219},{"x":691,"y":931,"w":137,"h":218},{"x":973,"y":931,"w":143,"h":218}],"maxWidth":143,"maxHeight":219},"alien":{"file":"alien.png","width":1254,"height":1254,"rows":["down","left","right","up"],"columns":["idle","step-left","passing","step-right"],"frames":[{"x":137,"y":57,"w":131,"h":253},{"x":416,"y":57,"w":130,"h":253},{"x":698,"y":58,"w":130,"h":252},{"x":981,"y":57,"w":130,"h":253},{"x":144,"y":346,"w":119,"h":253},{"x":418,"y":345,"w":133,"h":254},{"x":707,"y":346,"w":119,"h":253},{"x":986,"y":345,"w":131,"h":254},{"x":136,"y":639,"w":119,"h":256},{"x":410,"y":639,"w":137,"h":255},{"x":697,"y":639,"w":126,"h":256},{"x":972,"y":641,"w":142,"h":254},{"x":136,"y":935,"w":129,"h":258},{"x":408,"y":936,"w":132,"h":258},{"x":690,"y":936,"w":129,"h":257},{"x":972,"y":936,"w":135,"h":258}],"maxWidth":142,"maxHeight":258}},assets=new Map(),directions={down:0,left:1,right:2,up:3};
+    const base=new URL('npcs/',new URL(document.documentElement.dataset.spriteBase||'sprites/',document.baseURI));
+    const calm=matchMedia('(prefers-reduced-motion: reduce)');
+    const ready=Promise.all(Object.keys(atlas).map(name=>new Promise(resolve=>{
+        const image=new Image(),entry={image,loaded:false,error:false};assets.set(name,entry);
+        image.onload=()=>{entry.loaded=true;resolve();};image.onerror=()=>{entry.error=true;resolve();};
+        image.src=new URL(atlas[name].file,base).href;
+    })));
+    function draw(ctx,name,x,y,facing='down',moving=false,time=0,size=40){
+        const a=assets.get(name),meta=atlas[name];if(!a?.loaded||!meta)return false;
+        const col=moving&&!calm.matches?[1,2,3,2][Math.floor(time/150)%4]:0;
+        const f=meta.frames[(directions[facing]??0)*4+col],scale=Math.min(size/meta.maxHeight,size*.9/meta.maxWidth);
+        const w=Math.round(f.w*scale),h=Math.round(f.h*scale);
+        ctx.save();ctx.imageSmoothingEnabled=false;
+        ctx.drawImage(a.image,f.x,f.y,f.w,f.h,Math.round(x-w/2),Math.round(y-h),w,h);ctx.restore();return true;
+    }
+    return {draw,ready,status:()=>Object.fromEntries([...assets].map(([name,a])=>[name,{loaded:a.loaded,error:a.error}]))};
+})();
+
+// Local scenery actors only: no quest flags, Coins or save-file fields are changed.
+const RoamingNPCs=(()=>{
+    const definitions=[
+        {id:'island-farmer',sector:1,sprite:'bauer',name:'Bauer Bruno',speed:57,start:{x:448,y:600},lines:[
+            'Morgens giesse ich meine Beete. Abends zähle ich die Karotten. Die Hasen machen leider nie bei der Inventur mit.',
+            'Ob 1.5 oder 1.50 Liter: Meine Giesskanne bleibt gleich voll. Mehr Nullen machen noch keinen Regen.',
+            'Zwischen den alten Ruinen wächst das Unkraut erstaunlich ordentlich. Vielleicht steckt ein Muster dahinter …',
+            'Krabbor nennt sich Inselwächter. Beim Unkrautjäten habe ich ihn allerdings noch nie gesehen.'
+        ]},
+        {id:'city-courier',sector:2,sprite:'roboter',name:'PIP-7 · Kurierroboter',speed:69,start:{x:600,y:650},lines:[
+            'Systemmeldung: Feierabend nicht gefunden. Ich starte einen weiteren Spaziergang durch Robotown.',
+            'Beim Multiplizieren mit 0.5 wird eine positive Zahl halb so gross. Meine Portion Schrauben leider auch.',
+            'Mein Wartungskollege hat manchmal Kommaprobleme. Ich habe dafür vergessen, wo ich mein Ladekabel geparkt habe.',
+            'MECHATRON X hat mir befohlen: «Denk nicht selbst!» Darum übe ich jetzt besonders gründlich.'
+        ]},
+        {id:'moon-alien',sector:3,sprite:'alien',name:'Lumi · Mondreisende',speed:51,start:{x:640,y:608},lines:[
+            'Willkommen auf der Moonbase! Ich bin Lumi. Keine Sorge: Mein Übersetzer kann Dezimalzahlen. Meistens jedenfalls.',
+            'Hier springt man leichter. Aus einem Krater kommt man trotzdem besser mit R als mit Jammern.',
+            'Bei uns ist ein Liter auch ein Liter. Die Übersetzung von «1 dm³» war also überraschend einfach.',
+            'Ich habe NULLOX gefragt, ob er die Leere aufräumen kann. Er meinte, sie sei schon leer genug.'
+        ]}
+    ];
+    const graphs=new Map(),actors=new Map(),STEP=16,STOP=52,RESUME=68,BODY=18;
+    let owner=null,talking=null;
+    const world=n=>[null,IslandLevel1,CityLevel2,PlanetLevel3][n];
+    const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+    function sync(){if(owner!==appState){owner=appState;actors.clear();talking=null;}}
+    function safe(n,x,y){
+        const w=world(n);
+        // Ignore only the old moving robot while building the static city graph.
+        if(!w.walkable(x,y,n===2)||!w.walkable(x,y-5,n===2))return false;
+        if(n===3&&w.craters.some(c=>((x-c.x)/(c.rx+14))**2+((y-c.y)/(c.ry+14))**2<1))return false;
+        // Keep doors, boarding places and existing riddle interaction areas clear.
+        if(w.sites.some(s=>Math.abs(x-s.door.x)<58&&y>s.door.y-6&&y<s.door.y+88))return false;
+        if(WorldTravel.routes.some(r=>r.sector===n&&Math.hypot(x-r.x,y-r.y)<86))return false;
+        return true;
+    }
+    function clear(n,a,b){
+        const count=Math.max(1,Math.ceil(dist(a,b)/4));
+        for(let i=0;i<=count;i++)if(!safe(n,a.x+(b.x-a.x)*i/count,a.y+(b.y-a.y)*i/count))return false;
+        return true;
+    }
+    function graph(n){
+        let g=graphs.get(n);if(g)return g;
+        g={phase:'scan',x:64,y:64,at:0,nodes:[],lookup:new Map(),reachable:[],districts:[]};graphs.set(n,g);return g;
+    }
+    function build(n){
+        const g=graph(n),w=world(n),W=w.bounds.width,H=w.bounds.height;
+        if(g.phase==='ready')return g;
+        // Small chunks avoid a long frame when entering a world for the first time.
+        if(g.phase==='scan'){
+            for(let budget=0;budget<420&&g.y<=H-64;budget++){
+                const x=g.x,y=g.y;
+                if(safe(n,x,y)){const node={id:g.nodes.length,x,y,edges:[],district:Math.min(2,Math.floor(y/H*3))*3+Math.min(2,Math.floor(x/W*3))};g.lookup.set(x+','+y,node.id);g.nodes.push(node);}
+                g.x+=STEP;if(g.x>W-64){g.x=64;g.y+=STEP;}
+            }
+            if(g.y>H-64)g.phase='edges';
+        }else if(g.phase==='edges'){
+            for(let budget=0;budget<360&&g.at<g.nodes.length;budget++,g.at++){
+                const a=g.nodes[g.at];
+                for(const [dx,dy] of [[STEP,0],[0,STEP]]){const id=g.lookup.get((a.x+dx)+','+(a.y+dy));if(id===undefined)continue;const b=g.nodes[id];if(clear(n,a,b)){a.edges.push(id);b.edges.push(a.id);}}
+            }
+            if(g.at===g.nodes.length){
+                const seen=new Uint8Array(g.nodes.length);let largest=[];
+                for(const a of g.nodes)if(!seen[a.id]){
+                    const queue=[a.id];seen[a.id]=1;
+                    for(let i=0;i<queue.length;i++)for(const next of g.nodes[queue[i]].edges)if(!seen[next]){seen[next]=1;queue.push(next);}
+                    if(queue.length>largest.length)largest=queue;
+                }
+                g.reachable=largest;g.districts=[...new Set(largest.map(id=>g.nodes[id].district))];g.phase='ready';
+            }
+        }
+        return g;
+    }
+    function nearest(g,p,n){
+        let best=null,distance=Infinity;
+        for(const id of g.reachable){const node=g.nodes[id],d=dist(node,p);if(d<distance&&clear(n,p,node)){best=node;distance=d;}}
+        return best;
+    }
+    function actor(n){
+        sync();let a=actors.get(n);if(a)return a;
+        const d=definitions.find(d=>d.sector===n),g=graph(n);if(!d||g.phase!=='ready'||!g.reachable.length)return null;
+        const candidates=g.reachable.map(id=>g.nodes[id]).sort((a,b)=>dist(a,d.start)-dist(b,d.start));
+        const p=world(n).position(),node=candidates.find(q=>dist(q,p)>80)||candidates[0];
+        a={...d,x:node.x,y:node.y,facing:'down',moving:false,paused:false,path:[],districtQueue:[],line:0,wait:1,blocked:0,animation:0,visited:new Set([node.district]),yield:null};actors.set(n,a);return a;
+    }
+    function plan(a){
+        const g=graph(a.sector),start=nearest(g,a,a.sector);if(!start)return [];
+        const parents=new Int32Array(g.nodes.length).fill(-1),queue=[start.id];parents[start.id]=start.id;
+        for(let i=0;i<queue.length;i++)for(const next of g.nodes[queue[i]].edges)if(parents[next]<0){parents[next]=queue[i];queue.push(next);}
+        if(!a.districtQueue.length){
+            a.districtQueue=g.districts.slice();for(let i=a.districtQueue.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a.districtQueue[i],a.districtQueue[j]]=[a.districtQueue[j],a.districtQueue[i]];}
+            if(a.districtQueue[0]===start.district)a.districtQueue.push(a.districtQueue.shift());
+        }
+        let candidates=[];
+        while(a.districtQueue.length&&!candidates.length){const district=a.districtQueue.shift();candidates=queue.filter(id=>g.nodes[id].district===district&&dist(g.nodes[id],a)>160);}
+        if(!candidates.length)candidates=queue.filter(id=>dist(g.nodes[id],a)>160);
+        if(!candidates.length)return [];
+        const goal=candidates[Math.floor(Math.random()*candidates.length)],path=[];
+        for(let id=goal;;id=parents[id]){path.push(g.nodes[id]);if(id===start.id)break;}
+        return path.reverse();
+    }
+    const face=(a,p)=>{const dx=p.x-a.x,dy=p.y-a.y;a.facing=Math.abs(dx)>Math.abs(dy)?dx>0?'right':'left':dy>0?'down':'up';};
+    function dynamicClear(a,p){
+        const w=world(a.sector);if(!w.walkable(p.x,p.y))return false;
+        const pet=window.companions?.pose(a.sector);if(pet&&dist(p,pet)<23)return false;
+        return true;
+    }
+    function advance(a,target,dt,p,speed=a.speed){
+        const d=dist(a,target);if(d<.2)return true;
+        const amount=Math.min(d,speed*dt),q={x:a.x+(target.x-a.x)/d*amount,y:a.y+(target.y-a.y)/d*amount};
+        if(!clear(a.sector,a,q)||!dynamicClear(a,q)||(dist(q,p)<BODY&&dist(q,p)<=dist(a,p)))return false;
+        face(a,q);a.x=q.x;a.y=q.y;a.moving=amount>.05;a.animation+=amount*19;
+        return amount>=d-.2;
+    }
+    function step(n,dt,time,enabled){
+        sync();if(!enabled){const a=actors.get(n);if(a)a.moving=false;return;}
+        const g=build(n);if(g.phase!=='ready')return;
+        const a=actor(n),p=world(n).position();if(!a)return;a.moving=false;dt=Math.min(dt,.04);
+        const distance=dist(a,p);
+        if(a.yield){
+            const y=a.yield,along=(a.x-p.x)*y.dx+(a.y-p.y)*y.dy,side=Math.abs((a.x-p.x)*y.dy-(a.y-p.y)*y.dx);
+            if(time>y.until||side>=24||along<-8||distance>62||dist(a,y.target)<2){a.yield=null;a.path=[];}
+            else{advance(a,y.target,dt,p,105);return;}
+        }
+        if(talking===a.id||distance<(a.paused?RESUME:STOP)){a.paused=true;face(a,p);return;}
+        a.paused=false;
+        if(a.wait>0){a.wait-=dt;return;}
+        if(!a.path.length)a.path=plan(a);
+        const target=a.path[0];if(!target){a.wait=1;return;}
+        const x=a.x,y=a.y,reached=advance(a,target,dt,p);
+        if(reached){a.path.shift();a.visited.add(target.district);if(!a.path.length)a.wait=1.5+Math.random()*2.5;}
+        if(x===a.x&&y===a.y&&!reached){a.blocked+=dt;if(a.blocked>1.2){a.path=[];a.wait=.5;a.blocked=0;}}else a.blocked=0;
+    }
+    function nearby(p,n){
+        const a=actors.get(n);if(!a||dist(a,p)>58)return null;
+        // A nearby figure behind a wall cannot be spoken to through the building.
+        const count=Math.max(1,Math.ceil(dist(a,p)/4)),w=world(n);
+        for(let i=0;i<=count;i++)if(!w.walkable(p.x+(a.x-p.x)*i/count,p.y+(a.y-p.y)*i/count,n===2))return null;
+        return {id:a.id,npc:true,name:a.name,prompt:a.name+' · Sprich mit mir',sector:n};
+    }
+    function blocksHero(n,from,x,y){
+        sync();const a=actors.get(n);if(!a||window.worldTravel?.isTravelling())return false;
+        const before=dist(from,a),after=Math.hypot(x-a.x,y-a.y),dx=x-from.x,dy=y-from.y,len=Math.hypot(dx,dy);
+        if(len&&before<36&&!talking){
+            const ux=dx/len,uy=dy/len,along=(a.x-from.x)*ux+(a.y-from.y)*uy,side=Math.abs((a.x-from.x)*uy-(a.y-from.y)*ux);
+            if(along>0&&side<22&&!a.yield){
+                search:for(const radius of [30,42,54])for(const [sx,sy] of [[-uy,ux],[uy,-ux],[-ux,-uy]]){
+                    const q={x:a.x+sx*radius,y:a.y+sy*radius};
+                    const vx=q.x-a.x,vy=q.y-a.y,vv=vx*vx+vy*vy,t=vv?Math.max(0,Math.min(1,((from.x-a.x)*vx+(from.y-a.y)*vy)/vv)):0;
+                    if(Math.hypot(a.x+vx*t-from.x,a.y+vy*t-from.y)>=BODY&&clear(n,a,q)&&dynamicClear(a,q)){a.yield={target:q,dx:ux,dy:uy,until:performance.now()+900};break search;}
+                }
+            }
+        }
+        return before<BODY?after<before-.001:after<BODY;
+    }
+    function pose(n){sync();const a=actors.get(n);return a?{id:a.id,sector:n,name:a.name,sprite:a.sprite,x:a.x,y:a.y,facing:a.facing,moving:a.moving,paused:a.paused,visited:[...a.visited]}:null;}
+    function draw(ctx,n){
+        const a=actors.get(n);if(!a)return;
+        ctx.save();ctx.fillStyle=n===3?'#090b2880':'#0b211b66';ctx.beginPath();ctx.ellipse(a.x,a.y+3,11,4,0,0,Math.PI*2);ctx.fill();ctx.restore();
+        RoamingNPCSprites.draw(ctx,a.sprite,a.x,a.y,a.facing,a.moving,a.animation,40);
+    }
+    const modal=document.getElementById('modalOverlay'),section=document.createElement('section');
+    section.id='roaming-npc-dialogue';section.className='mission-content hidden';
+    section.innerHTML='<div class="roaming-npc-conversation"><canvas id="roaming-npc-portrait" width="144" height="144" aria-hidden="true"></canvas><div><p id="roaming-npc-line" aria-live="polite"></p></div></div><div class="roaming-npc-actions"><button type="button" id="roaming-npc-next">Weitererzählen</button><button type="button" id="roaming-npc-close">Zur Karte</button></div>';
+    document.getElementById('modalContent').appendChild(section);
+    function render(a){
+        section.querySelector('#roaming-npc-line').textContent=a.lines[a.line];
+        const canvas=section.querySelector('canvas'),c=canvas.getContext('2d');c.clearRect(0,0,144,144);RoamingNPCSprites.draw(c,a.sprite,72,138,'down',false,0,125);
+    }
+    function open(id){
+        sync();const a=[...actors.values()].find(a=>a.id===id);if(!a||!world(a.sector).active()||!nearby(world(a.sector).position(),a.sector))return false;
+        talking=id;a.moving=false;a.paused=true;face(a,world(a.sector).position());hideAllModalContent();delete modal.dataset.menu;modal.dataset.chapter=String(a.sector);
+        document.getElementById('modalTitle').textContent=a.name;render(a);section.classList.remove('hidden');modal.classList.remove('hidden');document.getElementById('modalContent').scrollTop=0;section.querySelector('#roaming-npc-next').focus();return true;
+    }
+    section.querySelector('#roaming-npc-next').addEventListener('click',()=>{const a=[...actors.values()].find(a=>a.id===talking);if(a){a.line=(a.line+1)%a.lines.length;render(a);}});
+    function end(){if(!talking)return;const a=[...actors.values()].find(a=>a.id===talking);if(a){a.line=(a.line+1)%a.lines.length;a.wait=1;}talking=null;if(a)world(a.sector).focus();}
+    section.querySelector('#roaming-npc-close').addEventListener('click',()=>{closeModal();end();});
+    new MutationObserver(()=>{if(talking&&modal.classList.contains('hidden'))end();}).observe(modal,{attributes:true,attributeFilter:['class']});
+    RoamingNPCSprites.ready.then(()=>{if(talking){const a=[...actors.values()].find(a=>a.id===talking);if(a)render(a);}});
+    return {step,pose,draw,nearby,open,blocksHero,navigation:n=>{const g=graph(n);return {phase:g.phase,nodes:g.nodes.length,reachable:g.reachable.length,districts:g.districts.slice()};}};
+})();
+window.roamingNpcs=RoamingNPCs;
 
 
 NumberWriting.observe();
