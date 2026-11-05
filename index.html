@@ -8616,19 +8616,19 @@ const RoamingNPCSprites=(()=>{
 // Local scenery actors only: no quest flags, Coins or save-file fields are changed.
 const RoamingNPCs=(()=>{
     const definitions=[
-        {id:'island-farmer',sector:1,sprite:'bauer',name:'Bauer Bruno',speed:57,start:{x:448,y:600},lines:[
+        {id:'island-farmer',sector:1,sprite:'bauer',name:'Bauer Bruno',speed:57,start:{x:1472,y:416},lines:[
             'Morgens giesse ich meine Beete. Abends zähle ich die Karotten. Die Hasen machen leider nie bei der Inventur mit.',
             'Ob 1.5 oder 1.50 Liter: Meine Giesskanne bleibt gleich voll. Mehr Nullen machen noch keinen Regen.',
             'Zwischen den alten Ruinen wächst das Unkraut erstaunlich ordentlich. Vielleicht steckt ein Muster dahinter …',
             'Krabbor nennt sich Inselwächter. Beim Unkrautjäten habe ich ihn allerdings noch nie gesehen.'
         ]},
-        {id:'city-courier',sector:2,sprite:'roboter',name:'PIP-7 · Kurierroboter',speed:69,start:{x:600,y:650},lines:[
+        {id:'city-courier',sector:2,sprite:'roboter',name:'PIP-7 · Kurierroboter',speed:69,start:{x:1664,y:496},lines:[
             'Systemmeldung: Feierabend nicht gefunden. Ich starte einen weiteren Spaziergang durch Robotown.',
             'Beim Multiplizieren mit 0.5 wird eine positive Zahl halb so gross. Meine Portion Schrauben leider auch.',
             'Mein Wartungskollege hat manchmal Kommaprobleme. Ich habe dafür vergessen, wo ich mein Ladekabel geparkt habe.',
             'MECHATRON X hat mir befohlen: «Denk nicht selbst!» Darum übe ich jetzt besonders gründlich.'
         ]},
-        {id:'moon-alien',sector:3,sprite:'alien',name:'Lumi · Mondreisende',speed:51,start:{x:640,y:608},lines:[
+        {id:'moon-alien',sector:3,sprite:'alien',name:'Lumi · Mondreisende',speed:51,start:{x:1488,y:928},lines:[
             'Willkommen auf der Moonbase! Ich bin Lumi. Keine Sorge: Mein Übersetzer kann Dezimalzahlen. Meistens jedenfalls.',
             'Hier springt man leichter. Aus einem Krater kommt man trotzdem besser mit R als mit Jammern.',
             'Bei uns ist ein Liter auch ein Liter. Die Übersetzung von «1 dm³» war also überraschend einfach.',
@@ -8696,7 +8696,8 @@ const RoamingNPCs=(()=>{
         sync();let a=actors.get(n);if(a)return a;
         const d=definitions.find(d=>d.sector===n),g=graph(n);if(!d||g.phase!=='ready'||!g.reachable.length)return null;
         const candidates=g.reachable.map(id=>g.nodes[id]).sort((a,b)=>dist(a,d.start)-dist(b,d.start));
-        const p=world(n).position(),node=candidates.find(q=>dist(q,p)>80)||candidates[0];
+        // Start well away from the actual hero, also when loading an older save.
+        const p=world(n).position(),node=candidates.find(q=>dist(q,p)>=800)||candidates.reduce((far,q)=>dist(q,p)>dist(far,p)?q:far,candidates[0]);
         a={...d,x:node.x,y:node.y,facing:'down',moving:false,paused:false,path:[],districtQueue:[],line:0,wait:1,blocked:0,animation:0,visited:new Set([node.district]),yield:null};actors.set(n,a);return a;
     }
     function plan(a){
