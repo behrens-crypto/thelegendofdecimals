@@ -7842,7 +7842,7 @@ const SettingsMenu=(()=>{
         <section><h3>Moonbase: geringe Schwerkraft</h3><p>Auf der Moonbase braucht deine Figur etwas zum Anlaufen und gleitet nach. Mit <kbd>R</kbd> springst du. Halte gleichzeitig eine Richtung, um über Kristalle zu springen. Wenn du in einen Krater fällst, springst du mit R wieder hinaus. Gebäude, Raketen, Schluchten und der Kartenrand bleiben feste Grenzen.</p></section>
         <section><h3>Titel und Fähigkeiten</h3><p>Im Shop kannst du jeweils einen gekauften Titel aktivieren und kostenlos wechseln. Komma-Könner hinterlässt eine leuchtende Kommaspur. Zahlen-Stratege gibt dir mit <kbd>M</kbd> drei Sekunden Überblick. Dezimal-Profi erhöht dein Lauftempo auf das 1.5-Fache. Hütergilde-Legende lässt deinen Helden golden leuchten. Sternenläufer startet mit <kbd>Shift</kbd> einen zweisekündigen Sprint mit doppeltem Tempo; danach folgen sechs Sekunden Erholung. Dein Begleiter hält beim schnelleren Laufen mit.</p></section>
         <section><h3>Shop und Geheimnisse</h3><p>Den Shop kannst du auf der Insel betreten. Dort kannst du Coins für Helden, Begleiter, Farben, Titel und Siegeseffekte ausgeben oder 20 Coins gegen 1 Astrostutz eintauschen.</p><p>In jeder Welt gibt es zwei Eastereggs. Untersuche die Umgebung. Den Wartungsroboter musst du zuerst aus nächster Nähe zum Anhalten bringen.</p><p>Wähle einen gekauften Begleiter im Shop aus. Er begleitet jeden Helden auf The Island und in Robotown und reist im Flugzeug mit. Bei Mondreisen wartet er beim Raketenstartplatz in Robotown. Unter Einstellungen → Käufe übertragen exportierst du deine Käufe als JSON-Datei ohne Coins für die nächste Spielwelt. Dort muss der Heldenname genau übereinstimmen.</p></section>
-        <section><h3>Speichern und fortsetzen</h3><p>Position, Antworten, Coins und Fortschritt sicherst du oben über <strong>SPEICHERN</strong> als JSON-Datei. In Edge oder Chrome wählst du beim ersten Speichern die Datei und ihren Speicherort. Weitere Klicks auf SPEICHERN aktualisieren dieselbe Datei. Beim erneuten Laden dieses Spielstands kann der Browser die Datei wiederfinden und bei Bedarf erneut um Schreibzugriff bitten. Ist die Datei nicht mehr verfügbar, wählst du sie neu. Andere Browser laden die JSON-Datei wie bisher herunter. Lade deinen Spielstand beim nächsten Start mit <strong>DATEN HOCHLADEN</strong>, um weiterzuspielen.</p><p>Nach einem besiegten Boss bearbeitest du den Zwischenstopp auf LearningView. Trage danach im Zwischenstopp deine erreichten Punkte ein. Bei voller Punktzahl geht es direkt weiter. Sonst übst du die Inhalte auf LearningView und bestätigst anschliessend hier, dass du geübt hast. Deine Ergebnisse findest du unter <strong>Einstellungen → Zwischenstopp</strong>.</p><p>Wenn alle 19 Quests abgeschlossen sind, findest du das Theoriemerkheft unter <strong>Einstellungen → Zusammenfassung</strong>.</p></section>
+        <section><h3>Speichern und fortsetzen</h3><p>Position, Antworten, Coins und Fortschritt sicherst du oben über <strong>SPEICHERN</strong> als JSON-Datei. Du speicherst deinen Spielstand jedes Mal selbst. Bei jedem Klick wählst du die Datei und ihren Speicherort neu aus; das Spiel merkt sich kein Speicherziel. Unterstützt dein Browser diese Dateiauswahl nicht, wird die JSON-Datei über den normalen Browser-Download gespeichert. Lade deinen Spielstand beim nächsten Start mit <strong>DATEN HOCHLADEN</strong>, um weiterzuspielen.</p><p>Nach einem besiegten Boss bearbeitest du den Zwischenstopp auf LearningView. Trage danach im Zwischenstopp deine erreichten Punkte ein. Bei voller Punktzahl geht es direkt weiter. Sonst übst du die Inhalte auf LearningView und bestätigst anschliessend hier, dass du geübt hast. Deine Ergebnisse findest du unter <strong>Einstellungen → Zwischenstopp</strong>.</p><p>Wenn alle 19 Quests abgeschlossen sind, findest du das Theoriemerkheft unter <strong>Einstellungen → Zusammenfassung</strong>.</p></section>
     </div>`;
     const difficulty=document.createElement('div');difficulty.id='difficulty-content';difficulty.className='mission-content hidden';
     difficulty.innerHTML=`<div class="game-instructions"><section><h3>Spielmodus</h3><p>Der Spielmodus bestimmt die Orientierungshilfen. Dein Aufgabenniveau bleibt gleich.</p><fieldset class="legend-field" aria-label="Spielmodus"><div class="legend-niveaux difficulty-choices">
@@ -8466,130 +8466,51 @@ const PurchaseTransfer=(()=>{
 
 // Only file handles are remembered here. Progress still lives in the user's JSON file.
 const GameFileSave=(()=>{
-    let boundOwner=null,target=null,priming=null,busy=false,dbPromise=null,feedbackTimer=null;
+    let busy=false,feedbackTimer=null;
     const button=document.getElementById('btn-save-progress');
     const feedback=document.createElement('div');feedback.id='file-save-feedback';feedback.hidden=true;feedback.setAttribute('role','status');feedback.setAttribute('aria-live','polite');document.body.appendChild(feedback);
     const supported=()=>window.isSecureContext&&typeof window.showSaveFilePicker==='function';
-    const playerKey=state=>String(state.agentName||'').trim().normalize('NFC')+'|'+state.agentNiveau;
-    const validId=id=>typeof id==='string'&&/^lod-[a-zA-Z0-9-]{10,90}$/.test(id);
-    const newId=()=>'lod-'+(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2));
     const filename=state=>{
         const name=String(state.agentName).trim().replace(/[<>:"/\\|?*\u0000-\u001f]/g,'_').replace(/[. ]+$/g,'');
         return 'The_Legend_of_Decimals_'+(name||'Held')+'.json';
     };
     function notify(text){clearTimeout(feedbackTimer);feedback.textContent=text;feedback.hidden=false;feedbackTimer=setTimeout(()=>feedback.hidden=true,5500);}
-    function database(){
-        if(dbPromise)return dbPromise;
-        dbPromise=new Promise(resolve=>{
-            let done=false;const finish=db=>{if(done){db?.close();return;}done=true;clearTimeout(timer);resolve(db);};
-            const timer=setTimeout(()=>finish(null),1000);
-            try{
-                const request=indexedDB.open('legend-of-decimals-file-targets',1);
-                request.onupgradeneeded=()=>{if(!request.result.objectStoreNames.contains('targets'))request.result.createObjectStore('targets');};
-                request.onsuccess=()=>finish(request.result);request.onerror=()=>finish(null);request.onblocked=()=>finish(null);
-            }catch{finish(null);}
-        });return dbPromise;
-    }
-    async function stored(id,value,remove=false){
-        const db=await database();if(!db||!validId(id))return null;
-        return new Promise(resolve=>{
-            try{
-                const writing=value!==undefined||remove,transaction=db.transaction('targets',writing?'readwrite':'readonly'),store=transaction.objectStore('targets');
-                const request=remove?store.delete(id):writing?store.put(value,id):store.get(id);
-                if(!writing)request.onsuccess=()=>resolve(request.result||null);
-                transaction.oncomplete=()=>{if(writing)resolve(true);};transaction.onerror=transaction.onabort=()=>resolve(null);request.onerror=()=>resolve(null);
-            }catch{resolve(null);}
-        });
-    }
-    function updateTitle(){button.title=target?'Spielstand aktualisieren: '+target.handle.name:'Spielstand als JSON-Datei speichern';}
-    function prime(state=appState){
-        if(boundOwner===state)return priming||Promise.resolve();
-        boundOwner=state;target=null;clearTimeout(feedbackTimer);feedback.hidden=true;updateTitle();
-        priming=(async()=>{
-            if(!supported()||!validId(state.saveFileId))return;
-            const record=await stored(state.saveFileId);
-            if(boundOwner===state&&record?.player===playerKey(state)&&record.handle?.kind==='file'&&typeof record.handle.createWritable==='function')target={...record,id:state.saveFileId};
-            if(boundOwner===state)updateTitle();
-        })();return priming;
-    }
-    function legacyDownload(state){
+    function prime(){clearTimeout(feedbackTimer);feedback.hidden=true;button.title='Spielstand manuell speichern und Speicherort auswählen';}
+    function download(state){
         if(appState!==state)return false;
         const text=JSON.stringify(window.directorTestCoins.snapshotForSave(),null,2),url=URL.createObjectURL(new Blob([text],{type:'application/json'}));
-        const a=document.createElement('a');a.href=url;a.download=filename(state);document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
-        window.saveSafety?.downloaded(text);notify('JSON-Download gestartet. Dieser Browser unterstützt das direkte Aktualisieren einer Datei nicht.');return true;
-    }
-    async function picker(state){
-        const handle=await window.showSaveFilePicker({id:'legend-decimals-save',suggestedName:filename(state),types:[{description:'JSON-Spielstand',accept:{'application/json':['.json']}}],excludeAcceptAllOption:true});
-        return {id:newId(),player:playerKey(state),handle};
-    }
-    async function permission(handle){
-        if(typeof handle.queryPermission!=='function')return true;
-        if(await handle.queryPermission({mode:'readwrite'})==='granted')return true;
-        return typeof handle.requestPermission==='function'&&await handle.requestPermission({mode:'readwrite'})==='granted';
-    }
-    async function forget(record,state){
-        if(!record)return;
-        if(boundOwner===state&&target?.id===record.id){target=null;updateTitle();}
-        await stored(record.id,undefined,true);
-    }
-    async function write(record,state){
-        if(appState!==state)return null;
-        const data={...window.directorTestCoins.snapshotForSave(),saveFileId:record.id},text=JSON.stringify(data,null,2);
-        let writable;
-        try{
-            writable=await record.handle.createWritable();
-            if(appState!==state){await writable.abort();return null;}
-            await writable.write(text);
-            if(appState!==state){await writable.abort();return null;}
-            await writable.close();return text;
-        }catch(error){if(writable)try{await writable.abort();}catch{}throw error;}
+        const a=document.createElement('a');a.href=url;a.download=filename(state);document.body.appendChild(a);
+        try{a.click();}finally{a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);}
+        window.saveSafety?.downloaded(text);notify('JSON-Download gestartet. Speichere die Datei über deinen Browser.');return true;
     }
     async function save(){
         if(busy||!appState.agentName||window.worldTravel?.isTravelling())return false;
-        const state=appState;if(!supported())return legacyDownload(state);
+        const state=appState;let writable=null;
         busy=true;button.disabled=true;button.setAttribute('aria-busy','true');
-        let record=null,usedPicker=false;
         try{
-            await prime(state);if(appState!==state)return false;
-            record=target;
-            if(record){
-                try{
-                    if(!await permission(record.handle))throw new DOMException('No write access','NotAllowedError');
-                    await record.handle.getFile();
-                }catch(error){
-                    if(!['NotFoundError','NotAllowedError','SecurityError'].includes(error.name))throw error;
-                    await forget(record,state);record=null;notify('Die Speicherdatei ist nicht mehr verfügbar. Wähle die Datei erneut.');
-                }
-            }
+            if(!supported())return download(state);
+            // Open directly on this click, without restoring or reusing a previous file.
+            const handle=await window.showSaveFilePicker({suggestedName:filename(state),types:[{description:'JSON-Spielstand',accept:{'application/json':['.json']}}],excludeAcceptAllOption:true});
             if(appState!==state)return false;
-            if(!record){record=await picker(state);usedPicker=true;}
-            if(appState!==state)return false;
-            let text;
-            try{text=await write(record,state);}
-            catch(error){
-                // The entry can disappear between getFile() and createWritable(). Retry once with a new picker.
-                if(!usedPicker&&['NotFoundError','NotAllowedError'].includes(error.name)){
-                    await forget(record,state);if(appState!==state)return false;
-                    notify('Die Speicherdatei ist nicht mehr verfügbar. Wähle die Datei erneut.');record=await picker(state);usedPicker=true;text=await write(record,state);
-                }else throw error;
-            }
-            if(text===null)return false;
-            const previousId=state.saveFileId;state.saveFileId=record.id;
-            if(boundOwner===state){target=record;updateTitle();}
-            if(appState===state){window.saveSafety?.downloaded(text);notify('Gespeichert: '+record.handle.name);}
-            await stored(record.id,{player:record.player,handle:record.handle});
-            if(validId(previousId)&&previousId!==record.id){const previous=await stored(previousId);if(previous?.player===playerKey(state))await stored(previousId,undefined,true);}
+            const text=JSON.stringify(window.directorTestCoins.snapshotForSave(),null,2);
+            writable=await handle.createWritable();
+            if(appState!==state){await writable.abort();writable=null;return false;}
+            await writable.write(text);
+            if(appState!==state){await writable.abort();writable=null;return false;}
+            await writable.close();writable=null;
+            if(appState===state){window.saveSafety?.downloaded(text);notify('Gespeichert: '+handle.name);}
             return true;
         }catch(error){
+            if(writable)try{await writable.abort();}catch{}
             if(appState!==state)return false;
-            if(error.name==='AbortError'){notify('Speichern abgebrochen. Es wurde kein neuer Spielstand gespeichert.');return false;}
-            if(error.name==='SecurityError'&&!record){notify('Die Dateiauswahl wurde vom Browser blockiert. Klicke erneut auf SPEICHERN.');return false;}
-            notify('Speichern fehlgeschlagen. Deine Änderungen sind noch nicht gespeichert. Versuche es erneut.');return false;
+            if(error.name==='AbortError'){notify('Speichern abgebrochen. Deine Änderungen sind noch nicht gespeichert.');return false;}
+            // A blocked picker or an unavailable file must not prevent manual saving.
+            try{return download(state);}catch{notify('Der JSON-Download konnte nicht gestartet werden. Klicke erneut auf SPEICHERN.');return false;}
         }finally{busy=false;button.disabled=false;button.removeAttribute('aria-busy');window.saveSafety?.refresh();}
     }
-    const show=window.showMainUI;window.showMainUI=function(...args){const result=show.apply(this,args);prime(appState);return result;};
-    prime(appState);
-    const api={save,prime,supported,isSaving:()=>busy,status:()=>({supported:supported(),busy,file:target?.handle.name||null,remembered:!!target})};window.gameFileSave=api;return api;
+    const show=window.showMainUI;window.showMainUI=function(...args){const result=show.apply(this,args);prime();return result;};
+    prime();
+    const api={save,prime,supported,isSaving:()=>busy,status:()=>({mode:'manual',supported:supported(),busy,file:null,remembered:false})};window.gameFileSave=api;return api;
 })();
 
 
